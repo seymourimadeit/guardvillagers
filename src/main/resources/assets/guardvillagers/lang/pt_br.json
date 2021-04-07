@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "Guarda",
+"item.guardvillagers.guard_spawn_egg": "Ovo Gerador de Guarda",
+"item.guardvillagers.illusioner_spawn_egg": "Ovo Gerador de Ilusionista",
+"item.guardvillagers.iron_golem_spawn_egg": "Ovo Gerador de Golem de Ferro",
+"item.guardvillagers.snow_golem_spawn_egg": "Ovo Gerador de Golem de Neve",
+"guardinventory.health": "Vida: %s",
+"guardinventory.armor": "Armadura: %s"
+}

@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "보초병",
+"item.guardvillagers.guard_spawn_egg": "보초병 생성 알",
+"item.guardvillagers.illusioner_spawn_egg": "환술사 생성 알",
+"item.guardvillagers.iron_golem_spawn_egg": "철 골렘 생성 알",
+"item.guardvillagers.snow_golem_spawn_egg": "눈 골렘 생성 알",
+"guardinventory.health": "체력: %s",
+"guardinventory.armor": "방어력: %s"
+}

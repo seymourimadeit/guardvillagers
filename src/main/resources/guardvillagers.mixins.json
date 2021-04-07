@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "tallestegg.guardvillagers.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "guardvillagers.refmap.json",
+  "mixins": [
+    "ZombieEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

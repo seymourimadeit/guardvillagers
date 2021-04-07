@@ -1,0 +1,29 @@
+modLoader="javafml" #mandatory
+loaderVersion="[28,)" #mandatory (28 is current forge version)
+issueTrackerURL="https://github.com/seymourimadeit/guardvillagers/issues" #optional
+license="MIT"
+# A list of mods - how many allowed here is determined by the individual mod loader
+[[mods]] #mandatory
+modId="guardvillagers" #mandatory
+version="1.2.2" #mandatory
+displayName="Guard Villagers" #mandatory
+updateJSONURL="https://raw.githubusercontent.com/seymourimadeit/guardvillagers/master/update.json" #optional
+displayURL="https://www.curseforge.com/minecraft/mc-mods/guard-villagers" #optional
+credits="TallestEgg and HadeZ/SadNya69 for the textures." #optional
+authors="TallestEgg, HadeZ/SadNya69 for the textures." #optional
+description='''
+Need some help with pest control? The Guards are ready to help!
+'''
+[[dependencies.guardvillagers]] #optional
+    modId="forge" #mandatory
+    mandatory=true #mandatory
+    versionRange="[32.0.65,)" #mandatory
+    ordering="NONE"
+    side="BOTH"
+# Here's another dependency
+[[dependencies.guardvillagers]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.4,]"
+    ordering="NONE"
+    side="BOTH"
