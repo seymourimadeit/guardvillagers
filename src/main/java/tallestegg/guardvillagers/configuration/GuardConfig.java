@@ -53,7 +53,7 @@ public class GuardConfig {
     public static boolean armorerRepairGuardArmor;
     public static boolean giveGuardStuffHOTV;
     public static boolean setGuardPatrolHotv;
-    public static boolean guardSteve;
+    public static boolean guardSteve; // test
     public static List<String> MobBlackList;
 
     public static void bakeCommonConfig() {
