@@ -337,7 +337,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
     public LivingEntity getOwner() {
         try {
             UUID uuid = this.getOwnerId();
-            return uuid == null ? null : this.world.getPlayerByUuid(uuid);
+            return uuid == null || !this.world.getPlayerByUuid(uuid).isPotionActive(Effects.HERO_OF_THE_VILLAGE) && uuid != null ? null : this.world.getPlayerByUuid(uuid);
         } catch (IllegalArgumentException illegalargumentexception) {
             return null;
         }
@@ -408,10 +408,6 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
         }
         if (this.shieldCoolDown > 0) {
             --this.shieldCoolDown;
-        }
-        if (this.getOwner() != null && !this.getOwner().isPotionActive(Effects.HERO_OF_THE_VILLAGE)) {
-            this.setOwnerId(null); // TODO find a better method instead of checking every tick, using potion expiry
-                                   // event instead
         }
         if (this.getHealth() < this.getMaxHealth() && this.ticksExisted % 200 == 0) {
             this.heal(GuardConfig.amountOfHealthRegenerated);
