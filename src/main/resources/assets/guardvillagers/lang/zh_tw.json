@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "護衛",
+"item.guardvillagers.guard_spawn_egg": "護衛 生怪蛋",
+"item.guardvillagers.illusioner_spawn_egg": "幻術師 生怪蛋",
+"item.guardvillagers.iron_golem_spawn_egg": "鐵巨人 生怪蛋",
+"item.guardvillagers.snow_golem_spawn_egg": "雪人 生怪蛋",
+"guardinventory.health": "生命值: %s",
+"guardinventory.armor": "護甲值: %s"
+}
