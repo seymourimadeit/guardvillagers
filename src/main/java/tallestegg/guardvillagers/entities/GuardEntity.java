@@ -269,6 +269,12 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
         this.setRunningToEat(compound.getBoolean("RunningToEat"));
         this.shieldCoolDown = compound.getInt("KickCooldown");
         this.kickCoolDown = compound.getInt("ShieldCooldown");
+        if (compound.contains("PatrolPosX")) {
+            int x = compound.getInt("PatrolPosX");
+            int y = compound.getInt("PatrolPosY");
+            int z = compound.getInt("PatrolPosZ");
+            this.dataManager.set(GUARD_POS, Optional.ofNullable(new BlockPos(x, y, z)));
+        }
         ListNBT listnbt = compound.getList("Inventory", 10);
         for (int i = 0; i < listnbt.size(); ++i) {
             CompoundNBT compoundnbt = listnbt.getCompound(i);
@@ -288,12 +294,6 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
                 int handSlot = i == 0 ? 5 : 4;
                 this.guardInventory.setInventorySlotContents(handSlot, ItemStack.read(handItems.getCompound(i)));
             }
-        }
-        if (compound.contains("PatrolPosX")) {
-            int x = compound.getInt("PatrolPosX");
-            int y = compound.getInt("PatrolPosY");
-            int z = compound.getInt("PatrolPosZ");
-            this.dataManager.set(GUARD_POS, Optional.ofNullable(new BlockPos(x, y, z)));
         }
         if (!world.isRemote)
             this.readAngerNBT((ServerWorld) this.world, compound);
@@ -477,11 +477,6 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
         super.resetActiveHand();
     }
 
-    @Override
-    public void setAttackTarget(LivingEntity target) {
-        super.setAttackTarget(target);
-    }
-
     public void disableShield(boolean increase) {
         float f = 0.25F + (float) EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
         if (increase) {
@@ -639,7 +634,6 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
 
     @Override
     public void setItemStackToSlot(EquipmentSlotType slotIn, ItemStack stack) {
-        super.setItemStackToSlot(slotIn, stack);
         switch (slotIn) {
         case CHEST:
             this.guardInventory.setInventorySlotContents(1, this.inventoryArmor.get(slotIn.getIndex()));
@@ -660,6 +654,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
             this.guardInventory.setInventorySlotContents(4, this.inventoryHands.get(slotIn.getIndex()));
             break;
         }
+        super.setItemStackToSlot(slotIn, stack);
     }
 
     @Override
@@ -703,13 +698,12 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
         Biome biome = world.getBiome(pos);
         switch (biome.getCategory()) {
         case DESERT:
+        case MESA:
             return 1;
         case ICY:
             return 6;
         case JUNGLE:
             return 4;
-        case MESA:
-            return 1;
         case NONE:
             return 0;
         case PLAINS:
