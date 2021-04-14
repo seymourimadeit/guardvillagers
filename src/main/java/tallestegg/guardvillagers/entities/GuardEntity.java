@@ -634,27 +634,33 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
 
     @Override
     public void setItemStackToSlot(EquipmentSlotType slotIn, ItemStack stack) {
+        super.setItemStackToSlot(slotIn, stack);
         switch (slotIn) {
         case CHEST:
-            this.guardInventory.setInventorySlotContents(1, this.inventoryArmor.get(slotIn.getIndex()));
+            if (this.guardInventory.getStackInSlot(1).isEmpty())
+                this.guardInventory.setInventorySlotContents(1, this.inventoryArmor.get(slotIn.getIndex()));
             break;
         case FEET:
-            this.guardInventory.setInventorySlotContents(3, this.inventoryArmor.get(slotIn.getIndex()));
+            if (this.guardInventory.getStackInSlot(3).isEmpty())
+                this.guardInventory.setInventorySlotContents(3, this.inventoryArmor.get(slotIn.getIndex()));
             break;
         case HEAD:
-            this.guardInventory.setInventorySlotContents(0, this.inventoryArmor.get(slotIn.getIndex()));
+            if (this.guardInventory.getStackInSlot(0).isEmpty())
+                this.guardInventory.setInventorySlotContents(0, this.inventoryArmor.get(slotIn.getIndex()));
             break;
         case LEGS:
-            this.guardInventory.setInventorySlotContents(2, this.inventoryArmor.get(slotIn.getIndex()));
+            if (this.guardInventory.getStackInSlot(2).isEmpty())
+                this.guardInventory.setInventorySlotContents(2, this.inventoryArmor.get(slotIn.getIndex()));
             break;
         case MAINHAND:
-            this.guardInventory.setInventorySlotContents(5, this.inventoryHands.get(slotIn.getIndex()));
+            if (this.guardInventory.getStackInSlot(5).isEmpty())
+                this.guardInventory.setInventorySlotContents(5, this.inventoryHands.get(slotIn.getIndex()));
             break;
         case OFFHAND:
-            this.guardInventory.setInventorySlotContents(4, this.inventoryHands.get(slotIn.getIndex()));
+            if (this.guardInventory.getStackInSlot(4).isEmpty())
+                this.guardInventory.setInventorySlotContents(4, this.inventoryHands.get(slotIn.getIndex()));
             break;
         }
-        super.setItemStackToSlot(slotIn, stack);
     }
 
     @Override
