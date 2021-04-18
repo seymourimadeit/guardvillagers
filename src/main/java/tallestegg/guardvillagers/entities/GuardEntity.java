@@ -240,7 +240,6 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
 
     @Override
     protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
-        super.dropSpecialItems(source, looting, recentlyHitIn);
         for (int i = 0; i < this.guardInventory.getSizeInventory(); ++i) {
             ItemStack itemstack = this.guardInventory.getStackInSlot(i);
             if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack)) {
