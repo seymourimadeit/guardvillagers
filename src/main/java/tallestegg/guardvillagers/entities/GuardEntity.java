@@ -336,7 +336,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
     public LivingEntity getOwner() {
         try {
             UUID uuid = this.getOwnerId();
-            return uuid == null || !this.world.getPlayerByUuid(uuid).isPotionActive(Effects.HERO_OF_THE_VILLAGE) && uuid != null ? null : this.world.getPlayerByUuid(uuid);
+            return (uuid == null || uuid != null && this.world.getPlayerByUuid(uuid) != null && !this.world.getPlayerByUuid(uuid).isPotionActive(Effects.HERO_OF_THE_VILLAGE)) ? null : this.world.getPlayerByUuid(uuid);
         } catch (IllegalArgumentException illegalargumentexception) {
             return null;
         }

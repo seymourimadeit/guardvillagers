@@ -22,6 +22,7 @@ public class HeroHurtByTargetGoal extends TargetGoal {
         this.setMutexFlags(EnumSet.of(Goal.Flag.TARGET));
     }
 
+    @Override
     public boolean shouldExecute() {
         LivingEntity livingentity = this.guard.getOwner();
         if (livingentity == null) {
@@ -38,6 +39,7 @@ public class HeroHurtByTargetGoal extends TargetGoal {
         return super.isSuitableTarget(potentialTarget, targetPredicate) && !(potentialTarget instanceof IronGolemEntity) && !(potentialTarget instanceof GuardEntity);
     }
 
+    @Override
     public void startExecuting() {
         this.goalOwner.setAttackTarget(this.attacker);
         LivingEntity livingentity = this.guard.getOwner();
