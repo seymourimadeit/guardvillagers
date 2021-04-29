@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntitySize;
@@ -621,6 +622,21 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
             hand.damageItem(1, this, (entity) -> entity.sendBreakAnimation(EquipmentSlotType.MAINHAND));
             AbstractArrowEntity abstractarrowentity = ProjectileHelper.fireArrow(this, itemstack, distanceFactor);
             abstractarrowentity = ((net.minecraft.item.BowItem) this.getHeldItemMainhand().getItem()).customArrow(abstractarrowentity);
+
+            int powerLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER, itemstack);
+            if (powerLevel > 0) {
+                abstractarrowentity.setDamage(abstractarrowentity.getDamage() + (double) powerLevel * 0.5D + 0.5D);
+            }
+
+            int punchLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.PUNCH, itemstack);
+            if (punchLevel > 0) {
+                abstractarrowentity.setKnockbackStrength(punchLevel);
+            }
+
+            if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAME, itemstack) > 0) {
+                abstractarrowentity.setFire(100);
+            }
+
             double d0 = target.getPosX() - this.getPosX();
             double d1 = target.getPosYHeight(0.3333333333333333D) - abstractarrowentity.getPosY();
             double d2 = target.getPosZ() - this.getPosZ();
