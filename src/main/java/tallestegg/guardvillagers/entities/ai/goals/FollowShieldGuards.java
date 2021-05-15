@@ -26,7 +26,8 @@ public class FollowShieldGuards extends Goal {
         List<GuardEntity> list = this.taskOwner.world.getEntitiesWithinAABB(this.taskOwner.getClass(), this.taskOwner.getBoundingBox().grow(8.0D, 8.0D, 8.0D));
         if (!list.isEmpty()) {
             for (GuardEntity guard : list) {
-                if (!guard.isInvisible() && guard.getHeldItemOffhand().isShield(guard) && guard.isActiveItemStackBlocking() && this.taskOwner.world.getTargettableEntitiesWithinAABB(GuardEntity.class, (new EntityPredicate()).setDistance(3.0D), guard, this.taskOwner.getBoundingBox().grow(5.0D)).size() < 5) {
+                if (!guard.isInvisible() && guard.getHeldItemOffhand().isShield(guard) && guard.isActiveItemStackBlocking()
+                        && this.taskOwner.world.getTargettableEntitiesWithinAABB(GuardEntity.class, (new EntityPredicate()).setDistance(3.0D), guard, this.taskOwner.getBoundingBox().grow(5.0D)).size() < 5) {
                     this.guardtofollow = guard;
                     Vector3d vec3d = this.getPosition();
                     if (vec3d == null) {

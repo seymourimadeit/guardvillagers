@@ -34,10 +34,6 @@ public class GuardConfig {
     public static boolean WitchesVillager;
     public static boolean IllusionerRaids;
     public static boolean AttackAllMobs;
-    public static boolean VillagersRunFromPolarBears;
-    public static boolean IllagersRunFromPolarBears;
-    public static boolean GuardsRunFromPolarBears;
-    public static boolean GuardsOpenDoors;
     public static boolean GuardAlwaysShield;
     public static boolean GuardFormation;
     public static boolean FriendlyFire;
@@ -61,9 +57,6 @@ public class GuardConfig {
         WitchesVillager = COMMON.WitchesVillager.get();
         IllusionerRaids = COMMON.IllusionerRaids.get();
         AttackAllMobs = COMMON.AttackAllMobs.get();
-        VillagersRunFromPolarBears = COMMON.VillagersRunFromPolarBears.get();
-        IllagersRunFromPolarBears = COMMON.IllagersRunFromPolarBears.get();
-        GuardsOpenDoors = COMMON.GuardsOpenDoors.get();
         GuardAlwaysShield = COMMON.GuardRaiseShield.get();
         GuardFormation = COMMON.GuardFormation.get();
         FriendlyFire = COMMON.FriendlyFire.get();
@@ -88,7 +81,7 @@ public class GuardConfig {
     }
 
     @SubscribeEvent
-    public static void onModConfigEvent(final ModConfig.ModConfigEvent configEvent) {
+    public static void onModConfigEvent(ModConfig.ModConfigEvent configEvent) {
         if (configEvent.getConfig().getSpec() == GuardConfig.COMMON_SPEC) {
             bakeCommonConfig();
         } else if (configEvent.getConfig().getSpec() == GuardConfig.CLIENT_SPEC) {
@@ -101,10 +94,6 @@ public class GuardConfig {
         public final ForgeConfigSpec.BooleanValue WitchesVillager;
         public final ForgeConfigSpec.BooleanValue IllusionerRaids;
         public final ForgeConfigSpec.BooleanValue AttackAllMobs;
-        public final ForgeConfigSpec.BooleanValue VillagersRunFromPolarBears;
-        public final ForgeConfigSpec.BooleanValue IllagersRunFromPolarBears;
-        public final ForgeConfigSpec.BooleanValue GuardsRunFromPolarBears;
-        public final ForgeConfigSpec.BooleanValue GuardsOpenDoors;
         public final ForgeConfigSpec.BooleanValue GuardRaiseShield;
         public final ForgeConfigSpec.BooleanValue GuardFormation;
         public final ForgeConfigSpec.BooleanValue FriendlyFire;
@@ -128,10 +117,6 @@ public class GuardConfig {
             IllusionerRaids = builder.comment("This will make Illusioners get involved in raids").translation(GuardVillagers.MODID + ".config.IllusionerRaids").define("Have illusioners in raids?", true);
             AttackAllMobs = builder.comment("Guards will attack all hostiles with this option").translation(GuardVillagers.MODID + ".config.AttackAllMobs").define("Guards attack all mobs?", false);
             MobBlackList = builder.comment("Guards won't attack mobs in this list if AttackAllMobs is enabled, for example, putting minecraft:creeper in this list will make guards ignore creepers.").define("Mob BlackList", new ArrayList<>());
-            VillagersRunFromPolarBears = builder.comment("This makes villagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.VillagersRunFromPolarBears").define("Have Villagers have some common sense?", true);
-            IllagersRunFromPolarBears = builder.comment("This makes Illagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.IllagersRunFromPolarBears").define("Have Illagers have some common sense?", true);
-            GuardsRunFromPolarBears = builder.comment("This makes Guards run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.IllagersRunFromPolarBears").define("Have Guards have some common sense?", false);
-            GuardsOpenDoors = builder.comment("This lets Guards open doors.").translation(GuardVillagers.MODID + ".config.GuardsOpenDoors").define("Have Guards open doors?", true);
             GuardRaiseShield = builder.comment("This will make guards raise their shields all the time, on default they will only raise their shields under certain conditions").translation(GuardVillagers.MODID + ".config.GuardRaiseShield").define("Have Guards raise their shield all the time?",
                     false);
             GuardFormation = builder.comment("This makes guards form a phalanx").translation(GuardVillagers.MODID + ".config.GuardFormation").define("Have guards form a phalanx?", true);

@@ -1,9 +1,14 @@
 package tallestegg.guardvillagers;
 
+import java.util.List;
+
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.raid.Raid;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -66,8 +71,19 @@ public class GuardVillagers {
     private void processIMC(final InterModProcessEvent event) {
     }
 
-    public static boolean hotvChecker(PlayerEntity player) {
-        return player.isPotionActive(Effects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV || !GuardConfig.giveGuardStuffHOTV;
+    public static boolean hotvChecker(GuardEntity guard, PlayerEntity player) {
+        boolean isRepHigh = false;
+        AxisAlignedBB axisalignedbb = guard.getBoundingBox().grow(10.0D, 8.0D, 10.0D);
+        List<LivingEntity> list = guard.world.getEntitiesWithinAABB(VillagerEntity.class, axisalignedbb);
+        if (player.isServerWorld()) {
+            for (LivingEntity livingentity : list) {
+                VillagerEntity villagerentity = (VillagerEntity) livingentity;
+                int i = villagerentity.getPlayerReputation(player);
+                if (i >= 100)
+                    isRepHigh = true;
+            }
+        }
+        return isRepHigh || player.isPotionActive(Effects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV || !GuardConfig.giveGuardStuffHOTV;
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

@@ -21,12 +21,6 @@ public class WalkBackToCheckPointGoal extends Goal {
         return guard.getPatrolPos() != null && !this.guard.getPatrolPos().withinDistance(this.guard.getPositionVec(), 1.0D) && !guard.isFollowing() && guard.isPatrolling();
     }
 
-    /*
-     * @Override public void startExecuting() { }
-     * 
-     * @Override public void resetTask() { // this.guard.setGoingHome(false); }
-     */
-
     @Override
     public boolean shouldContinueExecuting() {
         return this.shouldExecute();

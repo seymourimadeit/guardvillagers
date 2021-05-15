@@ -32,10 +32,7 @@ public class RangedBowAttackPassiveGoal<T extends GuardEntity & IRangedAttackMob
         this.attackCooldown = attackCooldownIn;
     }
 
-    /**
-     * Returns whether execution should begin. You can also read and cache any state
-     * necessary for execution in this method as well.
-     */
+    @Override
     public boolean shouldExecute() {
         return this.entity.getAttackTarget() != null && this.isBowInMainhand() && !this.entity.isEating();
     }
@@ -44,25 +41,18 @@ public class RangedBowAttackPassiveGoal<T extends GuardEntity & IRangedAttackMob
         return this.entity.getHeldItemMainhand().getItem() instanceof BowItem;
     }
 
-    /**
-     * Returns whether an in-progress EntityAIBase should continue executing
-     */
+    @Override
     public boolean shouldContinueExecuting() {
         return (this.shouldExecute() || !this.entity.getNavigator().noPath()) && this.isBowInMainhand();
     }
 
-    /**
-     * Execute a one shot task or start executing a continuous task
-     */
+    @Override
     public void startExecuting() {
         super.startExecuting();
         this.entity.setAggroed(true);
     }
 
-    /**
-     * Reset the task's internal state. Called when this task is interrupted by
-     * another one
-     */
+    @Override
     public void resetTask() {
         super.resetTask();
         this.entity.setAggroed(false);
@@ -71,9 +61,7 @@ public class RangedBowAttackPassiveGoal<T extends GuardEntity & IRangedAttackMob
         this.entity.resetActiveHand();
     }
 
-    /**
-     * Keep ticking a continuous task that has already been started
-     */
+    @Override
     public void tick() {
         LivingEntity livingentity = this.entity.getAttackTarget();
         if (livingentity != null) {

@@ -4,9 +4,10 @@ import java.util.EnumSet;
 import java.util.List;
 
 import net.minecraft.entity.EntityPredicate;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.brain.BrainUtil;
+import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
@@ -19,14 +20,10 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import tallestegg.guardvillagers.GuardEntityType;
-import tallestegg.guardvillagers.entities.GuardEntity;
 
-@SuppressWarnings("unused")
-//TODO make this a task instead of a goal.
 public class HealGuardAndPlayerGoal extends Goal {
     private final MobEntity healer;
     private LivingEntity mob;
@@ -58,7 +55,8 @@ public class HealGuardAndPlayerGoal extends Goal {
         if (!list.isEmpty()) {
             for (LivingEntity mob : list) {
                 if (mob != null) {
-                    if (mob.getType() == GuardEntityType.GUARD.get() && mob != null && mob.isAlive() && mob.getHealth() < mob.getMaxHealth() || mob instanceof PlayerEntity && mob.isPotionActive(Effects.HERO_OF_THE_VILLAGE) && !((PlayerEntity)mob).abilities.isCreativeMode && mob.getHealth() < mob.getMaxHealth()) {
+                    if (mob.getType() == GuardEntityType.GUARD.get() && mob != null && mob.isAlive() && mob.getHealth() < mob.getMaxHealth()
+                            || mob instanceof PlayerEntity && mob.isPotionActive(Effects.HERO_OF_THE_VILLAGE) && !((PlayerEntity) mob).abilities.isCreativeMode && mob.getHealth() < mob.getMaxHealth()) {
                         this.mob = mob;
                         return true;
                     }
@@ -78,6 +76,7 @@ public class HealGuardAndPlayerGoal extends Goal {
         this.mob = null;
         this.seeTime = 0;
         this.rangedAttackTime = -1;
+        this.healer.getBrain().removeMemory(MemoryModuleType.LOOK_TARGET);
     }
 
     @Override
@@ -91,8 +90,7 @@ public class HealGuardAndPlayerGoal extends Goal {
         } else {
             this.seeTime = 0;
         }
-        this.healer.faceEntity(mob, 30.0F, 30.0F);
-        this.healer.getLookController().setLookPositionWithEntity(this.healer, 30.0F, 30.0F);
+        BrainUtil.lookAt(healer, mob);
         if (!(d0 > (double) this.maxAttackDistance) && this.seeTime >= 5) {
             this.healer.getNavigator().clearPath();
         } else {
@@ -105,8 +103,8 @@ public class HealGuardAndPlayerGoal extends Goal {
             if (!flag) {
                 return;
             }
-            float f =  this.attackRadius;
-            float distanceFactor = MathHelper.clamp(f, 0.5F, 0.5F);
+            float f = this.attackRadius;
+            float distanceFactor = MathHelper.clamp(f, 0.10F, 0.10F);
             this.throwPotion(mob, distanceFactor);
             this.rangedAttackTime = MathHelper.floor(f * (float) (this.maxRangedAttackTime - this.attackIntervalMin) + (float) this.attackIntervalMin);
         } else if (this.rangedAttackTime < 0) {
@@ -127,9 +125,6 @@ public class HealGuardAndPlayerGoal extends Goal {
         } else {
             potion = Potions.REGENERATION;
         }
-
-        this.healer.faceEntity(mob, 30.0F, 30.0F);
-        this.healer.getLookController().setLookPositionWithEntity(this.healer, 30.0F, 30.0F);
         PotionEntity potionentity = new PotionEntity(healer.world, healer);
         potionentity.setItem(PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potion));
         potionentity.rotationPitch -= -20.0F;
