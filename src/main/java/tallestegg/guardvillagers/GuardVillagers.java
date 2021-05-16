@@ -75,15 +75,13 @@ public class GuardVillagers {
         boolean isRepHigh = false;
         AxisAlignedBB axisalignedbb = guard.getBoundingBox().grow(10.0D, 8.0D, 10.0D);
         List<LivingEntity> list = guard.world.getEntitiesWithinAABB(VillagerEntity.class, axisalignedbb);
-        if (player.isServerWorld()) {
-            for (LivingEntity livingentity : list) {
-                VillagerEntity villagerentity = (VillagerEntity) livingentity;
-                int i = villagerentity.getPlayerReputation(player);
-                if (i >= 100)
-                    isRepHigh = true;
-            }
+        for (LivingEntity livingentity : list) {
+            VillagerEntity villagerentity = (VillagerEntity) livingentity;
+            int i = villagerentity.getPlayerReputation(player);
+            if (i >= 25)
+                isRepHigh = true;
         }
-        return isRepHigh || player.isPotionActive(Effects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV || !GuardConfig.giveGuardStuffHOTV;
+        return isRepHigh && player.isServerWorld() ||player.isPotionActive(Effects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV || !GuardConfig.giveGuardStuffHOTV;
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

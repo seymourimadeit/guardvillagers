@@ -148,7 +148,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
     public boolean interacting;
     private int field_234197_bv_;
     private static final RangedInteger angerTime = TickRangeConverter.convertRange(20, 39);
-    private UUID field_234198_bw_;
+    private UUID angerTarget;
     private static final Map<EquipmentSlotType, ResourceLocation> EQUIPMENT_SLOT_ITEMS = Util.make(Maps.newHashMap(), (slotItems) -> {
         slotItems.put(EquipmentSlotType.MAINHAND, GuardLootTables.GUARD_MAIN_HAND);
         slotItems.put(EquipmentSlotType.OFFHAND, GuardLootTables.GUARD_OFF_HAND);
@@ -697,7 +697,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
 
     @Override
     public boolean canAttack(LivingEntity target) {
-        return !this.isOwner(target) && !(target instanceof VillagerEntity) && target instanceof GuardEntity && super.canAttack(target);
+        return !this.isOwner(target) && !(target instanceof VillagerEntity) && !(target instanceof IronGolemEntity) && super.canAttack(target);
     }
 
     /**
@@ -756,8 +756,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
         for (LivingEntity livingentity : list) {
             VillagerEntity villagerentity = (VillagerEntity) livingentity;
             int i = villagerentity.getPlayerReputation(player);
-            System.out.println(i);
-            if (i >= 50)
+            if (i >= 25)
                 isReputationHigh = true;
         }
         if (inventoryRequirements) {
@@ -871,7 +870,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
 
     @Override
     public UUID getAngerTarget() {
-        return this.field_234198_bw_;
+        return this.angerTarget;
     }
 
     @Override
@@ -881,7 +880,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
 
     @Override
     public void setAngerTarget(UUID arg0) {
-        this.field_234198_bw_ = arg0;
+        this.angerTarget = arg0;
     }
 
     @Override

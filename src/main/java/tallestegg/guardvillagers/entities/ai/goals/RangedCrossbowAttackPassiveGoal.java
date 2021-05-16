@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.vector.Vector3d;
 import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.GuardItems;
+import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.GuardEntity;
 
 public class RangedCrossbowAttackPassiveGoal<T extends CreatureEntity & IRangedAttackMob & ICrossbowUser> extends Goal {
@@ -76,7 +77,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends CreatureEntity & IRangedA
                         Vector3d vector3d1 = guard.getPositionVec().subtractReverse(entity.getPositionVec()).normalize();
                         vector3d1 = new Vector3d(vector3d1.x, vector3d1.y, vector3d1.z);
                         if (vector3d1.dotProduct(vector3d) < 0.0D && entity.canEntityBeSeen(guard))
-                            return true;
+                            return GuardConfig.FriendlyFire;
                     }
                 }
             }
@@ -111,7 +112,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends CreatureEntity & IRangedA
 
             double d1 = livingentity.getDistance(entity);
             if (d1 <= 2.0D) {
-                this.entity.getMoveHelper().strafe(this.entity.isHandActive() ? 0.5F : 3.0F, 0.0F);
+                this.entity.getMoveHelper().strafe(this.entity.isHandActive() ?- 0.5F : -3.0F, 0.0F);
                 this.entity.faceEntity(livingentity, 30.0F, 30.0F);
             }
 

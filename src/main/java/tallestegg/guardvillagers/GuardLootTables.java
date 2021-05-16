@@ -10,10 +10,10 @@ public class GuardLootTables {
         p_216252_0_.required(LootParameters.THIS_ENTITY);
     });
     
-    public static final ResourceLocation GUARD_MAIN_HAND = new ResourceLocation(GuardVillagers.MODID, "entity/guard_main_hand");
-    public static final ResourceLocation GUARD_OFF_HAND = new ResourceLocation(GuardVillagers.MODID, "entity/guard_off_hand");
-    public static final ResourceLocation GUARD_HELMET = new ResourceLocation(GuardVillagers.MODID, "entity/guard_helmet");
-    public static final ResourceLocation GUARD_CHEST = new ResourceLocation(GuardVillagers.MODID, "entity/guard_chestplate");
-    public static final ResourceLocation GUARD_LEGGINGS = new ResourceLocation(GuardVillagers.MODID, "entity/guard_legs");
-    public static final ResourceLocation GUARD_FEET = new ResourceLocation(GuardVillagers.MODID, "entity/guard_feet");
+    public static final ResourceLocation GUARD_MAIN_HAND = new ResourceLocation(GuardVillagers.MODID, "entities/guard_main_hand");
+    public static final ResourceLocation GUARD_OFF_HAND = new ResourceLocation(GuardVillagers.MODID, "entities/guard_off_hand");
+    public static final ResourceLocation GUARD_HELMET = new ResourceLocation(GuardVillagers.MODID, "entities/guard_helmet");
+    public static final ResourceLocation GUARD_CHEST = new ResourceLocation(GuardVillagers.MODID, "entities/guard_chestplate");
+    public static final ResourceLocation GUARD_LEGGINGS = new ResourceLocation(GuardVillagers.MODID, "entities/guard_legs");
+    public static final ResourceLocation GUARD_FEET = new ResourceLocation(GuardVillagers.MODID, "entities/guard_feet");
 }

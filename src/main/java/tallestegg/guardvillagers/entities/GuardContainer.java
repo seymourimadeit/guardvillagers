@@ -26,7 +26,7 @@ public class GuardContainer extends Container {
         this.addSlot(new Slot(guardInventory, 0, 8, 9) {
             @Override
             public boolean isItemValid(ItemStack stack) {
-                return stack.canEquip(EquipmentSlotType.HEAD, guard) && GuardVillagers.hotvChecker(guard, playerInventory.player);
+                return stack.canEquip(EquipmentSlotType.HEAD, guard);
             }
 
             @Override
@@ -41,11 +41,6 @@ public class GuardContainer extends Container {
             }
 
             @Override
-            public boolean canTakeStack(PlayerEntity playerIn) {
-                return GuardVillagers.hotvChecker(guard, playerInventory.player);
-            }
-
-            @Override
             public Pair<ResourceLocation, ResourceLocation> getBackground() {
                 return Pair.of(PlayerContainer.LOCATION_BLOCKS_TEXTURE, PlayerContainer.EMPTY_ARMOR_SLOT_HELMET);
             }
@@ -53,7 +48,7 @@ public class GuardContainer extends Container {
         this.addSlot(new Slot(guardInventory, 1, 8, 26) {
             @Override
             public boolean isItemValid(ItemStack stack) {
-                return stack.canEquip(EquipmentSlotType.CHEST, guard) && GuardVillagers.hotvChecker(guard, playerInventory.player);
+                return stack.canEquip(EquipmentSlotType.CHEST, guard);
             }
 
             @Override
@@ -68,11 +63,6 @@ public class GuardContainer extends Container {
             }
 
             @Override
-            public boolean canTakeStack(PlayerEntity playerIn) {
-                return GuardVillagers.hotvChecker(guard, playerInventory.player);
-            }
-
-            @Override
             public Pair<ResourceLocation, ResourceLocation> getBackground() {
                 return Pair.of(PlayerContainer.LOCATION_BLOCKS_TEXTURE, PlayerContainer.EMPTY_ARMOR_SLOT_CHESTPLATE);
             }
@@ -80,7 +70,7 @@ public class GuardContainer extends Container {
         this.addSlot(new Slot(guardInventory, 2, 8, 44) {
             @Override
             public boolean isItemValid(ItemStack stack) {
-                return stack.canEquip(EquipmentSlotType.LEGS, guard) && GuardVillagers.hotvChecker(guard, playerInventory.player);
+                return stack.canEquip(EquipmentSlotType.LEGS, guard);
             }
 
             @Override
@@ -95,11 +85,6 @@ public class GuardContainer extends Container {
             }
 
             @Override
-            public boolean canTakeStack(PlayerEntity playerIn) {
-                return GuardVillagers.hotvChecker(guard, playerInventory.player);
-            }
-
-            @Override
             public Pair<ResourceLocation, ResourceLocation> getBackground() {
                 return Pair.of(PlayerContainer.LOCATION_BLOCKS_TEXTURE, PlayerContainer.EMPTY_ARMOR_SLOT_LEGGINGS);
             }
@@ -107,7 +92,7 @@ public class GuardContainer extends Container {
         this.addSlot(new Slot(guardInventory, 3, 8, 62) {
             @Override
             public boolean isItemValid(ItemStack stack) {
-                return stack.canEquip(EquipmentSlotType.FEET, guard) && GuardVillagers.hotvChecker(guard, playerInventory.player);
+                return stack.canEquip(EquipmentSlotType.FEET, guard);
             }
 
             @Override
@@ -120,28 +105,13 @@ public class GuardContainer extends Container {
                 super.putStack(stack);
                 guard.setItemStackToSlot(EquipmentSlotType.FEET, stack);
             }
-
-            @Override
-            public boolean canTakeStack(PlayerEntity playerIn) {
-                return GuardVillagers.hotvChecker(guard, playerInventory.player);
-            }
-
+            
             @Override
             public Pair<ResourceLocation, ResourceLocation> getBackground() {
                 return Pair.of(PlayerContainer.LOCATION_BLOCKS_TEXTURE, PlayerContainer.EMPTY_ARMOR_SLOT_BOOTS);
             }
         });
         this.addSlot(new Slot(guardInventory, 4, 77, 62) {
-            @Override
-            public boolean isItemValid(ItemStack stack) {
-                return GuardVillagers.hotvChecker(guard, playerInventory.player);
-            }
-
-            @Override
-            public boolean canTakeStack(PlayerEntity playerIn) {
-                return GuardVillagers.hotvChecker(guard, playerIn);
-            }
-
             @Override
             public void putStack(ItemStack stack) {
                 super.putStack(stack);
@@ -155,16 +125,6 @@ public class GuardContainer extends Container {
         });
 
         this.addSlot(new Slot(guardInventory, 5, 77, 44) {
-            @Override
-            public boolean isItemValid(ItemStack stack) {
-                return GuardVillagers.hotvChecker(guard, playerInventory.player);
-            }
-
-            @Override
-            public boolean canTakeStack(PlayerEntity playerIn) {
-                return GuardVillagers.hotvChecker(guard, playerIn);
-            }
-
             @Override
             public void putStack(ItemStack stack) {
                 super.putStack(stack);
@@ -184,7 +144,7 @@ public class GuardContainer extends Container {
 
     @Override
     public boolean canInteractWith(PlayerEntity playerIn) {
-        return this.guardInventory.isUsableByPlayer(playerIn) && this.guard.isAlive() && this.guard.getDistance(playerIn) < 8.0F;
+        return this.guardInventory.isUsableByPlayer(playerIn) && this.guard.isAlive() && this.guard.getDistance(playerIn) < 8.0F && GuardVillagers.hotvChecker(guard, playerIn);
     }
 
     @Override
