@@ -7,7 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.gui.widget.button.ImageButton;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -27,27 +29,29 @@ public class GuardInventoryScreen extends ContainerScreen<GuardContainer> {
     private static final ResourceLocation PATROL_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/patrollingui.png");
     private static final ResourceLocation NOT_PATROLLING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/notpatrollingui.png");
     private final GuardEntity guard;
+    private PlayerEntity player;
     private float mousePosX;
     private float mousePosY;
     private boolean buttonPressed;
 
-    public GuardInventoryScreen(GuardContainer p_i51084_1_, PlayerInventory p_i51084_2_, GuardEntity p_i51084_3_) {
-        super(p_i51084_1_, p_i51084_2_, p_i51084_3_.getDisplayName());
-        this.guard = p_i51084_3_;
+    public GuardInventoryScreen(GuardContainer container, PlayerInventory playerInventory, GuardEntity guard) {
+        super(container, playerInventory, guard.getDisplayName());
+        this.guard = guard;
         this.titleX = 80;
         this.playerInventoryTitleX = 100;
         this.passEvents = false;
+        this.player = playerInventory.player;
     }
 
     @Override
     public void init() {
         super.init();
-        if (guard.getOwner() != null) {
+        if (player.isPotionActive(Effects.HERO_OF_THE_VILLAGE)) {
             this.addButton(new GuardGuiButton(this.guiLeft + 100, this.height / 2 - 40, 20, 18, 0, 0, 19, GUARD_FOLLOWING_ICON, GUARD_NOT_FOLLOWING_ICON, true, (p_214086_1_) -> {
                 GuardPacketHandler.INSTANCE.sendToServer(new GuardFollowPacket(guard.getEntityId()));
             }));
         }
-        if (GuardConfig.setGuardPatrolHotv && guard.getOwner() != null || !GuardConfig.setGuardPatrolHotv) {
+        if (GuardConfig.setGuardPatrolHotv && player.isPotionActive(Effects.HERO_OF_THE_VILLAGE) || !GuardConfig.setGuardPatrolHotv) {
             this.addButton(new GuardGuiButton(this.guiLeft + 120, this.height / 2 - 40, 20, 18, 0, 0, 19, PATROL_ICON, NOT_PATROLLING_ICON, false, (p_214086_1_) -> {
                 buttonPressed = !buttonPressed;
                 GuardPacketHandler.INSTANCE.sendToServer(new GuardSetPatrolPosPacket(guard.getEntityId(), buttonPressed));

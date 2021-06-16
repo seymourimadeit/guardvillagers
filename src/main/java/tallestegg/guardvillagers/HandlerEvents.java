@@ -77,7 +77,6 @@ public class HandlerEvents {
 
     @SubscribeEvent
     public static void onLivingSpawned(EntityJoinWorldEvent event) {
-
         if (GuardConfig.RaidAnimals) {
             if (event.getEntity() instanceof AbstractRaiderEntity)
                 if (((AbstractRaiderEntity) event.getEntity()).isRaidActive()) {

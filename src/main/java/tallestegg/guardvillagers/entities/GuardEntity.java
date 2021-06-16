@@ -438,9 +438,8 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
     @Override
     protected void blockUsingShield(LivingEntity entityIn) {
         super.blockUsingShield(entityIn);
-        if (entityIn.getHeldItemMainhand().canDisableShield(this.activeItemStack, this, entityIn)) {
+        if (entityIn.getHeldItemMainhand().canDisableShield(this.activeItemStack, this, entityIn))
             this.disableShield(true);
-        }
     }
 
     @Override
@@ -483,9 +482,8 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
 
     public void disableShield(boolean increase) {
         float chance = 0.25F + (float) EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
-        if (increase) {
-            chance += 0.75F;
-        }
+        if (increase)
+            chance += 0.75;
         if (this.rand.nextFloat() < chance) {
             this.shieldCoolDown = 100;
             this.resetActiveHand();
@@ -701,7 +699,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
 
     @Override
     public boolean canAttack(LivingEntity target) {
-        return !this.isOwner(target) && !(target instanceof VillagerEntity) && super.canAttack(target);
+        return !GuardConfig.MobBlackList.contains(target.getEntityString()) && !target.isPotionActive(Effects.HERO_OF_THE_VILLAGE) && !this.isOwner(target) && !(target instanceof VillagerEntity) && super.canAttack(target);
     }
 
     /**
@@ -794,17 +792,6 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
             } else {
                 return false;
             }
-        }
-    }
-
-    protected void playHealEffect() {
-        IParticleData iparticledata = ParticleTypes.HAPPY_VILLAGER;
-        for (int i = 0; i < 7; ++i) {
-            double d0 = this.rand.nextGaussian() * 0.02D;
-            double d1 = this.rand.nextGaussian() * 0.02D;
-            double d2 = this.rand.nextGaussian() * 0.02D;
-            this.world.addParticle(iparticledata, this.getPosX() + (double) (this.rand.nextFloat() * this.getWidth() * 2.0F) - (double) this.getWidth(), this.getPosY() + 0.5D + (double) (this.rand.nextFloat() * this.getHeight()),
-                    this.getPosZ() + (double) (this.rand.nextFloat() * this.getWidth() * 2.0F) - (double) this.getWidth(), d0, d1, d2);
         }
     }
 
@@ -977,7 +964,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
                     }
                 }
             }
-            return villageAggressorTarget != null && !this.villageAggressorTarget.isSpectator() && !((PlayerEntity) this.villageAggressorTarget).isCreative();
+            return villageAggressorTarget != null && !villageAggressorTarget.isPotionActive(Effects.HERO_OF_THE_VILLAGE) && !this.villageAggressorTarget.isSpectator() && !((PlayerEntity) this.villageAggressorTarget).isCreative();
         }
 
         @Override
