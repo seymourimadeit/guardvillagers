@@ -10,6 +10,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
+import net.minecraft.item.AxeItem;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.Effects;
@@ -26,8 +27,8 @@ public class VillagerToGuard {
     @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         ItemStack itemstack = event.getItemStack();
-        if (itemstack.getItem() instanceof SwordItem && event.getPlayer().isCrouching() || itemstack.getItem() instanceof CrossbowItem && event.getPlayer().isCrouching()) {
-            Entity target = event.getTarget();
+	if (event.getPlayer().isCrouching() && (itemstack.getItem() instanceof SwordItem || itemstack.getItem() instanceof CrossbowItem || itemstack.getItem() instanceof AxeItem)) {
+        Entity target = event.getTarget();
             if (target instanceof VillagerEntity) {
                 VillagerEntity villager = (VillagerEntity) event.getTarget();
                 if (!villager.isChild()) {
