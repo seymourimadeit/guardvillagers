@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "Стражник",
+"item.guardvillagers.guard_spawn_egg": "Яйцо призыва стражника",
+"item.guardvillagers.illusioner_spawn_egg": "Яйцо призыва иллюзора",
+"item.guardvillagers.iron_golem_spawn_egg": "Яйцо призыва железного голема",
+"item.guardvillagers.snow_golem_spawn_egg": "Яйцо призыва снеговика",
+"guardinventory.health": "Здоровье: %s",
+"guardinventory.armor": "Броня: %s"
+}
