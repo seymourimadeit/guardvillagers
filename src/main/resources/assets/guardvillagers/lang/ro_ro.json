@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "Paznic",
+"item.guardvillagers.guard_spawn_egg": "Ou generator de paznic",
+"item.guardvillagers.illusioner_spawn_egg": "Ou generator de iluzionist",
+"item.guardvillagers.iron_golem_spawn_egg": "Ou generator de golem de fier",
+"item.guardvillagers.snow_golem_spawn_egg": "Ou generator de golem de zăpadă",
+"guardinventory.health": "Sănătate: %s",
+"guardinventory.armor": "Armură: %s"
+}
