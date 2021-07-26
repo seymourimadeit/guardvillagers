@@ -4,32 +4,39 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.EntityPredicate;
-import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.util.math.vector.Vector3d;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.entity.ai.util.RandomPos;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.phys.Vec3;
+import tallestegg.guardvillagers.entities.Guard;
 
 public class FollowShieldGuards extends Goal {
-    private final GuardEntity taskOwner;
-    private GuardEntity guardtofollow;
+    private static final TargetingConditions NEARBY_GUARDS = TargetingConditions.forNonCombat().range(8.0D)
+            .ignoreLineOfSight();
+    private final Guard taskOwner;
+    private Guard guardtofollow;
     private double x;
     private double y;
     private double z;
 
-    public FollowShieldGuards(GuardEntity taskOwnerIn) {
+    public FollowShieldGuards(Guard taskOwnerIn) {
         this.taskOwner = taskOwnerIn;
     }
 
     @Override
-    public boolean shouldExecute() {
-        List<GuardEntity> list = this.taskOwner.world.getEntitiesWithinAABB(this.taskOwner.getClass(), this.taskOwner.getBoundingBox().grow(8.0D, 8.0D, 8.0D));
+    public boolean canUse() {
+        List<? extends Guard> list = this.taskOwner.level.getEntitiesOfClass(this.taskOwner.getClass(),
+                this.taskOwner.getBoundingBox().inflate(8.0D, 8.0D, 8.0D));
         if (!list.isEmpty()) {
-            for (GuardEntity guard : list) {
-                if (!guard.isInvisible() && guard.getHeldItemOffhand().isShield(guard) && guard.isActiveItemStackBlocking()
-                        && this.taskOwner.world.getTargettableEntitiesWithinAABB(GuardEntity.class, (new EntityPredicate()).setDistance(3.0D), guard, this.taskOwner.getBoundingBox().grow(5.0D)).size() < 5) {
+            for (Guard guard : list) {
+                if (!guard.isInvisible() && guard.getOffhandItem().isShield(guard) && guard.isBlocking()
+                        && this.taskOwner.level
+                                .getNearbyEntities(Guard.class, NEARBY_GUARDS.range(3.0D), guard,
+                                        this.taskOwner.getBoundingBox().inflate(5.0D))
+                                .size() < 5) {
                     this.guardtofollow = guard;
-                    Vector3d vec3d = this.getPosition();
+                    Vec3 vec3d = this.getPosition();
                     if (vec3d == null) {
                         return false;
                     } else {
@@ -45,23 +52,23 @@ public class FollowShieldGuards extends Goal {
     }
 
     @Nullable
-    protected Vector3d getPosition() {
-        return RandomPositionGenerator.findRandomTargetBlockTowards(taskOwner, 1, 1, guardtofollow.getPositionVec());
+    protected Vec3 getPosition() {
+        return DefaultRandomPos.getPosTowards(this.taskOwner, 16, 7, this.guardtofollow.position(), (double)((float)Math.PI / 2F));
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
-        return !this.taskOwner.getNavigator().noPath() && !this.taskOwner.isBeingRidden();
+    public boolean canContinueToUse() {
+        return !this.taskOwner.getNavigation().isDone() && !this.taskOwner.isVehicle();
     }
 
     @Override
-    public void resetTask() {
-        this.taskOwner.getNavigator().clearPath();
-        super.resetTask();
+    public void stop() {
+        this.taskOwner.getNavigation().stop();
+        super.stop();
     }
 
     @Override
-    public void startExecuting() {
-        this.taskOwner.getNavigator().tryMoveToXYZ(x, y, z, 0.4D);
+    public void start() {
+        this.taskOwner.getNavigation().moveTo(x, y, z, 0.4D);
     }
 }

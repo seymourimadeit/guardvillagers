@@ -2,44 +2,44 @@ package tallestegg.guardvillagers.client.renderer;
 
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.BipedRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.layers.BipedArmorLayer;
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.UseAction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.resources.ResourceLocation;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.models.GuardSteveModel;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import tallestegg.guardvillagers.entities.Guard;
 
-public class GuardSteveRenderer extends BipedRenderer<GuardEntity, GuardSteveModel> {
-    public GuardSteveRenderer(EntityRendererManager manager) {
+/*public class GuardSteveRenderer extends HumanoidMobRenderer<Guard, GuardSteveModel> {
+    public GuardSteveRenderer(EntityRenderDispatcher manager) {
         super(manager, new GuardSteveModel(0), 0.5f);
-        this.addLayer(new BipedArmorLayer<>(this, new BipedModel<>(0.5F), new BipedModel<>(1.0F)));
+        this.addLayer(new HumanoidArmorLayer<>(this, new HumanoidModel<>(0.5F), new HumanoidModel<>(1.0F)));
     }
 
     @Override
-    public void render(GuardEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+    public void render(Guard entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         this.setModelVisibilities(entityIn);
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
-    private void setModelVisibilities(GuardEntity entityIn) {
-        GuardSteveModel guardmodel = this.getEntityModel();
-        ItemStack itemstack = entityIn.getHeldItemMainhand();
-        ItemStack itemstack1 = entityIn.getHeldItemOffhand();
-        guardmodel.setVisible(true);
-        BipedModel.ArmPose bipedmodel$armpose = this.getArmPose(entityIn, itemstack, itemstack1, Hand.MAIN_HAND);
-        BipedModel.ArmPose bipedmodel$armpose1 = this.getArmPose(entityIn, itemstack, itemstack1, Hand.OFF_HAND);
-        guardmodel.isSneak = entityIn.isCrouching();
-        if (entityIn.getPrimaryHand() == HandSide.RIGHT) {
+    private void setModelVisibilities(Guard entityIn) {
+        GuardSteveModel guardmodel = this.getModel();
+        ItemStack itemstack = entityIn.getMainHandItem();
+        ItemStack itemstack1 = entityIn.getOffhandItem();
+        guardmodel.setAllVisible(true);
+        HumanoidModel.ArmPose bipedmodel$armpose = this.getArmPose(entityIn, itemstack, itemstack1, InteractionHand.MAIN_HAND);
+        HumanoidModel.ArmPose bipedmodel$armpose1 = this.getArmPose(entityIn, itemstack, itemstack1, InteractionHand.OFF_HAND);
+        guardmodel.crouching = entityIn.isCrouching();
+        if (entityIn.getMainArm() == HumanoidArm.RIGHT) {
             guardmodel.rightArmPose = bipedmodel$armpose;
             guardmodel.leftArmPose = bipedmodel$armpose1;
         } else {
@@ -48,41 +48,41 @@ public class GuardSteveRenderer extends BipedRenderer<GuardEntity, GuardSteveMod
         }
     }
 
-    private BipedModel.ArmPose getArmPose(GuardEntity entityIn, ItemStack itemStackMain, ItemStack itemStackOff, Hand handIn) {
-        BipedModel.ArmPose bipedmodel$armpose = BipedModel.ArmPose.EMPTY;
-        ItemStack itemstack = handIn == Hand.MAIN_HAND ? itemStackMain : itemStackOff;
+    private HumanoidModel.ArmPose getArmPose(Guard entityIn, ItemStack itemStackMain, ItemStack itemStackOff, InteractionHand handIn) {
+        HumanoidModel.ArmPose bipedmodel$armpose = HumanoidModel.ArmPose.EMPTY;
+        ItemStack itemstack = handIn == InteractionHand.MAIN_HAND ? itemStackMain : itemStackOff;
         if (!itemstack.isEmpty()) {
-            bipedmodel$armpose = BipedModel.ArmPose.ITEM;
-            if (entityIn.getItemInUseCount() > 0) {
-                UseAction useaction = itemstack.getUseAction();
+            bipedmodel$armpose = HumanoidModel.ArmPose.ITEM;
+            if (entityIn.getUseItemRemainingTicks() > 0) {
+                UseAnim useaction = itemstack.getUseAnimation();
                 switch (useaction) {
                 case BLOCK:
-                    bipedmodel$armpose = BipedModel.ArmPose.BLOCK;
+                    bipedmodel$armpose = HumanoidModel.ArmPose.BLOCK;
                     break;
                 case BOW:
-                    bipedmodel$armpose = BipedModel.ArmPose.BOW_AND_ARROW;
+                    bipedmodel$armpose = HumanoidModel.ArmPose.BOW_AND_ARROW;
                     break;
                 case SPEAR:
-                    bipedmodel$armpose = BipedModel.ArmPose.THROW_SPEAR;
+                    bipedmodel$armpose = HumanoidModel.ArmPose.THROW_SPEAR;
                     break;
                 case CROSSBOW:
-                    if (handIn == entityIn.getActiveHand()) {
-                        bipedmodel$armpose = BipedModel.ArmPose.CROSSBOW_CHARGE;
+                    if (handIn == entityIn.getUsedItemHand()) {
+                        bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_CHARGE;
                     }
                     break;
                 default:
-                    bipedmodel$armpose = BipedModel.ArmPose.EMPTY;
+                    bipedmodel$armpose = HumanoidModel.ArmPose.EMPTY;
                     break;
                 }
             } else {
                 boolean flag1 = itemStackMain.getItem() instanceof CrossbowItem;
                 boolean flag2 = itemStackOff.getItem() instanceof CrossbowItem;
                 if (flag1 && entityIn.isAggressive()) {
-                    bipedmodel$armpose = BipedModel.ArmPose.CROSSBOW_HOLD;
+                    bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
                 }
 
-                if (flag2 && itemStackMain.getItem().getUseAction(itemStackMain) == UseAction.NONE && entityIn.isAggressive()) {
-                    bipedmodel$armpose = BipedModel.ArmPose.CROSSBOW_HOLD;
+                if (flag2 && itemStackMain.getItem().getUseAnimation(itemStackMain) == UseAnim.NONE && entityIn.isAggressive()) {
+                    bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
                 }
             }
         }
@@ -90,13 +90,13 @@ public class GuardSteveRenderer extends BipedRenderer<GuardEntity, GuardSteveMod
     }
 
     @Override
-    protected void preRenderCallback(GuardEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(Guard entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(0.9375F, 0.9375F, 0.9375F);
     }
 
     @Nullable
     @Override
-    public ResourceLocation getEntityTexture(GuardEntity entity) {
+    public ResourceLocation getTextureLocation(Guard entity) {
         return new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_steve_" + entity.getGuardVariant() + ".png");
     }
-}
+}*/

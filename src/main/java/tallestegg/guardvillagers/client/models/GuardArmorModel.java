@@ -1,16 +1,26 @@
 package tallestegg.guardvillagers.client.models;
 
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import tallestegg.guardvillagers.entities.Guard;
 
-public class GuardArmorModel extends BipedModel<GuardEntity> {
-    public float floatthing2;
+public class GuardArmorModel extends HumanoidModel<Guard> {
+    public GuardArmorModel(ModelPart part) {
+        super(part);
+    }
 
-    public GuardArmorModel(float p_i1148_1_) {
-        super(p_i1148_1_);
-        this.bipedHead = new ModelRenderer(this, 0, 0);
-        this.bipedHead.addBox(-4.0F, -10.0F, -4.0F, 8.0F, 8.0F, 8.0F, p_i1148_1_);
-        this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = HumanoidModel.createMesh(new CubeDeformation(0.0F), 0.0F);
+        PartDefinition partdefinition = meshdefinition.getRoot();
+        partdefinition.addOrReplaceChild("head",
+                CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -10.0F, -4.0F, 8.0F, 8.0F, 8.0F, new CubeDeformation(0.0F)),
+                PartPose.offset(0.0F, 1.0F, 0.0F));
+        return LayerDefinition.create(meshdefinition, 64, 32);
     }
 }

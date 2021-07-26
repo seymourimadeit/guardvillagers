@@ -2,13 +2,13 @@ package tallestegg.guardvillagers.networking;
 
 import java.util.function.Supplier;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.NetworkEvent;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardSetPatrolPosPacket {
     private final int entityId;
@@ -19,11 +19,11 @@ public class GuardSetPatrolPosPacket {
         this.entityId = entityId;
     }
 
-    public static GuardSetPatrolPosPacket decode(PacketBuffer buf) {
+    public static GuardSetPatrolPosPacket decode(FriendlyByteBuf buf) {
         return new GuardSetPatrolPosPacket(buf.readInt(), buf.readBoolean());
     }
 
-    public static void encode(GuardSetPatrolPosPacket msg, PacketBuffer buf) {
+    public static void encode(GuardSetPatrolPosPacket msg, FriendlyByteBuf buf) {
         buf.writeInt(msg.entityId);
         buf.writeBoolean(msg.pressed);
     }
@@ -46,13 +46,13 @@ public class GuardSetPatrolPosPacket {
                 ((NetworkEvent.Context) context.get()).enqueueWork(new Runnable() {
                     @Override
                     public void run() {
-                        ServerPlayerEntity player = ((NetworkEvent.Context) context.get()).getSender();
-                        if (player != null && player.world instanceof ServerWorld) {
-                            Entity entity = player.world.getEntityByID(msg.getEntityId());
-                            if (entity instanceof GuardEntity) {
-                                GuardEntity guard = (GuardEntity) entity;
-                                BlockPos pos = msg.isPressed() ? null : guard.getPosition();
-                                if (guard.getPosition() != null)
+                        ServerPlayer player = ((NetworkEvent.Context) context.get()).getSender();
+                        if (player != null && player.level instanceof ServerLevel) {
+                            Entity entity = player.level.getEntity(msg.getEntityId());
+                            if (entity instanceof Guard) {
+                                Guard guard = (Guard) entity;
+                                BlockPos pos = msg.isPressed() ? null : guard.blockPosition();
+                                if (guard.blockPosition() != null)
                                     guard.setPatrolPos(pos);
                                 guard.setPatrolling(!msg.isPressed());
                                 msg.setPressed(!msg.isPressed());

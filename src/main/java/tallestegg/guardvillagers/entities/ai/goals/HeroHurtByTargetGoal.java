@@ -4,49 +4,49 @@ import java.util.EnumSet;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.EntityPredicate;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.TargetGoal;
-import net.minecraft.entity.passive.IronGolemEntity;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.animal.IronGolem;
+import tallestegg.guardvillagers.entities.Guard;
 
 public class HeroHurtByTargetGoal extends TargetGoal {
-    private final GuardEntity guard;
+    private final Guard guard;
     private LivingEntity attacker;
     private int timestamp;
 
-    public HeroHurtByTargetGoal(GuardEntity guard) {
+    public HeroHurtByTargetGoal(Guard guard) {
         super(guard, false);
         this.guard = guard;
-        this.setMutexFlags(EnumSet.of(Goal.Flag.TARGET));
+        this.setFlags(EnumSet.of(Goal.Flag.TARGET));
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         LivingEntity livingentity = this.guard.getOwner();
         if (livingentity == null) {
             return false;
         } else {
-            this.attacker = livingentity.getRevengeTarget();
-            int i = livingentity.getRevengeTimer();
-            return i != this.timestamp && this.isSuitableTarget(this.attacker, EntityPredicate.DEFAULT);
+            this.attacker = livingentity.getLastHurtByMob();
+            int i = livingentity.getLastHurtByMobTimestamp();
+            return i != this.timestamp && this.canAttack(this.attacker, TargetingConditions.DEFAULT);
         }
     }
 
     @Override
-    protected boolean isSuitableTarget(@Nullable LivingEntity potentialTarget, EntityPredicate targetPredicate) {
-        return super.isSuitableTarget(potentialTarget, targetPredicate) && !(potentialTarget instanceof IronGolemEntity) && !(potentialTarget instanceof GuardEntity);
+    protected boolean canAttack(@Nullable LivingEntity potentialTarget, TargetingConditions targetPredicate) {
+        return super.canAttack(potentialTarget, targetPredicate) && !(potentialTarget instanceof IronGolem) && !(potentialTarget instanceof Guard);
     }
 
     @Override
-    public void startExecuting() {
-        this.goalOwner.setAttackTarget(this.attacker);
+    public void start() {
+        this.mob.setTarget(this.attacker);
         LivingEntity livingentity = this.guard.getOwner();
         if (livingentity != null) {
-            this.timestamp = livingentity.getRevengeTimer();
+            this.timestamp = livingentity.getLastHurtByMobTimestamp();
         }
 
-        super.startExecuting();
+        super.start();
     }
 }

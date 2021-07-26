@@ -1,38 +1,44 @@
 package tallestegg.guardvillagers;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.potion.Effects;
-import net.minecraft.world.raid.Raid;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.raid.Raid;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fmlclient.registry.RenderingRegistry;
+import tallestegg.guardvillagers.client.models.GuardArmorModel;
+import tallestegg.guardvillagers.client.models.GuardModel;
 import tallestegg.guardvillagers.client.renderer.GuardRenderer;
-import tallestegg.guardvillagers.client.renderer.GuardSteveRenderer;
 import tallestegg.guardvillagers.configuration.GuardConfig;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.items.DeferredSpawnEggItem;
 
 @Mod(GuardVillagers.MODID)
 public class GuardVillagers {
     public static final String MODID = "guardvillagers";
+    public static ModelLayerLocation GUARD = new ModelLayerLocation(new ResourceLocation(MODID + "guard"), "guard");
+    public static ModelLayerLocation GUARD_STEVE = new ModelLayerLocation(new ResourceLocation(MODID + "guard_steve"),
+            "guard_steve");
+    public static ModelLayerLocation GUARD_ARMOR = new ModelLayerLocation(new ResourceLocation(MODID + "guard_armor"),
+            "guard_armor");
 
     public GuardVillagers() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, GuardConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, GuardConfig.CLIENT_SPEC);
         MinecraftForge.EVENT_BUS.register(this);
@@ -42,32 +48,30 @@ public class GuardVillagers {
         // GuardSpawner.inject();
     }
 
-    @SuppressWarnings("deprecation")
     private void setup(final FMLCommonSetupEvent event) {
         if (GuardConfig.IllusionerRaids) {
-            Raid.WaveMember.create("thebluemengroup", EntityType.ILLUSIONER, new int[] { 0, 0, 0, 0, 0, 1, 1, 2 });
+            Raid.RaiderType.create("thebluemengroup", EntityType.ILLUSIONER, new int[] { 0, 0, 0, 0, 0, 1, 1, 2 });
         }
-        event.enqueueWork(() -> {
-            GlobalEntityTypeAttributes.put(GuardEntityType.GUARD.get(), GuardEntity.createAttributes().create());
-        });
+    }
+
+    private void addAttributes(final EntityAttributeCreationEvent event) {
+        event.put(GuardEntityType.GUARD.get(), Guard.createAttributes().build());
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-        if (GuardConfig.guardSteve) {
-            RenderingRegistry.registerEntityRenderingHandler(GuardEntityType.GUARD.get(), GuardSteveRenderer::new);
-        } else {
-            RenderingRegistry.registerEntityRenderingHandler(GuardEntityType.GUARD.get(), GuardRenderer::new);
-        }
+        event.enqueueWork(() -> {
+            EntityRenderers.register(GuardEntityType.GUARD.get(), GuardRenderer::new);
+            RenderingRegistry.registerLayerDefinition(GUARD, GuardModel::createBodyLayer);
+            RenderingRegistry.registerLayerDefinition(GUARD_ARMOR, GuardArmorModel::createBodyLayer);
+        });
+        // RenderingRegistry.registerLayerDefinition(GUARD_STEVE,
+        // (Supplier<LayerDefinition>) GuardSteveModel.createMesh(new
+        // CubeDeformation(0.0F), false));
     }
 
-    private void enqueueIMC(final InterModEnqueueEvent event) {
-    }
-
-    private void processIMC(final InterModProcessEvent event) {
-    }
-
-    public static boolean hotvChecker(PlayerEntity player) {
-        return player.isPotionActive(Effects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV || !GuardConfig.giveGuardStuffHOTV;
+    public static boolean hotvChecker(Player player) {
+        return player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
+                || !GuardConfig.giveGuardStuffHOTV;
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

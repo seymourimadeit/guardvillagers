@@ -3,40 +3,40 @@ package tallestegg.guardvillagers.entities.ai.goals;
 import java.util.EnumSet;
 import java.util.List;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
-import net.minecraft.entity.merchant.villager.VillagerProfession;
-import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundEvents;
 
 public class HealGolemGoal extends Goal {
-    public final MobEntity healer;
-    public IronGolemEntity golem;
+    public final Mob healer;
+    public IronGolem golem;
     public boolean hasStartedHealing;
 
-    public HealGolemGoal(MobEntity mob) {
+    public HealGolemGoal(Mob mob) {
         healer = mob;
-        this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
     @Override
-    public boolean shouldExecute() {
-        if (((VillagerEntity) this.healer).getVillagerData().getProfession() != VillagerProfession.WEAPONSMITH && (((VillagerEntity) this.healer).getVillagerData().getProfession() != VillagerProfession.TOOLSMITH)
-                && (((VillagerEntity) this.healer).getVillagerData().getProfession() != VillagerProfession.ARMORER) || this.healer.isSleeping()) {
+    public boolean canUse() {
+        if (((Villager) this.healer).getVillagerData().getProfession() != VillagerProfession.WEAPONSMITH && (((Villager) this.healer).getVillagerData().getProfession() != VillagerProfession.TOOLSMITH)
+                && (((Villager) this.healer).getVillagerData().getProfession() != VillagerProfession.ARMORER) || this.healer.isSleeping()) {
             return false;
         }
-        List<IronGolemEntity> list = this.healer.world.getEntitiesWithinAABB(IronGolemEntity.class, this.healer.getBoundingBox().grow(10.0D));
+        List<IronGolem> list = this.healer.level.getEntitiesOfClass(IronGolem.class, this.healer.getBoundingBox().inflate(10.0D));
         if (!list.isEmpty()) {
-            for (IronGolemEntity golem : list) {
+            for (IronGolem golem : list) {
                 if (!golem.isInvisible() && golem.isAlive() && golem.getType() == EntityType.IRON_GOLEM) { // Check if the entity is an Iron Golem, not any other golem.
                     if (golem.getHealth() <= 60.0D || this.hasStartedHealing && golem.getHealth() < golem.getMaxHealth()) {
-                        healer.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_INGOT));
+                        healer.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_INGOT));
                         this.golem = golem;
                         return true;
                     }
@@ -47,17 +47,17 @@ public class HealGolemGoal extends Goal {
     }
 
     @Override
-    public void resetTask() {
-        healer.setItemStackToSlot(EquipmentSlotType.MAINHAND, ItemStack.EMPTY);
+    public void stop() {
+        healer.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
         this.hasStartedHealing = false;
-        super.resetTask();
+        super.stop();
     }
 
     @Override
-    public void startExecuting() {
+    public void start() {
         if (golem == null)
             return;
-        healer.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_INGOT));
+        healer.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_INGOT));
         this.healGolem();
     }
 
@@ -69,14 +69,14 @@ public class HealGolemGoal extends Goal {
     }
 
     public void healGolem() {
-        healer.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_INGOT));
-        healer.getNavigator().tryMoveToEntityLiving(golem, 0.5);
-        if (healer.getDistance(golem) <= 2.0D) {
+        healer.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_INGOT));
+        healer.getNavigation().moveTo(golem, 0.5);
+        if (healer.distanceTo(golem) <= 2.0D) {
             this.hasStartedHealing = true;
-            healer.swingArm(Hand.MAIN_HAND);
+            healer.swing(InteractionHand.MAIN_HAND);
             golem.heal(15.0F);
-            float f1 = 1.0F + (golem.getRNG().nextFloat() - golem.getRNG().nextFloat()) * 0.2F;
-            golem.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, f1);
+            float f1 = 1.0F + (golem.getRandom().nextFloat() - golem.getRandom().nextFloat()) * 0.2F;
+            golem.playSound(SoundEvents.IRON_GOLEM_REPAIR, 1.0F, f1);
         }
     }
 

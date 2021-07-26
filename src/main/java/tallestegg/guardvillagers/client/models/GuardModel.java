@@ -1,122 +1,135 @@
 package tallestegg.guardvillagers.client.models;
 
-import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ShootableItem;
-import net.minecraft.item.UseAction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.math.MathHelper;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.util.Mth;
+import tallestegg.guardvillagers.entities.Guard;
 
-public class GuardModel extends BipedModel<GuardEntity> {
-    public ModelRenderer quiver;
-    public ModelRenderer ArmLShoulderPad;
-    public ModelRenderer ArmRShoulderPad;
-    public ModelRenderer Nose;
+public class GuardModel extends HumanoidModel<Guard> {
+    public ModelPart quiver;
+    public ModelPart ArmLShoulderPad;
+    public ModelPart ArmRShoulderPad;
+    public ModelPart Nose;
 
-    public GuardModel(float f) {
-        super(f);
-        this.textureWidth = 128;
-        this.textureHeight = 128;
-        this.quiver = new ModelRenderer(this, 100, 0);
-        this.quiver.setRotationPoint(0.5F, 3.0F, 2.3F);
-        this.quiver.addBox(-2.5F, -2.0F, 0.0F, 5, 10, 5, 0.0F);
+    public GuardModel(ModelPart part) {
+        super(part);
+        this.quiver = part.getChild("quiver");
+        this.ArmLShoulderPad = part.getChild("shoulderPad_left");
+        this.ArmRShoulderPad = part.getChild("shoulderPad_right");
+        this.Nose = part.getChild("nose");
         this.setRotateAngle(quiver, 0.0F, 0.0F, 0.2617993877991494F);
-        this.bipedHeadwear = new ModelRenderer(this, 0, 0);
-        this.bipedHeadwear.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.bipedHeadwear.addBox(-4.5F, -11.0F, -4.5F, 9, 11, 9, 0.0F);
-        this.bipedRightLeg = new ModelRenderer(this, 16, 48);
-        this.bipedRightLeg.mirror = true;
-        this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
-        this.bipedRightLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F);
-        this.ArmLShoulderPad = new ModelRenderer(this, 72, 33);
-        this.ArmLShoulderPad.setRotationPoint(0.5F, -3.5F, 0.0F);
-        this.ArmLShoulderPad.addBox(-5.0F, 0.0F, -3.0F, 5, 3, 6, 0.0F);
         this.setRotateAngle(ArmLShoulderPad, 0.0F, 0.0F, -0.3490658503988659F);
-        this.bipedLeftLeg = new ModelRenderer(this, 16, 28);
-        this.bipedLeftLeg.setRotationPoint(1.9F, 12.0F, 0.0F);
-        this.bipedLeftLeg.addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, 0.0F);
-        this.bipedRightArm = new ModelRenderer(this, 32, 75);
-        this.bipedRightArm.mirror = true;
-        this.bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-        this.bipedRightArm.addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F);
-        this.bipedHead = new ModelRenderer(this, 49, 99);
-        this.bipedHead.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.bipedHead.addBox(-4.0F, -10.0F, -4.0F, 8, 10, 8, 0.0F);
-        this.ArmRShoulderPad = new ModelRenderer(this, 40, 20);
-        this.ArmRShoulderPad.setRotationPoint(-0.5F, -3.5F, 0.0F);
-        this.ArmRShoulderPad.addBox(0.0F, 0.0F, -3.0F, 5, 3, 6, 0.0F);
         this.setRotateAngle(ArmRShoulderPad, 0.0F, 0.0F, 0.3490658503988659F);
-        this.bipedLeftArm = new ModelRenderer(this, 33, 48);
-        this.bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-        this.bipedLeftArm.addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, 0.0F);
-        this.Nose = new ModelRenderer(this, 54, 0);
-        this.Nose.setRotationPoint(0.0F, -3.0F, -4.0F);
-        this.Nose.addBox(-1.0F, 0.0F, -2.0F, 2, 4, 2, 0.0F);
-        this.bipedBody = new ModelRenderer(this, 52, 50);
-        this.bipedBody.setRotationPoint(0.0F, 0.0F, 0.0F);
-        this.bipedBody.addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, 0.25F);
-        this.bipedBody.addChild(this.quiver);
-        this.bipedRightArm.addChild(this.ArmLShoulderPad);
-        this.bipedLeftArm.addChild(this.ArmRShoulderPad);
-        this.bipedHead.addChild(this.Nose);
     }
 
-    public void setRotateAngle(ModelRenderer ModelRenderer, float x, float y, float z) {
-        ModelRenderer.rotateAngleX = x;
-        ModelRenderer.rotateAngleY = y;
-        ModelRenderer.rotateAngleZ = z;
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = HumanoidModel.createMesh(CubeDeformation.NONE, 0.0F);
+        PartDefinition partdefinition = meshdefinition.getRoot();
+        partdefinition.addOrReplaceChild("body",
+                CubeListBuilder.create().texOffs(52, 50).addBox(-4.0F, 0.0F, -2.0F, 8, 12, 4, new CubeDeformation(0.25F), 0.0F, 0.0F),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        partdefinition.addOrReplaceChild("head",
+                CubeListBuilder.create().texOffs(49, 99).addBox(-4.0F, -10.0F, -4.0F, 8, 10, 8, new CubeDeformation(0.0F)),
+                PartPose.offset(0.0F, 1.0F, 0.0F));
+        partdefinition.addOrReplaceChild("right_leg",
+                CubeListBuilder.create().texOffs(16, 48).mirror().addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, new CubeDeformation(0.0F)),
+                PartPose.offset(-1.9F, 12.0F, 0.0F));
+        partdefinition.addOrReplaceChild("left_leg",
+                CubeListBuilder.create().texOffs(16, 28).mirror().addBox(-2.0F, 0.0F, -2.0F, 4, 12, 4, new CubeDeformation(0.0F)),
+                PartPose.offset(1.9F, 12.0F, 0.0F));
+        partdefinition.addOrReplaceChild("right_arm",
+                CubeListBuilder.create().texOffs(32, 75).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)),
+                PartPose.offset(-5.0F, 2.0F, 0.0F));
+        partdefinition.addOrReplaceChild("left_arm",
+                CubeListBuilder.create().texOffs(33, 48).mirror().addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, new CubeDeformation(0.0F)),
+                PartPose.offset(5.0F, 2.0F, 0.0F));
+        partdefinition.addOrReplaceChild("hat",
+                CubeListBuilder.create().texOffs(0, 0).mirror().addBox(-4.5F, -11.0F, -4.5F, 9, 11, 9, new CubeDeformation(0.0F)),
+                PartPose.offset(0.0F, 0.0F, 0.0F));
+        partdefinition.addOrReplaceChild("nose",
+                CubeListBuilder.create().texOffs(54, 0).mirror().addBox(-1.0F, 0.0F, -2.0F, 2, 4, 2, new CubeDeformation(0.0F)),
+                PartPose.offset(0.0F, -3.0F, -4.0F));
+        partdefinition.addOrReplaceChild("quiver",
+                CubeListBuilder.create().texOffs(100, 0).mirror().addBox(-2.5F, -2.0F, 0.0F, 5, 10, 5, new CubeDeformation(0.0F)),
+                PartPose.offset(0.5F, 3.0F, 2.3F));
+        partdefinition.addOrReplaceChild("shoulderPad_left",
+                CubeListBuilder.create().texOffs(72, 33).mirror().addBox(-5.0F, 0.0F, -3.0F, 5, 3, 6, new CubeDeformation(0.0F)),
+                PartPose.offset(0.5F, -3.5F, 0.0F));
+        partdefinition.addOrReplaceChild("shoulderPad_right",
+                CubeListBuilder.create().texOffs(33, 48).mirror().addBox(0.0F, 0.0F, -3.0F, 5, 3, 6, new CubeDeformation(0.0F)),
+                PartPose.offset(-0.5F, -3.5F, 0.0F));
+        return LayerDefinition.create(meshdefinition, 128, 128);
+    }
+
+    public void setRotateAngle(ModelPart ModelRenderer, float x, float y, float z) {
+        ModelRenderer.xRot = x;
+        ModelRenderer.yRot = y;
+        ModelRenderer.zRot = z;
     }
 
     @Override
-    public void setRotationAngles(GuardEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netbipedHeadYaw, float bipedHeadPitch) {
-        super.setRotationAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netbipedHeadYaw, bipedHeadPitch);
-        ItemStack itemstack = entityIn.getHeldItem(Hand.MAIN_HAND);
-        boolean isHoldingShootable = itemstack.getItem() instanceof ShootableItem;
-        this.quiver.showModel = isHoldingShootable;
-        boolean hasChestplate = entityIn.getItemStackFromSlot(EquipmentSlotType.CHEST).getItem() instanceof ArmorItem;
-        this.ArmLShoulderPad.showModel = !hasChestplate;
-        this.ArmRShoulderPad.showModel = !hasChestplate;
+    public void setupAnim(Guard entityIn, float limbSwing, float limbSwingAmount, float ageInTicks,
+            float netbipedHeadYaw, float bipedHeadPitch) {
+        super.setupAnim(entityIn, limbSwing, limbSwingAmount, ageInTicks, netbipedHeadYaw, bipedHeadPitch);
+        ItemStack itemstack = entityIn.getItemInHand(InteractionHand.MAIN_HAND);
+        boolean isHoldingShootable = itemstack.getItem() instanceof ProjectileWeaponItem;
+        this.quiver.visible = isHoldingShootable;
+        boolean hasChestplate = entityIn.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof ArmorItem;
+        this.ArmLShoulderPad.visible = !hasChestplate;
+        this.ArmRShoulderPad.visible = !hasChestplate;
         if (entityIn.getKickTicks() > 0) {
-            float f1 = 1.0F - (float) MathHelper.abs(10 - 2 * entityIn.getKickTicks()) / 10.0F;
-            this.bipedRightLeg.rotateAngleX = MathHelper.lerp(f1, this.bipedRightLeg.rotateAngleX, -1.40F);
+            float f1 = 1.0F - (float) Mth.abs(10 - 2 * entityIn.getKickTicks()) / 10.0F;
+            this.rightLeg.xRot = Mth.lerp(f1, this.rightLeg.xRot, -1.40F);
         }
-        if (entityIn.getPrimaryHand() == HandSide.RIGHT) {
-            this.eatingAnimationRightHand(Hand.MAIN_HAND, entityIn, ageInTicks);
-            this.eatingAnimationLeftHand(Hand.OFF_HAND, entityIn, ageInTicks);
+        if (entityIn.getMainArm() == HumanoidArm.RIGHT) {
+            this.eatingAnimationRightHand(InteractionHand.MAIN_HAND, entityIn, ageInTicks);
+            this.eatingAnimationLeftHand(InteractionHand.OFF_HAND, entityIn, ageInTicks);
         } else {
-            this.eatingAnimationRightHand(Hand.OFF_HAND, entityIn, ageInTicks);
-            this.eatingAnimationLeftHand(Hand.MAIN_HAND, entityIn, ageInTicks);
+            this.eatingAnimationRightHand(InteractionHand.OFF_HAND, entityIn, ageInTicks);
+            this.eatingAnimationLeftHand(InteractionHand.MAIN_HAND, entityIn, ageInTicks);
         }
     }
 
-    public void eatingAnimationRightHand(Hand hand, GuardEntity entity, float ageInTicks) {
-        ItemStack itemstack = entity.getHeldItem(hand);
-        boolean drinkingoreating = itemstack.getUseAction() == UseAction.EAT || itemstack.getUseAction() == UseAction.DRINK;
-        if (entity.isEating() && drinkingoreating || entity.getItemInUseCount() > 0 && drinkingoreating && entity.getActiveHand() == hand) {
-            this.bipedRightArm.rotateAngleY = -0.5F;
-            this.bipedRightArm.rotateAngleX = -1.3F;
-            this.bipedRightArm.rotateAngleZ = MathHelper.cos(ageInTicks) * 0.1F;
-            this.bipedHead.rotateAngleX = MathHelper.cos(ageInTicks) * 0.2F;
-            this.bipedHead.rotateAngleY = 0.0F;
-            this.bipedHeadwear.copyModelAngles(bipedHead);
+    public void eatingAnimationRightHand(InteractionHand hand, Guard entity, float ageInTicks) {
+        ItemStack itemstack = entity.getItemInHand(hand);
+        boolean drinkingoreating = itemstack.getUseAnimation() == UseAnim.EAT
+                || itemstack.getUseAnimation() == UseAnim.DRINK;
+        if (entity.isEating() && drinkingoreating
+                || entity.getUseItemRemainingTicks() > 0 && drinkingoreating && entity.getUsedItemHand() == hand) {
+            this.rightArm.yRot = -0.5F;
+            this.rightArm.xRot = -1.3F;
+            this.rightArm.zRot = Mth.cos(ageInTicks) * 0.1F;
+            this.head.xRot = Mth.cos(ageInTicks) * 0.2F;
+            this.head.yRot = 0.0F;
+            this.hat.copyFrom(head);
         }
     }
 
-    public void eatingAnimationLeftHand(Hand hand, GuardEntity entity, float ageInTicks) {
-        ItemStack itemstack = entity.getHeldItem(hand);
-        boolean drinkingoreating = itemstack.getUseAction() == UseAction.EAT || itemstack.getUseAction() == UseAction.DRINK;
-        if (entity.isEating() && drinkingoreating || entity.getItemInUseCount() > 0 && drinkingoreating && entity.getActiveHand() == hand) {
-            this.bipedLeftArm.rotateAngleY = 0.5F;
-            this.bipedLeftArm.rotateAngleX = -1.3F;
-            this.bipedLeftArm.rotateAngleZ = MathHelper.cos(ageInTicks) * 0.1F;
-            this.bipedHead.rotateAngleX = MathHelper.cos(ageInTicks) * 0.2F;
-            this.bipedHead.rotateAngleY = 0.0F;
-            this.bipedHeadwear.copyModelAngles(bipedHead);
+    public void eatingAnimationLeftHand(InteractionHand hand, Guard entity, float ageInTicks) {
+        ItemStack itemstack = entity.getItemInHand(hand);
+        boolean drinkingoreating = itemstack.getUseAnimation() == UseAnim.EAT
+                || itemstack.getUseAnimation() == UseAnim.DRINK;
+        if (entity.isEating() && drinkingoreating
+                || entity.getUseItemRemainingTicks() > 0 && drinkingoreating && entity.getUsedItemHand() == hand) {
+            this.leftArm.yRot = 0.5F;
+            this.leftArm.xRot = -1.3F;
+            this.leftArm.zRot = Mth.cos(ageInTicks) * 0.1F;
+            this.head.xRot = Mth.cos(ageInTicks) * 0.2F;
+            this.head.yRot = 0.0F;
+            this.hat.copyFrom(head);
         }
     }
 }

@@ -1,13 +1,13 @@
 package tallestegg.guardvillagers;
 
-import net.minecraft.loot.LootParameterSet;
-import net.minecraft.loot.LootParameterSets;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.resources.ResourceLocation;
 
 public class GuardLootTables {
-    public static final LootParameterSet SLOT = LootParameterSets.register("slot", (p_216252_0_) -> {
-        p_216252_0_.required(LootParameters.THIS_ENTITY);
+    public static final LootContextParamSet SLOT = LootContextParamSets.register("slot", (p_216252_0_) -> {
+        p_216252_0_.required(LootContextParams.THIS_ENTITY);
     });
     
     public static final ResourceLocation GUARD_MAIN_HAND = new ResourceLocation(GuardVillagers.MODID, "entities/guard_main_hand");

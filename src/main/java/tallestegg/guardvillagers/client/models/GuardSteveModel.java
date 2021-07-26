@@ -1,57 +1,63 @@
 package tallestegg.guardvillagers.client.models;
 
-import net.minecraft.client.renderer.entity.model.PlayerModel;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.UseAction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.math.MathHelper;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.UseAnim;
+import tallestegg.guardvillagers.entities.Guard;
 
-public class GuardSteveModel extends PlayerModel<GuardEntity> {
-    public GuardSteveModel(float modelSize) {
-        super(modelSize, false);
+public class GuardSteveModel extends PlayerModel<Guard> {
+    public GuardSteveModel(ModelPart part) {
+        super(part, false);
     }
-
+    
     @Override
-    public void setRotationAngles(GuardEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netbipedHeadYaw, float bipedHeadPitch) {
-        super.setRotationAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netbipedHeadYaw, bipedHeadPitch);
+    public void setupAnim(Guard entityIn, float limbSwing, float limbSwingAmount, float ageInTicks,
+            float netbipedHeadYaw, float bipedHeadPitch) {
+        super.setupAnim(entityIn, limbSwing, limbSwingAmount, ageInTicks, netbipedHeadYaw, bipedHeadPitch);
         if (entityIn.getKickTicks() > 0) {
-            float f1 = 1.0F - (float) MathHelper.abs(10 - 2 * entityIn.getKickTicks()) / 10.0F;
-            this.bipedRightLeg.rotateAngleX = MathHelper.lerp(f1, this.bipedRightLeg.rotateAngleX, -1.40F);
+            float f1 = 1.0F - (float) Mth.abs(10 - 2 * entityIn.getKickTicks()) / 10.0F;
+            this.rightLeg.xRot = Mth.lerp(f1, this.rightLeg.xRot, -1.40F);
         }
-        if (entityIn.getPrimaryHand() == HandSide.RIGHT) {
-            this.eatingAnimationRightHand(Hand.MAIN_HAND, entityIn, ageInTicks);
-            this.eatingAnimationLeftHand(Hand.OFF_HAND, entityIn, ageInTicks);
+        if (entityIn.getMainArm() == HumanoidArm.RIGHT) {
+            this.eatingAnimationRightHand(InteractionHand.MAIN_HAND, entityIn, ageInTicks);
+            this.eatingAnimationLeftHand(InteractionHand.OFF_HAND, entityIn, ageInTicks);
         } else {
-            this.eatingAnimationRightHand(Hand.OFF_HAND, entityIn, ageInTicks);
-            this.eatingAnimationLeftHand(Hand.MAIN_HAND, entityIn, ageInTicks);
+            this.eatingAnimationRightHand(InteractionHand.OFF_HAND, entityIn, ageInTicks);
+            this.eatingAnimationLeftHand(InteractionHand.MAIN_HAND, entityIn, ageInTicks);
         }
     }
 
-    public void eatingAnimationRightHand(Hand hand, GuardEntity entity, float ageInTicks) {
-        ItemStack itemstack = entity.getHeldItem(hand);
-        boolean drinkingoreating = itemstack.getUseAction() == UseAction.EAT || itemstack.getUseAction() == UseAction.DRINK;
-        if (entity.isEating() && drinkingoreating || entity.getItemInUseCount() > 0 && drinkingoreating && entity.getActiveHand() == hand) {
-            this.bipedRightArm.rotateAngleY = -0.5F;
-            this.bipedRightArm.rotateAngleX = -1.3F;
-            this.bipedRightArm.rotateAngleZ = MathHelper.cos(ageInTicks) * 0.1F;
-            this.bipedHead.rotateAngleX = MathHelper.cos(ageInTicks) * 0.2F;
-            this.bipedHead.rotateAngleY = 0.0F;
-            this.bipedHeadwear.copyModelAngles(bipedHead);
+    public void eatingAnimationRightHand(InteractionHand hand, Guard entity, float ageInTicks) {
+        ItemStack itemstack = entity.getItemInHand(hand);
+        boolean drinkingoreating = itemstack.getUseAnimation() == UseAnim.EAT
+                || itemstack.getUseAnimation() == UseAnim.DRINK;
+        if (entity.isEating() && drinkingoreating
+                || entity.getUseItemRemainingTicks() > 0 && drinkingoreating && entity.getUsedItemHand() == hand) {
+            this.rightArm.yRot = -0.5F;
+            this.rightArm.xRot = -1.3F;
+            this.rightArm.zRot = Mth.cos(ageInTicks) * 0.1F;
+            this.head.xRot = Mth.cos(ageInTicks) * 0.2F;
+            this.head.yRot = 0.0F;
+            this.hat.copyFrom(head);
         }
     }
 
-    public void eatingAnimationLeftHand(Hand hand, GuardEntity entity, float ageInTicks) {
-        ItemStack itemstack = entity.getHeldItem(hand);
-        boolean drinkingoreating = itemstack.getUseAction() == UseAction.EAT || itemstack.getUseAction() == UseAction.DRINK;
-        if (entity.isEating() && drinkingoreating || entity.getItemInUseCount() > 0 && drinkingoreating && entity.getActiveHand() == hand) {
-            this.bipedLeftArm.rotateAngleY = 0.5F;
-            this.bipedLeftArm.rotateAngleX = -1.3F;
-            this.bipedLeftArm.rotateAngleZ = MathHelper.cos(ageInTicks) * 0.1F;
-            this.bipedHead.rotateAngleX = MathHelper.cos(ageInTicks) * 0.2F;
-            this.bipedHead.rotateAngleY = 0.0F;
-            this.bipedHeadwear.copyModelAngles(bipedHead);
+    public void eatingAnimationLeftHand(InteractionHand hand, Guard entity, float ageInTicks) {
+        ItemStack itemstack = entity.getItemInHand(hand);
+        boolean drinkingoreating = itemstack.getUseAnimation() == UseAnim.EAT
+                || itemstack.getUseAnimation() == UseAnim.DRINK;
+        if (entity.isEating() && drinkingoreating
+                || entity.getUseItemRemainingTicks() > 0 && drinkingoreating && entity.getUsedItemHand() == hand) {
+            this.leftArm.yRot = 0.5F;
+            this.leftArm.xRot = -1.3F;
+            this.leftArm.zRot = Mth.cos(ageInTicks) * 0.1F;
+            this.head.xRot = Mth.cos(ageInTicks) * 0.2F;
+            this.head.yRot = 0.0F;
+            this.hat.copyFrom(head);
         }
     }
 }

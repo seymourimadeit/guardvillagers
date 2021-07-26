@@ -2,27 +2,27 @@ package tallestegg.guardvillagers.entities.ai.tasks;
 
 import java.util.List;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.BrainUtil;
-import net.minecraft.entity.ai.brain.task.SpawnGolemTask;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
-import net.minecraft.entity.merchant.villager.VillagerProfession;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PotionEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.potion.Effects;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
+import net.minecraft.world.entity.ai.behavior.WorkAtPoi;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.server.level.ServerLevel;
 import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 
-public class HealGuardAndPlayerTask extends SpawnGolemTask {
+/*public class HealGuardAndPlayerTask extends WorkAtPoi {
     private LivingEntity entityToHeal;
     private int rangedAttackTime = -1;
     private int seeTime;
@@ -40,18 +40,18 @@ public class HealGuardAndPlayerTask extends SpawnGolemTask {
     }
 
     @Override
-    protected boolean shouldExecute(ServerWorld worldIn, VillagerEntity owner) {
+    protected boolean checkExtraStartConditions(ServerLevel worldIn, Villager owner) {
         if (!GuardConfig.ClericHealing) {
             return false;
         } else if (owner.getVillagerData().getProfession() != VillagerProfession.CLERIC || owner.isSleeping()) {
             return false;
         } else {
-            List<LivingEntity> list = owner.world.getEntitiesWithinAABB(LivingEntity.class, owner.getBoundingBox().grow(10.0D, 3.0D, 10.0D));
+            List<LivingEntity> list = owner.level.getEntitiesOfClass(LivingEntity.class, owner.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
             if (!list.isEmpty()) {
                 for (LivingEntity entityToHeal : list) {
                     if (entityToHeal != null) {
                         if (entityToHeal.getType() == GuardEntityType.GUARD.get() && entityToHeal != null && entityToHeal.isAlive() && entityToHeal.getHealth() < entityToHeal.getMaxHealth()
-                                || entityToHeal instanceof PlayerEntity && entityToHeal.isPotionActive(Effects.HERO_OF_THE_VILLAGE) && !((PlayerEntity) entityToHeal).abilities.isCreativeMode && entityToHeal.getHealth() < entityToHeal.getMaxHealth()) {
+                                || entityToHeal instanceof Player && entityToHeal.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !((Player) entityToHeal).getAbilities().instabuild && entityToHeal.getHealth() < entityToHeal.getMaxHealth()) {
                             this.entityToHeal = entityToHeal;
                             return true;
                         }
@@ -63,63 +63,63 @@ public class HealGuardAndPlayerTask extends SpawnGolemTask {
     }
 
     @Override
-    protected boolean shouldContinueExecuting(ServerWorld worldIn, VillagerEntity entityIn, long gameTimeIn) {
-        return entityToHeal.isAlive() && entityToHeal.getHealth() < entityToHeal.getMaxHealth() && this.shouldExecute(worldIn, entityIn);
+    protected boolean canStillUse(ServerLevel worldIn, Villager entityIn, long gameTimeIn) {
+        return entityToHeal.isAlive() && entityToHeal.getHealth() < entityToHeal.getMaxHealth() && this.checkExtraStartConditions(worldIn, entityIn);
     }
 
     @Override
-    protected void updateTask(ServerWorld worldIn, VillagerEntity owner, long gameTime) {
+    protected void tick(ServerLevel worldIn, Villager owner, long gameTime) {
         if (entityToHeal == null)
             return;
-        double d0 = owner.getDistanceSq(this.entityToHeal.getPosX(), this.entityToHeal.getPosY(), this.entityToHeal.getPosZ());
-        boolean flag = owner.getEntitySenses().canSee(this.entityToHeal);
+        double d0 = owner.distanceToSqr(this.entityToHeal.getX(), this.entityToHeal.getY(), this.entityToHeal.getZ());
+        boolean flag = owner.getSensing().canSee(this.entityToHeal);
         if (flag) {
             ++this.seeTime;
         } else {
             this.seeTime = 0;
         }
-        BrainUtil.lookAt(owner, entityToHeal);
-        owner.faceEntity(entityToHeal, 90.0F, 90.0F);
+        BehaviorUtils.lookAtEntity(owner, entityToHeal);
+        owner.lookAt(entityToHeal, 90.0F, 90.0F);
         if (!(d0 > (double) this.maxAttackDistance) && this.seeTime >= 5) {
-            owner.getNavigator().clearPath();
+            owner.getNavigation().stop();
         } else {
-            owner.getNavigator().tryMoveToEntityLiving(entityToHeal, owner.getAIMoveSpeed());
+            owner.getNavigation().moveTo(entityToHeal, owner.getSpeed());
         }
-        if (entityToHeal.getDistance(owner) <= 5.0D) {
-            owner.getMoveHelper().strafe(-0.5F, 0);
+        if (entityToHeal.distanceTo(owner) <= 5.0D) {
+            owner.getMoveControl().strafe(-0.5F, 0);
         }
         if (--this.rangedAttackTime == 0 && entityToHeal.getHealth() < entityToHeal.getMaxHealth() && entityToHeal.isAlive()) {
             if (!flag) {
                 return;
             }
             float f =  this.attackRadius;
-            float lvt_5_1_ = MathHelper.clamp(f, 0.5F, 0.5F);
+            float lvt_5_1_ = Mth.clamp(f, 0.5F, 0.5F);
             this.throwPotion(owner, entityToHeal, lvt_5_1_);
-            this.rangedAttackTime = MathHelper.floor(f * (float) (this.maxRangedAttackTime - this.attackIntervalMin) + (float) this.attackIntervalMin);
-        } else if (this.rangedAttackTime < 0 && owner.getDistance(entityToHeal) >= 5.0D) {
-            float f2 = MathHelper.sqrt(d0) / this.attackRadius;
-            this.rangedAttackTime = MathHelper.floor(f2 * (float) (this.maxRangedAttackTime - this.attackIntervalMin) + (float) this.attackIntervalMin);
+            this.rangedAttackTime = Mth.floor(f * (float) (this.maxRangedAttackTime - this.attackIntervalMin) + (float) this.attackIntervalMin);
+        } else if (this.rangedAttackTime < 0 && owner.distanceTo(entityToHeal) >= 5.0D) {
+            float f2 = Mth.sqrt(d0) / this.attackRadius;
+            this.rangedAttackTime = Mth.floor(f2 * (float) (this.maxRangedAttackTime - this.attackIntervalMin) + (float) this.attackIntervalMin);
         }
     }
 
-    public void throwPotion(VillagerEntity villager, LivingEntity target, float distanceFactor) {
-        Vector3d vec3d = target.getMotion();
-        double d0 = target.getPosX() + vec3d.x - villager.getPosX();
-        double d1 = target.getPosYEye() - (double) 1.1F - villager.getPosY();
-        double d2 = target.getPosZ() + vec3d.z - villager.getPosZ();
-        float f = MathHelper.sqrt(d0 * d0 + d2 * d2);
+    public void throwPotion(Villager villager, LivingEntity target, float distanceFactor) {
+        Vec3 vec3d = target.getDeltaMovement();
+        double d0 = target.getX() + vec3d.x - villager.getX();
+        double d1 = target.getEyeY() - (double) 1.1F - villager.getY();
+        double d2 = target.getZ() + vec3d.z - villager.getZ();
+        float f = Mth.sqrt(d0 * d0 + d2 * d2);
         Potion potion = Potions.REGENERATION;
         if (target.getHealth() <= 4.0F) {
             potion = Potions.HEALING;
         } else {
             potion = Potions.REGENERATION;
         }
-        BrainUtil.lookAt(villager, target);
-        PotionEntity potionentity = new PotionEntity(villager.world, villager);
-        potionentity.setItem(PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potion));
-        potionentity.rotationPitch -= -20.0F;
+        BehaviorUtils.lookAtEntity(villager, target);
+        ThrownPotion potionentity = new ThrownPotion(villager.level, villager);
+        potionentity.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+        potionentity.xRot -= -20.0F;
         potionentity.shoot(d0, d1 + (double) (f * 0.2F), d2, 0.75F, 8.0F);
-        villager.world.playSound((PlayerEntity) null, villager.getPosX(), villager.getPosY(), villager.getPosZ(), SoundEvents.ENTITY_SPLASH_POTION_THROW, villager.getSoundCategory(), 1.0F, 0.8F + villager.getRNG().nextFloat() * 0.4F);
-        villager.world.addEntity(potionentity);
+        villager.level.playSound((Player) null, villager.getX(), villager.getY(), villager.getZ(), SoundEvents.SPLASH_POTION_THROW, villager.getSoundSource(), 1.0F, 0.8F + villager.getRandom().nextFloat() * 0.4F);
+        villager.level.addFreshEntity(potionentity);
     }
-}
+}*/

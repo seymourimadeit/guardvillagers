@@ -2,13 +2,13 @@ package tallestegg.guardvillagers.networking;
 
 import java.util.function.Supplier;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.NetworkEvent;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardFollowPacket {
     private final int entityId;
@@ -17,11 +17,11 @@ public class GuardFollowPacket {
         this.entityId = entityId;
     }
 
-    public static GuardFollowPacket decode(PacketBuffer buf) {
+    public static GuardFollowPacket decode(FriendlyByteBuf buf) {
         return new GuardFollowPacket(buf.readInt());
     }
 
-    public static void encode(GuardFollowPacket msg, PacketBuffer buf) {
+    public static void encode(GuardFollowPacket msg, FriendlyByteBuf buf) {
         buf.writeInt(msg.entityId);
     }
 
@@ -35,14 +35,14 @@ public class GuardFollowPacket {
                 ((NetworkEvent.Context) context.get()).enqueueWork(new Runnable() {
                     @Override
                     public void run() {
-                        ServerPlayerEntity player = ((NetworkEvent.Context) context.get()).getSender();
-                        if (player != null && player.world instanceof ServerWorld) {
-                            Entity entity = player.world.getEntityByID(msg.getEntityId());
-                            if (entity instanceof GuardEntity) {
-                                GuardEntity guard = (GuardEntity) entity;
+                        ServerPlayer player = ((NetworkEvent.Context) context.get()).getSender();
+                        if (player != null && player.level instanceof ServerLevel) {
+                            Entity entity = player.level.getEntity(msg.getEntityId());
+                            if (entity instanceof Guard) {
+                                Guard guard = (Guard) entity;
                                 guard.setFollowing(!guard.isFollowing());
-                                guard.setOwnerId(player.getUniqueID());
-                                guard.playSound(SoundEvents.ENTITY_VILLAGER_YES, 1.0F, 1.0F);
+                                guard.setOwnerId(player.getUUID());
+                                guard.playSound(SoundEvents.VILLAGER_YES, 1.0F, 1.0F);
                             }
                         }
                     }

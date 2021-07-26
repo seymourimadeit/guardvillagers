@@ -1,17 +1,17 @@
 package tallestegg.guardvillagers;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 import tallestegg.guardvillagers.client.gui.GuardInventoryScreen;
 import tallestegg.guardvillagers.entities.GuardContainer;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.networking.GuardFollowPacket;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
@@ -27,17 +27,18 @@ public class GuardPacketHandler {
         INSTANCE.registerMessage(id++, GuardSetPatrolPosPacket.class, GuardSetPatrolPosPacket::encode, GuardSetPatrolPosPacket::decode, GuardSetPatrolPosPacket::handle);
     }
 
+    @SuppressWarnings("resource")
     @OnlyIn(Dist.CLIENT) // This should be removed when I find a better solution.
     public static void openGuardInventory(GuardOpenInventoryPacket packet) {
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         if (player != null) {
-            Entity entity = player.world.getEntityByID(packet.getEntityId());
-            if (entity instanceof GuardEntity) {
-                GuardEntity guard = (GuardEntity) entity;
-                ClientPlayerEntity clientplayerentity = Minecraft.getInstance().player;
-                GuardContainer container = new GuardContainer(packet.getId(), player.inventory, guard.guardInventory, guard);
-                clientplayerentity.openContainer = container;
-                Minecraft.getInstance().displayGuiScreen(new GuardInventoryScreen(container, player.inventory, guard));
+            Entity entity = player.level.getEntity(packet.getEntityId());
+            if (entity instanceof Guard) {
+                Guard guard = (Guard) entity;
+                LocalPlayer clientplayerentity = Minecraft.getInstance().player;
+                GuardContainer container = new GuardContainer(packet.getId(), player.getInventory(), guard.guardInventory, guard);
+                clientplayerentity.containerMenu = container;
+                Minecraft.getInstance().setScreen(new GuardInventoryScreen(container, player.getInventory(), guard));
             }
         }
     }

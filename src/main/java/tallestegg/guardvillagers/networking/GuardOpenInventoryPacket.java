@@ -1,9 +1,8 @@
 package tallestegg.guardvillagers.networking;
-
 import java.util.function.Supplier;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import tallestegg.guardvillagers.GuardPacketHandler;
 
 public class GuardOpenInventoryPacket {
@@ -17,11 +16,11 @@ public class GuardOpenInventoryPacket {
         this.entityId = entityId;
     }
     
-    public static GuardOpenInventoryPacket decode(PacketBuffer buf) {
+    public static GuardOpenInventoryPacket decode(FriendlyByteBuf buf) {
         return new GuardOpenInventoryPacket(buf.readUnsignedByte(), buf.readVarInt(), buf.readInt());
     }
 
-    public static void encode(GuardOpenInventoryPacket msg, PacketBuffer buf) {
+    public static void encode(GuardOpenInventoryPacket msg, FriendlyByteBuf buf) {
         buf.writeByte(msg.id);
         buf.writeVarInt(msg.size);
         buf.writeInt(msg.entityId);

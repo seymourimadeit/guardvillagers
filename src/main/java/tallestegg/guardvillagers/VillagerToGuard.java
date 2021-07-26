@@ -1,25 +1,25 @@
 package tallestegg.guardvillagers;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
-import net.minecraft.entity.merchant.villager.VillagerProfession;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import tallestegg.guardvillagers.configuration.GuardConfig;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import tallestegg.guardvillagers.entities.Guard;
 
 @Mod.EventBusSubscriber(modid = GuardVillagers.MODID)
 public class VillagerToGuard {
@@ -28,13 +28,13 @@ public class VillagerToGuard {
         ItemStack itemstack = event.getItemStack();
         if (itemstack.getItem() instanceof SwordItem && event.getPlayer().isCrouching() || itemstack.getItem() instanceof CrossbowItem && event.getPlayer().isCrouching()) {
             Entity target = event.getTarget();
-            if (target instanceof VillagerEntity) {
-                VillagerEntity villager = (VillagerEntity) event.getTarget();
-                if (!villager.isChild()) {
+            if (target instanceof Villager) {
+                Villager villager = (Villager) event.getTarget();
+                if (!villager.isBaby()) {
                     if (villager.getVillagerData().getProfession() == VillagerProfession.NONE || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
-                        if (!GuardConfig.ConvertVillagerIfHaveHOTV || event.getPlayer().isPotionActive(Effects.HERO_OF_THE_VILLAGE) && GuardConfig.ConvertVillagerIfHaveHOTV) {
+                        if (!GuardConfig.ConvertVillagerIfHaveHOTV || event.getPlayer().hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.ConvertVillagerIfHaveHOTV) {
                             VillagerToGuard.convertVillager(villager, event.getPlayer());
-                            if (!event.getPlayer().abilities.isCreativeMode)
+                            if (!event.getPlayer().getAbilities().instabuild)
                                 itemstack.shrink(1);
                         }
                     }
@@ -43,41 +43,41 @@ public class VillagerToGuard {
         }
     }
 
-     private static void convertVillager(LivingEntity entity, PlayerEntity player) {
-        player.swingArm(Hand.MAIN_HAND);
-        ItemStack itemstack = player.getItemStackFromSlot(EquipmentSlotType.MAINHAND);
-        GuardEntity guard = GuardEntityType.GUARD.get().create(entity.world);
-        VillagerEntity villager = (VillagerEntity) entity;
+     private static void convertVillager(LivingEntity entity, Player player) {
+        player.swing(InteractionHand.MAIN_HAND);
+        ItemStack itemstack = player.getItemBySlot(EquipmentSlot.MAINHAND);
+        Guard guard = GuardEntityType.GUARD.get().create(entity.level);
+        Villager villager = (Villager) entity;
         if (guard == null)
             return;
-        if (entity.world.isRemote) {
-            IParticleData iparticledata = ParticleTypes.HAPPY_VILLAGER;
+        if (entity.level.isClientSide) {
+            ParticleOptions iparticledata = ParticleTypes.HAPPY_VILLAGER;
             for (int i = 0; i < 10; ++i) {
-                double d0 = villager.getRNG().nextGaussian() * 0.02D;
-                double d1 = villager.getRNG().nextGaussian() * 0.02D;
-                double d2 = villager.getRNG().nextGaussian() * 0.02D;
-                villager.world.addParticle(iparticledata, villager.getPosX() + (double) (villager.getRNG().nextFloat() * villager.getWidth() * 2.0F) - (double) villager.getWidth(), villager.getPosY() + 0.5D + (double) (villager.getRNG().nextFloat() * villager.getHeight()),
-                        villager.getPosZ() + (double) (villager.getRNG().nextFloat() * villager.getWidth() * 2.0F) - (double) villager.getWidth(), d0, d1, d2);
+                double d0 = villager.getRandom().nextGaussian() * 0.02D;
+                double d1 = villager.getRandom().nextGaussian() * 0.02D;
+                double d2 = villager.getRandom().nextGaussian() * 0.02D;
+                villager.level.addParticle(iparticledata, villager.getX() + (double) (villager.getRandom().nextFloat() * villager.getBbWidth() * 2.0F) - (double) villager.getBbWidth(), villager.getY() + 0.5D + (double) (villager.getRandom().nextFloat() * villager.getBbHeight()),
+                        villager.getZ() + (double) (villager.getRandom().nextFloat() * villager.getBbWidth() * 2.0F) - (double) villager.getBbWidth(), d0, d1, d2);
             }
         }
-        guard.copyLocationAndAnglesFrom(villager);
-        guard.playSound(SoundEvents.ENTITY_VILLAGER_YES, 1.0F, 1.0F);
-        guard.setItemStackToSlot(EquipmentSlotType.MAINHAND, itemstack.copy());
-        int i = GuardEntity.getRandomTypeForBiome(guard.world, guard.getPosition());
+        guard.copyPosition(villager);
+        guard.playSound(SoundEvents.VILLAGER_YES, 1.0F, 1.0F);
+        guard.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copy());
+        int i = Guard.getRandomTypeForBiome(guard.level, guard.blockPosition());
         guard.setGuardVariant(i);
-        guard.enablePersistence();
+        guard.setPersistenceRequired();
         guard.setCustomName(villager.getCustomName());
         guard.setCustomNameVisible(villager.isCustomNameVisible());
-        guard.setDropChance(EquipmentSlotType.HEAD, 100.0F);
-        guard.setDropChance(EquipmentSlotType.CHEST, 100.0F);
-        guard.setDropChance(EquipmentSlotType.FEET, 100.0F);
-        guard.setDropChance(EquipmentSlotType.LEGS, 100.0F);
-        guard.setDropChance(EquipmentSlotType.MAINHAND, 100.0F);
-        guard.setDropChance(EquipmentSlotType.OFFHAND, 100.0F);
-        villager.world.addEntity(guard);
-        villager.resetMemoryPoint(MemoryModuleType.HOME);
-        villager.resetMemoryPoint(MemoryModuleType.JOB_SITE);
-        villager.resetMemoryPoint(MemoryModuleType.MEETING_POINT);
-        villager.remove();
+        guard.setDropChance(EquipmentSlot.HEAD, 100.0F);
+        guard.setDropChance(EquipmentSlot.CHEST, 100.0F);
+        guard.setDropChance(EquipmentSlot.FEET, 100.0F);
+        guard.setDropChance(EquipmentSlot.LEGS, 100.0F);
+        guard.setDropChance(EquipmentSlot.MAINHAND, 100.0F);
+        guard.setDropChance(EquipmentSlot.OFFHAND, 100.0F);
+        villager.level.addFreshEntity(guard);
+        villager.releasePoi(MemoryModuleType.HOME);
+        villager.releasePoi(MemoryModuleType.JOB_SITE);
+        villager.releasePoi(MemoryModuleType.MEETING_POINT);
+        villager.remove(true);
     }
 }

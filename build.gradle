@@ -1,35 +1,31 @@
 buildscript {
     repositories {
         maven { url = 'https://maven.minecraftforge.net/' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        // maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT' 
-    }
-}
-repositories {
-    maven {
-        url 'https://www.dogforce-games.com/maven/'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+      //  classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT' 
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
-apply plugin: 'org.spongepowered.mixin'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
+// apply plugin: 'org.spongepowered.mixin'
 
-mixin {
-    add sourceSets.main, "guardvillagers.refmap.json"
-}
+//mixin {
+  //  add sourceSets.main, "guardvillagers.refmap.json"
+//}
 
 version = '1.16.5.1.2.4'
 group = 'tallestegg.guardvillagers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'guardvillagers'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '16' // Need this here so eclipse task generates correctly.
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
@@ -37,7 +33,7 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'snapshot', version: '20201028-1.16.3'
+    mappings channel: 'official', version: '1.17.1'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -53,7 +49,7 @@ minecraft {
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-            arg "-mixin.config=guardvillagers.mixins.json"    
+           // arg "-mixin.config=guardvillagers.mixins.json"    
 
             mods {
                 examplemod {
@@ -70,7 +66,7 @@ minecraft {
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-            arg "-mixin.config=guardvillagers.mixins.json"  
+           // arg "-mixin.config=guardvillagers.mixins.json"  
 
             mods {
                 examplemod {
@@ -103,7 +99,7 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.16.5-36.0.42'
+    minecraft 'net.minecraftforge:forge:1.17.1-37.0.7'
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
@@ -118,7 +114,6 @@ dependencies {
 
     // These dependencies get remapped to your current MCP mappings
     // deobf 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-    implementation fg.deobf("curse.maven:spark-361579:3138786")
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
@@ -141,8 +136,8 @@ jar {
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"examplemodsareus",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "guardvillagers.mixins.json"
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+           // "MixinConfigs": "guardvillagers.mixins.json"
         ])
     }
 }

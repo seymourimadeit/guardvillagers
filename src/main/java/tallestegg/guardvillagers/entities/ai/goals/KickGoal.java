@@ -1,32 +1,32 @@
 package tallestegg.guardvillagers.entities.ai.goals;
 
-import net.minecraft.entity.ai.goal.Goal;
-import tallestegg.guardvillagers.entities.GuardEntity;
+import net.minecraft.world.entity.ai.goal.Goal;
+import tallestegg.guardvillagers.entities.Guard;
 
 public class KickGoal extends Goal {
 
-    public final GuardEntity guard;
+    public final Guard guard;
 
-    public KickGoal(GuardEntity guard) {
+    public KickGoal(Guard guard) {
         this.guard = guard;
     }
 
     @Override
-    public boolean shouldExecute() {
-        return guard.getAttackTarget() != null && guard.getAttackTarget().getDistance(guard) <= 2.5D && guard.getHeldItemMainhand().getItem().isCrossbow(guard.getHeldItemMainhand()) && !guard.isActiveItemStackBlocking() && guard.kickCoolDown == 0;
+    public boolean canUse() {
+        return guard.getTarget() != null && guard.getTarget().distanceTo(guard) <= 2.5D && guard.getMainHandItem().getItem().useOnRelease(guard.getMainHandItem()) && !guard.isBlocking() && guard.kickCoolDown == 0;
     }
 
     @Override
-    public void startExecuting() {
+    public void start() {
         guard.setKicking(true);
         if (guard.kickTicks <= 0) {
             guard.kickTicks = 10;
         }
-        guard.attackEntityAsMob(guard.getAttackTarget());
+        guard.doHurtTarget(guard.getTarget());
     }
 
     @Override
-    public void resetTask() {
+    public void stop() {
         guard.setKicking(false);
         guard.kickCoolDown = 50;
     }

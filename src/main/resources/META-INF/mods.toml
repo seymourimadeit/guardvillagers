@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="[28,)" #mandatory (28 is current forge version)
+loaderVersion="[37,)" #mandatory (28 is current forge version)
 issueTrackerURL="https://github.com/seymourimadeit/guardvillagers/issues" #optional
 license="MIT"
 # A list of mods - how many allowed here is determined by the individual mod loader
@@ -24,6 +24,6 @@ Need some help with pest control? The Guards are ready to help!
 [[dependencies.guardvillagers]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.4,]"
+    versionRange="[1.17, 1.18]"
     ordering="NONE"
     side="BOTH"
