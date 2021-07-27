@@ -78,6 +78,7 @@ import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.entity.monster.Witch;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
@@ -378,6 +379,21 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public boolean isImmobile() {
         return this.interacting || super.isImmobile();
+    }
+    
+    @Override
+    public void die(DamageSource source) {
+        if ((this.level.getDifficulty() == Difficulty.NORMAL || this.level.getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie) {
+            if (this.level.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
+                return;
+            }
+            ZombieVillager zombieguard = this.convertTo(EntityType.ZOMBIE_VILLAGER, true);
+            zombieguard.finalizeSpawn((ServerLevelAccessor) this.level, this.level.getCurrentDifficultyAt(zombieguard.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), (CompoundTag) null);
+            if (!this.isSilent())
+                this.level.levelEvent((Player) null, 1026, this.blockPosition(), 0);
+            this.remove(false);
+        }
+        super.die(source);
     }
 
     @Override
@@ -849,7 +865,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             witchentity.setCustomNameVisible(this.isCustomNameVisible());
             witchentity.setPersistenceRequired();
             p_241841_1_.addFreshEntityWithPassengers(witchentity);
-            this.remove(true);
+            this.remove(false);
         } else {
             super.thunderHit(p_241841_1_, p_241841_2_);
         }

@@ -78,6 +78,6 @@ public class VillagerToGuard {
         villager.releasePoi(MemoryModuleType.HOME);
         villager.releasePoi(MemoryModuleType.JOB_SITE);
         villager.releasePoi(MemoryModuleType.MEETING_POINT);
-        villager.remove(true);
+        villager.remove(false);
     }
 }
