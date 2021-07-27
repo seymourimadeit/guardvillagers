@@ -27,7 +27,7 @@ import tallestegg.guardvillagers.entities.Guard;
 public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardModel> {
     public GuardRenderer(EntityRendererProvider.Context p_174463_) {
         super(p_174463_, new GuardModel(p_174463_.bakeLayer(GuardVillagers.GUARD)), 0.5F);
-        this.addLayer(new HumanoidArmorLayer<>(this, new GuardArmorModel(p_174463_.bakeLayer(GuardVillagers.GUARD_ARMOR)), new GuardArmorModel(p_174463_.bakeLayer(GuardVillagers.GUARD_ARMOR))));
+        this.addLayer(new HumanoidArmorLayer<>(this, new GuardArmorModel(p_174463_.bakeLayer(GuardVillagers.GUARD_ARMOR_INNER)), new GuardArmorModel(p_174463_.bakeLayer(GuardVillagers.GUARD_ARMOR_OUTER))));
     }
 
     @Override

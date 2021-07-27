@@ -32,13 +32,15 @@ public class GuardVillagers {
     public static ModelLayerLocation GUARD = new ModelLayerLocation(new ResourceLocation(MODID + "guard"), "guard");
     public static ModelLayerLocation GUARD_STEVE = new ModelLayerLocation(new ResourceLocation(MODID + "guard_steve"),
             "guard_steve");
-    public static ModelLayerLocation GUARD_ARMOR = new ModelLayerLocation(new ResourceLocation(MODID + "guard_armor"),
-            "guard_armor");
+    public static ModelLayerLocation GUARD_ARMOR_OUTER = new ModelLayerLocation(new ResourceLocation(MODID + "guard_armor_outer"),
+            "guard_armor_outer");
+    public static ModelLayerLocation GUARD_ARMOR_INNER = new ModelLayerLocation(new ResourceLocation(MODID + "guard_armor_inner"),
+            "guard_armor_inner");
 
     public GuardVillagers() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, GuardConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, GuardConfig.CLIENT_SPEC);
         MinecraftForge.EVENT_BUS.register(this);
@@ -62,7 +64,8 @@ public class GuardVillagers {
         event.enqueueWork(() -> {
             EntityRenderers.register(GuardEntityType.GUARD.get(), GuardRenderer::new);
             RenderingRegistry.registerLayerDefinition(GUARD, GuardModel::createBodyLayer);
-            RenderingRegistry.registerLayerDefinition(GUARD_ARMOR, GuardArmorModel::createBodyLayer);
+            RenderingRegistry.registerLayerDefinition(GUARD_ARMOR_OUTER, GuardArmorModel::createOuterArmorLayer);
+            RenderingRegistry.registerLayerDefinition(GUARD_ARMOR_INNER, GuardArmorModel::createInnerArmorLayer);
         });
         // RenderingRegistry.registerLayerDefinition(GUARD_STEVE,
         // (Supplier<LayerDefinition>) GuardSteveModel.createMesh(new
