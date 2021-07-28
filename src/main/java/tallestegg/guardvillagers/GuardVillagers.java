@@ -64,14 +64,14 @@ public class GuardVillagers {
 
     private void doClientStuff(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            if (!GuardConfig.guardSteve)
-                EntityRenderers.register(GuardEntityType.GUARD.get(), GuardRenderer::new);
-            else
-                EntityRenderers.register(GuardEntityType.GUARD.get(), GuardSteveRenderer::new);
             RenderingRegistry.registerLayerDefinition(GUARD, GuardModel::createBodyLayer);
             RenderingRegistry.registerLayerDefinition(GUARD_STEVE, GuardSteveModel::createMesh);
             RenderingRegistry.registerLayerDefinition(GUARD_ARMOR_OUTER, GuardArmorModel::createOuterArmorLayer);
             RenderingRegistry.registerLayerDefinition(GUARD_ARMOR_INNER, GuardArmorModel::createInnerArmorLayer);
+            if (!GuardConfig.guardSteve)
+                EntityRenderers.register(GuardEntityType.GUARD.get(), GuardRenderer::new);
+            else
+                EntityRenderers.register(GuardEntityType.GUARD.get(), GuardSteveRenderer::new);
         });
     }
 

@@ -20,7 +20,6 @@ import net.minecraftforge.common.util.NonNullSupplier;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 public class DeferredSpawnEggItem extends SpawnEggItem {
-
     public static final List<DeferredSpawnEggItem> UNADDED_EGGS = new ArrayList<>();
     private final Lazy<? extends EntityType<?>> entityTypeSupplier;
 
@@ -37,7 +36,7 @@ public class DeferredSpawnEggItem extends SpawnEggItem {
     }
 
     public static void initUnaddedEggs() {
-        final Map<EntityType<?>, SpawnEggItem> EGGS = ObfuscationReflectionHelper.getPrivateValue(SpawnEggItem.class, null, "BY_ID");
+        final Map<EntityType<?>, SpawnEggItem> EGGS = ObfuscationReflectionHelper.getPrivateValue(SpawnEggItem.class, null, "f_43201_");
         DefaultDispenseItemBehavior defaultDispenseItemBehavior = new DefaultDispenseItemBehavior() {
             public ItemStack execute(BlockSource source, ItemStack stack) {
                 Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
