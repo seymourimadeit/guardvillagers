@@ -1,12 +1,12 @@
 package tallestegg.guardvillagers;
 
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -18,7 +18,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlclient.registry.RenderingRegistry;
 import tallestegg.guardvillagers.client.models.GuardArmorModel;
 import tallestegg.guardvillagers.client.models.GuardModel;
 import tallestegg.guardvillagers.client.models.GuardSteveModel;
@@ -43,6 +42,8 @@ public class GuardVillagers {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::layerDefinitions);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::entityRenderers);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, GuardConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, GuardConfig.CLIENT_SPEC);
         MinecraftForge.EVENT_BUS.register(this);
@@ -63,16 +64,20 @@ public class GuardVillagers {
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            RenderingRegistry.registerLayerDefinition(GUARD, GuardModel::createBodyLayer);
-            RenderingRegistry.registerLayerDefinition(GUARD_STEVE, GuardSteveModel::createMesh);
-            RenderingRegistry.registerLayerDefinition(GUARD_ARMOR_OUTER, GuardArmorModel::createOuterArmorLayer);
-            RenderingRegistry.registerLayerDefinition(GUARD_ARMOR_INNER, GuardArmorModel::createInnerArmorLayer);
-            if (!GuardConfig.guardSteve)
-                EntityRenderers.register(GuardEntityType.GUARD.get(), GuardRenderer::new);
-            else
-                EntityRenderers.register(GuardEntityType.GUARD.get(), GuardSteveRenderer::new);
-        });
+    }
+
+    private void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(GUARD, GuardModel::createBodyLayer);
+        event.registerLayerDefinition(GUARD_STEVE, GuardSteveModel::createMesh);
+        event.registerLayerDefinition(GUARD_ARMOR_OUTER, GuardArmorModel::createOuterArmorLayer);
+        event.registerLayerDefinition(GUARD_ARMOR_INNER, GuardArmorModel::createInnerArmorLayer);
+    }
+
+    private void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        if (!GuardConfig.guardSteve)
+            event.registerEntityRenderer(GuardEntityType.GUARD.get(), GuardRenderer::new);
+        else
+            event.registerEntityRenderer(GuardEntityType.GUARD.get(), GuardSteveRenderer::new);
     }
 
     public static boolean hotvChecker(Player player) {

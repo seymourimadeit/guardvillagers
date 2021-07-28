@@ -4,10 +4,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.ai.util.RandomPos;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.phys.Vec3;
 import tallestegg.guardvillagers.entities.Guard;
 
