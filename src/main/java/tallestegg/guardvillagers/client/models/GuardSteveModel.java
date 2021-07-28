@@ -2,6 +2,12 @@ package tallestegg.guardvillagers.client.models;
 
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -30,6 +36,11 @@ public class GuardSteveModel extends PlayerModel<Guard> {
             this.eatingAnimationLeftHand(InteractionHand.MAIN_HAND, entityIn, ageInTicks);
         }
     }
+    
+    public static LayerDefinition createMesh() {
+        MeshDefinition meshdefinition = PlayerModel.createMesh(CubeDeformation.NONE, false);
+        return LayerDefinition.create(meshdefinition, 64, 64);
+     }
 
     public void eatingAnimationRightHand(InteractionHand hand, Guard entity, float ageInTicks) {
         ItemStack itemstack = entity.getItemInHand(hand);

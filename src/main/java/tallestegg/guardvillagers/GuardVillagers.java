@@ -21,7 +21,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fmlclient.registry.RenderingRegistry;
 import tallestegg.guardvillagers.client.models.GuardArmorModel;
 import tallestegg.guardvillagers.client.models.GuardModel;
+import tallestegg.guardvillagers.client.models.GuardSteveModel;
 import tallestegg.guardvillagers.client.renderer.GuardRenderer;
+import tallestegg.guardvillagers.client.renderer.GuardSteveRenderer;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.items.DeferredSpawnEggItem;
@@ -32,10 +34,10 @@ public class GuardVillagers {
     public static ModelLayerLocation GUARD = new ModelLayerLocation(new ResourceLocation(MODID + "guard"), "guard");
     public static ModelLayerLocation GUARD_STEVE = new ModelLayerLocation(new ResourceLocation(MODID + "guard_steve"),
             "guard_steve");
-    public static ModelLayerLocation GUARD_ARMOR_OUTER = new ModelLayerLocation(new ResourceLocation(MODID + "guard_armor_outer"),
-            "guard_armor_outer");
-    public static ModelLayerLocation GUARD_ARMOR_INNER = new ModelLayerLocation(new ResourceLocation(MODID + "guard_armor_inner"),
-            "guard_armor_inner");
+    public static ModelLayerLocation GUARD_ARMOR_OUTER = new ModelLayerLocation(
+            new ResourceLocation(MODID + "guard_armor_outer"), "guard_armor_outer");
+    public static ModelLayerLocation GUARD_ARMOR_INNER = new ModelLayerLocation(
+            new ResourceLocation(MODID + "guard_armor_inner"), "guard_armor_inner");
 
     public GuardVillagers() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
@@ -62,14 +64,15 @@ public class GuardVillagers {
 
     private void doClientStuff(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            EntityRenderers.register(GuardEntityType.GUARD.get(), GuardRenderer::new);
+            if (!GuardConfig.guardSteve)
+                EntityRenderers.register(GuardEntityType.GUARD.get(), GuardRenderer::new);
+            else
+                EntityRenderers.register(GuardEntityType.GUARD.get(), GuardSteveRenderer::new);
             RenderingRegistry.registerLayerDefinition(GUARD, GuardModel::createBodyLayer);
+            RenderingRegistry.registerLayerDefinition(GUARD_STEVE, GuardSteveModel::createMesh);
             RenderingRegistry.registerLayerDefinition(GUARD_ARMOR_OUTER, GuardArmorModel::createOuterArmorLayer);
             RenderingRegistry.registerLayerDefinition(GUARD_ARMOR_INNER, GuardArmorModel::createInnerArmorLayer);
         });
-        // RenderingRegistry.registerLayerDefinition(GUARD_STEVE,
-        // (Supplier<LayerDefinition>) GuardSteveModel.createMesh(new
-        // CubeDeformation(0.0F), false));
     }
 
     public static boolean hotvChecker(Player player) {

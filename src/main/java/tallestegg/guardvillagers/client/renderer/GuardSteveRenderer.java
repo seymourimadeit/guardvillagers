@@ -4,25 +4,26 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.resources.ResourceLocation;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.models.GuardSteveModel;
 import tallestegg.guardvillagers.entities.Guard;
 
-/*public class GuardSteveRenderer extends HumanoidMobRenderer<Guard, GuardSteveModel> {
-    public GuardSteveRenderer(EntityRenderDispatcher manager) {
-        super(manager, new GuardSteveModel(0), 0.5f);
-        this.addLayer(new HumanoidArmorLayer<>(this, new HumanoidModel<>(0.5F), new HumanoidModel<>(1.0F)));
+public class GuardSteveRenderer extends HumanoidMobRenderer<Guard, GuardSteveModel> {
+    public GuardSteveRenderer(EntityRendererProvider.Context context) {
+        super(context, new GuardSteveModel(context.bakeLayer(GuardVillagers.GUARD_STEVE)), 0.5F);
+        this.addLayer(new HumanoidArmorLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR))));
     }
 
     @Override
@@ -99,4 +100,4 @@ import tallestegg.guardvillagers.entities.Guard;
     public ResourceLocation getTextureLocation(Guard entity) {
         return new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_steve_" + entity.getGuardVariant() + ".png");
     }
-}*/
+}

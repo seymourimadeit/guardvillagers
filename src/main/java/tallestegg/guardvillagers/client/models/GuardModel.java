@@ -53,7 +53,7 @@ public class GuardModel extends HumanoidModel<Guard> {
         partdefinition.addOrReplaceChild("left_leg", CubeListBuilder.create().texOffs(16, 28).addBox(-2.0F, 0.0F, -2.0F,
                 4, 12, 4, new CubeDeformation(0.0F)), PartPose.offset(1.9F, 12.0F, 0.0F));
         leftArm.addOrReplaceChild("shoulderPad_right",
-                CubeListBuilder.create().texOffs(72, 33).addBox(0.0F, 0.0F, -3.0F, 5, 3, 6, new CubeDeformation(0.0F)),
+                CubeListBuilder.create().texOffs(72, 33).mirror().addBox(0.0F, 0.0F, -3.0F, 5, 3, 6, new CubeDeformation(0.0F)),
                 PartPose.offset(-0.5F, -3.5F, 0.0F));
         rightArm.addOrReplaceChild("shoulderPad_left",
                 CubeListBuilder.create().texOffs(72, 33).addBox(-5.0F, 0.0F, -3.0F, 5, 3, 6, new CubeDeformation(0.0F)),
