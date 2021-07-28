@@ -68,7 +68,7 @@ public class HandlerEvents {
             for (Mob mob : list) {
                 boolean type = mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM;
                 boolean trueSourceGolem = trueSource.getType() == GuardEntityType.GUARD.get() || trueSource.getType() == EntityType.IRON_GOLEM;
-                if (type && mob.getTarget() == null && trueSource.getType() != GuardEntityType.GUARD.get() && !trueSourceGolem) {
+                if (type && mob.getTarget() == null && !trueSourceGolem) {
                     mob.setTarget((Mob) event.getSource().getEntity());
                 }
             }

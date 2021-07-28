@@ -45,9 +45,6 @@ public class GuardConfig {
     public static boolean ConvertVillagerIfHaveHOTV;
     public static boolean BlackSmithHealing;
     public static boolean ClericHealing;
-    public static double GuardHealth;
-    public static double GuardFollowRange;
-    public static double GuardSpeed;
     public static double GuardVillagerHelpRange;
     public static float amountOfHealthRegenerated;
     public static boolean guardArrowsHurtVillagers;
@@ -73,9 +70,6 @@ public class GuardConfig {
         BlackSmithHealing = COMMON.BlacksmithHealing.get();
         ClericHealing = COMMON.ClericHealing.get();
         GuardVillagerHelpRange = COMMON.GuardVillagerHelpRange.get();
-        GuardFollowRange = COMMON.GuardFollowRange.get();
-        GuardHealth = COMMON.GuardHealth.get();
-        GuardSpeed = COMMON.GuardSpeed.get();
         amountOfHealthRegenerated = COMMON.amountOfHealthRegenerated.get().floatValue();
         guardArrowsHurtVillagers = COMMON.guardArrowsHurtVillagers.get();
         armorerRepairGuardArmor = COMMON.armorersRepairGuardArmor.get();
@@ -113,9 +107,6 @@ public class GuardConfig {
         public final ForgeConfigSpec.BooleanValue BlacksmithHealing;
         public final ForgeConfigSpec.BooleanValue ClericHealing;
         public final ForgeConfigSpec.DoubleValue GuardVillagerHelpRange;
-        public final ForgeConfigSpec.DoubleValue GuardHealth;
-        public final ForgeConfigSpec.DoubleValue GuardSpeed;
-        public final ForgeConfigSpec.DoubleValue GuardFollowRange;
         public final ForgeConfigSpec.DoubleValue amountOfHealthRegenerated;
         public final ForgeConfigSpec.BooleanValue guardArrowsHurtVillagers;
         public final ForgeConfigSpec.BooleanValue armorersRepairGuardArmor;
@@ -143,9 +134,6 @@ public class GuardConfig {
             ClericHealing = builder.translation(GuardVillagers.MODID + ".config.cleric").define("Have it so clerics heal guards and players with hero of the village?", true);
             GuardVillagerHelpRange = builder.translation(GuardVillagers.MODID + ".config.range").comment("This is the range in which the guards will be aggroed to mobs that are attacking villagers. Higher values are more resource intensive, and setting this to zero will disable the goal.")
                     .defineInRange("Range", 50.0D, -500.0D, 500.0D);
-            GuardHealth = builder.translation(GuardVillagers.MODID + ".config.health").defineInRange("Guard Health", 20.0D, -500.0D, 500.0D);
-            GuardSpeed = builder.translation(GuardVillagers.MODID + ".config.speed").defineInRange("Guard speed", 0.5D, -500.0D, 500.0D);
-            GuardFollowRange = builder.translation(GuardVillagers.MODID + ".config.followingRange").defineInRange("Guard follow range", 25.0D, -500.0D, 500.0D);
             amountOfHealthRegenerated = builder.translation(GuardVillagers.MODID + ".config.amountofHealthRegenerated").comment("How much health a guard regenerates.").defineInRange("Guard health regeneration amount", 1.0D, -500.0D, 500.0D);
             guardArrowsHurtVillagers = builder.translation(GuardVillagers.MODID + ".config.guardArrows").define("Allow guard arrows to damage villagers, iron golems, or other guards? The i-frames will still be shown for them but they won't lose any health if this is set to false", true);
             armorersRepairGuardArmor = builder.translation(GuardVillagers.MODID + ".config.armorvillager").define("Allow armorers and weaponsmiths repair guard items when down below half durability?", true);
