@@ -391,7 +391,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             zombieguard.finalizeSpawn((ServerLevelAccessor) this.level, this.level.getCurrentDifficultyAt(zombieguard.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), (CompoundTag) null);
             if (!this.isSilent())
                 this.level.levelEvent((Player) null, 1026, this.blockPosition(), 0);
-            this.remove(false);
+            this.discard();
         }
         super.die(source);
     }
@@ -865,7 +865,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             witchentity.setCustomNameVisible(this.isCustomNameVisible());
             witchentity.setPersistenceRequired();
             p_241841_1_.addFreshEntityWithPassengers(witchentity);
-            this.remove(false);
+            this.discard();
         } else {
             super.thunderHit(p_241841_1_, p_241841_2_);
         }
