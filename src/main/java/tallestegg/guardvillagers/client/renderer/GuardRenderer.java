@@ -15,6 +15,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import tallestegg.guardvillagers.GuardClientEvents;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.models.GuardArmorModel;
 import tallestegg.guardvillagers.client.models.GuardModel;
@@ -22,8 +23,8 @@ import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardModel> {
     public GuardRenderer(EntityRendererProvider.Context p_174463_) {
-        super(p_174463_, new GuardModel(p_174463_.bakeLayer(GuardVillagers.GUARD)), 0.5F);
-        this.addLayer(new HumanoidArmorLayer<>(this, new GuardArmorModel(p_174463_.bakeLayer(GuardVillagers.GUARD_ARMOR_INNER)), new GuardArmorModel(p_174463_.bakeLayer(GuardVillagers.GUARD_ARMOR_OUTER))));
+        super(p_174463_, new GuardModel(p_174463_.bakeLayer(GuardClientEvents.GUARD)), 0.5F);
+        this.addLayer(new HumanoidArmorLayer<>(this, new GuardArmorModel(p_174463_.bakeLayer(GuardClientEvents.GUARD_ARMOR_INNER)), new GuardArmorModel(p_174463_.bakeLayer(GuardClientEvents.GUARD_ARMOR_OUTER))));
     }
 
     @Override

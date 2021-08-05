@@ -1,12 +1,9 @@
 package tallestegg.guardvillagers;
 
-import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
-import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -18,11 +15,6 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import tallestegg.guardvillagers.client.models.GuardArmorModel;
-import tallestegg.guardvillagers.client.models.GuardModel;
-import tallestegg.guardvillagers.client.models.GuardSteveModel;
-import tallestegg.guardvillagers.client.renderer.GuardRenderer;
-import tallestegg.guardvillagers.client.renderer.GuardSteveRenderer;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.items.DeferredSpawnEggItem;
@@ -30,20 +22,11 @@ import tallestegg.guardvillagers.items.DeferredSpawnEggItem;
 @Mod(GuardVillagers.MODID)
 public class GuardVillagers {
     public static final String MODID = "guardvillagers";
-    public static ModelLayerLocation GUARD = new ModelLayerLocation(new ResourceLocation(MODID + "guard"), "guard");
-    public static ModelLayerLocation GUARD_STEVE = new ModelLayerLocation(new ResourceLocation(MODID + "guard_steve"),
-            "guard_steve");
-    public static ModelLayerLocation GUARD_ARMOR_OUTER = new ModelLayerLocation(
-            new ResourceLocation(MODID + "guard_armor_outer"), "guard_armor_outer");
-    public static ModelLayerLocation GUARD_ARMOR_INNER = new ModelLayerLocation(
-            new ResourceLocation(MODID + "guard_armor_inner"), "guard_armor_inner");
 
     public GuardVillagers() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::layerDefinitions);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::entityRenderers);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, GuardConfig.COMMON_SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, GuardConfig.CLIENT_SPEC);
         MinecraftForge.EVENT_BUS.register(this);
@@ -63,20 +46,6 @@ public class GuardVillagers {
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-    }
-
-    private void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(GUARD, GuardModel::createBodyLayer);
-        event.registerLayerDefinition(GUARD_STEVE, GuardSteveModel::createMesh);
-        event.registerLayerDefinition(GUARD_ARMOR_OUTER, GuardArmorModel::createOuterArmorLayer);
-        event.registerLayerDefinition(GUARD_ARMOR_INNER, GuardArmorModel::createInnerArmorLayer);
-    }
-
-    private void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        if (!GuardConfig.guardSteve)
-            event.registerEntityRenderer(GuardEntityType.GUARD.get(), GuardRenderer::new);
-        else
-            event.registerEntityRenderer(GuardEntityType.GUARD.get(), GuardSteveRenderer::new);
     }
 
     public static boolean hotvChecker(Player player) {

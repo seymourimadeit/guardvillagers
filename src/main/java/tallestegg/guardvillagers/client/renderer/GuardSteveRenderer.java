@@ -16,13 +16,14 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import tallestegg.guardvillagers.GuardClientEvents;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.models.GuardSteveModel;
 import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardSteveRenderer extends HumanoidMobRenderer<Guard, GuardSteveModel> {
     public GuardSteveRenderer(EntityRendererProvider.Context context) {
-        super(context, new GuardSteveModel(context.bakeLayer(GuardVillagers.GUARD_STEVE)), 0.5F);
+        super(context, new GuardSteveModel(context.bakeLayer(GuardClientEvents.GUARD_STEVE)), 0.5F);
         this.addLayer(new HumanoidArmorLayer<>(this, new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR))));
     }
 
