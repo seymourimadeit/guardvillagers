@@ -26,7 +26,7 @@ public class VillagerToGuard {
     @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         ItemStack itemstack = event.getItemStack();
-        if ((itemstack.getItem() instanceof SwordItem && itemstack.getItem() instanceof CrossbowItem) && event.getPlayer().isCrouching()) {
+        if ((itemstack.getItem() instanceof SwordItem || itemstack.getItem() instanceof CrossbowItem) && event.getPlayer().isCrouching()) {
             Entity target = event.getTarget();
             if (target instanceof Villager) {
                 Villager villager = (Villager) event.getTarget();
