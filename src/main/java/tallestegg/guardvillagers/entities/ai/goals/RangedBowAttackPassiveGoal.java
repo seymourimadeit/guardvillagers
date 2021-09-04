@@ -34,7 +34,7 @@ public class RangedBowAttackPassiveGoal<T extends GuardEntity & IRangedAttackMob
 
     @Override
     public boolean shouldExecute() {
-        return this.entity.getAttackTarget() != null && this.isBowInMainhand() && !this.entity.isEating();
+        return this.entity.getAttackTarget() != null && this.isBowInMainhand() && !this.entity.isEating() && !this.entity.isActiveItemStackBlocking();
     }
 
     protected boolean isBowInMainhand() {

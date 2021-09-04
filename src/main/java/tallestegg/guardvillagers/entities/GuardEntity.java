@@ -384,18 +384,28 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
 
     @Override
     protected void onItemUseFinish() {
-        super.onItemUseFinish();
-        if (this.getHeldItemOffhand().getItem() instanceof PotionItem && !(this.getHeldItemOffhand().getItem() instanceof SplashPotionItem))
-            this.setHeldItem(Hand.OFF_HAND, new ItemStack(Items.GLASS_BOTTLE));
-        if (this.getHeldItemOffhand().getItem() instanceof MilkBucketItem)
-            this.setHeldItem(Hand.OFF_HAND, new ItemStack(Items.BUCKET));
+        Hand hand = this.getActiveHand();
+        if (!this.activeItemStack.equals(this.getHeldItem(hand))) {
+            this.stopActiveHand();
+        } else {
+            if (!this.activeItemStack.isEmpty() && this.isHandActive()) {
+                this.triggerItemUseEffects(this.activeItemStack, 16);
+                ItemStack copy = this.activeItemStack.copy();
+                ItemStack itemstack = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, copy, getItemInUseCount(), this.activeItemStack.onItemUseFinish(this.world, this));
+                if (itemstack != this.activeItemStack) {
+                    this.setHeldItem(hand, itemstack);
+                }
+                if (!this.activeItemStack.isFood())
+                    this.activeItemStack.shrink(1);
+                this.resetActiveHand();
+            }
+        }
     }
 
     @Override
     public ItemStack onFoodEaten(World world, ItemStack stack) {
-        if (stack.isFood()) {
+        if (stack.isFood()) 
             this.heal(stack.getItem().getFood().getHealing());
-        }
         super.onFoodEaten(world, stack);
         world.playSound(null, this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
         this.setEating(false);
@@ -621,10 +631,8 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
         if (this.getHeldItemMainhand().getItem() instanceof BowItem) {
             ItemStack itemstack = this.findAmmo(this.getHeldItem(GuardItems.getHandWith(this, item -> item instanceof BowItem)));
             ItemStack hand = this.getHeldItemMainhand();
-            hand.damageItem(1, this, (entity) -> entity.sendBreakAnimation(EquipmentSlotType.MAINHAND));
             AbstractArrowEntity abstractarrowentity = ProjectileHelper.fireArrow(this, itemstack, distanceFactor);
             abstractarrowentity = ((net.minecraft.item.BowItem) this.getHeldItemMainhand().getItem()).customArrow(abstractarrowentity);
-
             int powerLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER, itemstack);
             if (powerLevel > 0)
                 abstractarrowentity.setDamage(abstractarrowentity.getDamage() + (double) powerLevel * 0.5D + 0.5D);
@@ -640,6 +648,7 @@ public class GuardEntity extends CreatureEntity implements ICrossbowUser, IRange
             abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - this.world.getDifficulty().getId() * 4));
             this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
             this.world.addEntity(abstractarrowentity);
+            hand.damageItem(1, this, (entity) -> entity.sendBreakAnimation(EquipmentSlotType.MAINHAND));
         }
     }
 
