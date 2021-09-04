@@ -1,27 +1,5 @@
 package tallestegg.guardvillagers.entities.ai.tasks;
 
-import java.util.List;
-
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
-import net.minecraft.world.entity.ai.behavior.WorkAtPoi;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.server.level.ServerLevel;
-import tallestegg.guardvillagers.GuardEntityType;
-import tallestegg.guardvillagers.configuration.GuardConfig;
-
 /*public class HealGuardAndPlayerTask extends WorkAtPoi {
     private LivingEntity entityToHeal;
     private int rangedAttackTime = -1;
