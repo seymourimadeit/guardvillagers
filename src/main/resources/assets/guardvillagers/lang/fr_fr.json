@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "Gardien",
+"item.guardvillagers.guard_spawn_egg": "Oeuf de gardien",
+"item.guardvillagers.illusioner_spawn_egg": "Oeuf d'illusionniste",
+"item.guardvillagers.iron_golem_spawn_egg": "Oeuf de golem de fer",
+"item.guardvillagers.snow_golem_spawn_egg": "Oeuf de golem de neige",
+"guardinventory.health": "Santé : %s",
+"guardinventory.armor": "Armure : %s"
+}
