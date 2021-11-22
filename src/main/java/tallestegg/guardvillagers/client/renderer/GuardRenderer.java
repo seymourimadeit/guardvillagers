@@ -40,7 +40,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     public void render(Guard entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
             MultiBufferSource bufferIn, int packedLightIn) {
         this.setModelVisibilities(entityIn);
-        if (GuardConfig.guardSteve)
+        if (GuardConfig.guardSteve) // I hate this.
             this.model = steve;
         else
             this.model = normal;
