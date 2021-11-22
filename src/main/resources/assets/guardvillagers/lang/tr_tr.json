@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "Koruyucu",
+"item.guardvillagers.guard_spawn_egg": "Koruyucu Çağırma Yumurtası",
+"item.guardvillagers.illusioner_spawn_egg": "İllüzyoncu Çağırma Yumurtası",
+"item.guardvillagers.iron_golem_spawn_egg": "Demir Golem Çağırma Yumurtası",
+"item.guardvillagers.snow_golem_spawn_egg": "Kardan Adam Çağırma Yumurtası",
+"guardinventory.health": "Sağlık: %s",
+"guardinventory.armor": "Zırh: %s"
+}

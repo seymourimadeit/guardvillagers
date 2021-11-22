@@ -91,10 +91,7 @@ import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.MilkBucketItem;
-import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.ProjectileWeaponItem;
-import net.minecraft.world.item.SplashPotionItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -758,7 +755,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public boolean canAttack(LivingEntity target) {
         return !GuardConfig.MobBlackList.contains(target.getEncodeId())
                 && !target.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !this.isOwner(target)
-                && !(target instanceof Villager) && super.canAttack(target);
+                && !(target instanceof Villager) && !(target instanceof IronGolem) && !(target instanceof Guard)
+                && super.canAttack(target);
     }
 
     /**
