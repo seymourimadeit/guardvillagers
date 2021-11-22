@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
@@ -19,27 +20,42 @@ import tallestegg.guardvillagers.GuardClientEvents;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.models.GuardArmorModel;
 import tallestegg.guardvillagers.client.models.GuardModel;
+import tallestegg.guardvillagers.client.models.GuardSteveModel;
+import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
-public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardModel> {
-    public GuardRenderer(EntityRendererProvider.Context p_174463_) {
-        super(p_174463_, new GuardModel(p_174463_.bakeLayer(GuardClientEvents.GUARD)), 0.5F);
-        this.addLayer(new HumanoidArmorLayer<>(this, new GuardArmorModel(p_174463_.bakeLayer(GuardClientEvents.GUARD_ARMOR_INNER)), new GuardArmorModel(p_174463_.bakeLayer(GuardClientEvents.GUARD_ARMOR_OUTER))));
+public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guard>> {
+
+    private final HumanoidModel<Guard> steve;
+    private final HumanoidModel<Guard> normal = this.getModel();
+
+    public GuardRenderer(EntityRendererProvider.Context context) {
+        super(context, new GuardModel(context.bakeLayer(GuardClientEvents.GUARD)), 0.5F);
+        this.steve = new GuardSteveModel(context.bakeLayer(GuardClientEvents.GUARD_STEVE));
+        this.addLayer(new HumanoidArmorLayer<>(this, !GuardConfig.guardSteve ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_INNER)) : new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)),
+                !GuardConfig.guardSteve ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_OUTER)) : new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR))));
     }
 
     @Override
-    public void render(Guard entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(Guard entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
+            MultiBufferSource bufferIn, int packedLightIn) {
         this.setModelVisibilities(entityIn);
+        if (GuardConfig.guardSteve)
+            this.model = steve;
+        else
+            this.model = normal;
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     private void setModelVisibilities(Guard entityIn) {
-        GuardModel guardmodel = this.getModel();
+        HumanoidModel<Guard> guardmodel = this.getModel();
         ItemStack itemstack = entityIn.getMainHandItem();
         ItemStack itemstack1 = entityIn.getOffhandItem();
         guardmodel.setAllVisible(true);
-        HumanoidModel.ArmPose bipedmodel$armpose = this.getArmPose(entityIn, itemstack, itemstack1, InteractionHand.MAIN_HAND);
-        HumanoidModel.ArmPose bipedmodel$armpose1 = this.getArmPose(entityIn, itemstack, itemstack1, InteractionHand.OFF_HAND);
+        HumanoidModel.ArmPose bipedmodel$armpose = this.getArmPose(entityIn, itemstack, itemstack1,
+                InteractionHand.MAIN_HAND);
+        HumanoidModel.ArmPose bipedmodel$armpose1 = this.getArmPose(entityIn, itemstack, itemstack1,
+                InteractionHand.OFF_HAND);
         guardmodel.crouching = entityIn.isCrouching();
         if (entityIn.getMainArm() == HumanoidArm.RIGHT) {
             guardmodel.rightArmPose = bipedmodel$armpose;
@@ -50,7 +66,8 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardModel> {
         }
     }
 
-    private HumanoidModel.ArmPose getArmPose(Guard entityIn, ItemStack itemStackMain, ItemStack itemStackOff, InteractionHand handIn) {
+    private HumanoidModel.ArmPose getArmPose(Guard entityIn, ItemStack itemStackMain, ItemStack itemStackOff,
+            InteractionHand handIn) {
         HumanoidModel.ArmPose bipedmodel$armpose = HumanoidModel.ArmPose.EMPTY;
         ItemStack itemstack = handIn == InteractionHand.MAIN_HAND ? itemStackMain : itemStackOff;
         if (!itemstack.isEmpty()) {
@@ -83,7 +100,8 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardModel> {
                     bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
                 }
 
-                if (flag2 && itemStackMain.getItem().getUseAnimation(itemStackMain) == UseAnim.NONE && entityIn.isAggressive()) {
+                if (flag2 && itemStackMain.getItem().getUseAnimation(itemStackMain) == UseAnim.NONE
+                        && entityIn.isAggressive()) {
                     bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
                 }
             }
@@ -99,6 +117,10 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardModel> {
     @Nullable
     @Override
     public ResourceLocation getTextureLocation(Guard entity) {
-        return new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_" + entity.getGuardVariant() + ".png");
+        return !GuardConfig.guardSteve
+                ? new ResourceLocation(GuardVillagers.MODID,
+                        "textures/entity/guard/guard_" + entity.getGuardVariant() + ".png")
+                : new ResourceLocation(GuardVillagers.MODID,
+                        "textures/entity/guard/guard_steve_" + entity.getGuardVariant() + ".png");
     }
 }
