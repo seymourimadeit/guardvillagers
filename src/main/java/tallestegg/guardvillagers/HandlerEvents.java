@@ -51,10 +51,9 @@ public class HandlerEvents {
                 }
             }
         }
-        
-        if (entity instanceof IronGolem golem && target instanceof Guard) {
+
+        if (entity instanceof IronGolem golem && target instanceof Guard)
             golem.setTarget(null);
-        }
     }
 
     @SubscribeEvent

@@ -32,18 +32,17 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     public GuardRenderer(EntityRendererProvider.Context context) {
         super(context, new GuardModel(context.bakeLayer(GuardClientEvents.GUARD)), 0.5F);
         this.steve = new GuardSteveModel(context.bakeLayer(GuardClientEvents.GUARD_STEVE));
+        if (GuardConfig.guardSteve)
+            this.model = steve;
+        else
+            this.model = normal;
         this.addLayer(new HumanoidArmorLayer<>(this, !GuardConfig.guardSteve ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_INNER)) : new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)),
                 !GuardConfig.guardSteve ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_OUTER)) : new HumanoidModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR))));
     }
 
     @Override
-    public void render(Guard entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
-            MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(Guard entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
         this.setModelVisibilities(entityIn);
-        if (GuardConfig.guardSteve) // I hate this.
-            this.model = steve;
-        else
-            this.model = normal;
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
