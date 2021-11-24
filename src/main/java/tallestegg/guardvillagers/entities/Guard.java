@@ -207,7 +207,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         super.doPush(entityIn);
     }
-
+    
     @Nullable
     public void setPatrolPos(BlockPos position) {
         this.entityData.set(GUARD_POS, Optional.ofNullable(position));
@@ -797,6 +797,13 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void onCrossbowAttackPerformed() {
         this.noActionTime = 0;
+    }
+    
+    @Override
+    public void setTarget(LivingEntity entity) {
+        if (entity instanceof Guard || entity instanceof Villager || entity instanceof IronGolem)
+            return;
+        super.setTarget(entity);
     }
 
     @Override

@@ -55,7 +55,7 @@ public class HealGuardAndPlayerGoal extends Goal {
         if (!list.isEmpty()) {
             for (LivingEntity mob : list) {
                 if (mob != null) {
-                    if (mob.getType() == GuardEntityType.GUARD.get() && mob != null && mob.isAlive() && mob.getHealth() < mob.getMaxHealth()
+                    if (mob instanceof Villager && mob.isAlive() && mob.getHealth() < mob.getMaxHealth() && mob != healer|| mob.getType() == GuardEntityType.GUARD.get() && mob != null && mob.isAlive() && mob.getHealth() < mob.getMaxHealth()
                             || mob instanceof Player && mob.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !((Player) mob).getAbilities().instabuild && mob.getHealth() < mob.getMaxHealth()) {
                         this.mob = mob;
                         return true;
@@ -75,8 +75,8 @@ public class HealGuardAndPlayerGoal extends Goal {
     public void stop() {
         this.mob = null;
         this.seeTime = 0;
-        this.rangedAttackTime = -1;
         this.healer.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
+        this.rangedAttackTime = 0;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class HealGuardAndPlayerGoal extends Goal {
         if (mob.distanceTo(healer) <= 3.0D) {
             healer.getMoveControl().strafe(-0.5F, 0);
         }
-        if (--this.rangedAttackTime == 0 && mob.getHealth() < mob.getMaxHealth() && mob.isAlive()) {
+        if (--this.rangedAttackTime == 0) {
             if (!flag) {
                 return;
             }
@@ -109,7 +109,7 @@ public class HealGuardAndPlayerGoal extends Goal {
             this.rangedAttackTime = Mth.floor(f * (float) (this.maxRangedAttackTime - this.attackIntervalMin) + (float) this.attackIntervalMin);
         } else if (this.rangedAttackTime < 0) {
             float f2 = Mth.sqrt((float) d0) / this.attackRadius;
-            this.rangedAttackTime = Mth.floor(f2 * (float) (this.maxRangedAttackTime - this.attackIntervalMin) + (float) this.attackIntervalMin);
+            this.rangedAttackTime = Mth.floor(Mth.lerp(Math.sqrt(d0) / (double)this.attackRadius, (double)this.attackIntervalMin, (double)this.maxAttackDistance));
         }
     }
 
