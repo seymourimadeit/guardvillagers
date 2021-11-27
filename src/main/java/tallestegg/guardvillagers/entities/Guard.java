@@ -81,6 +81,7 @@ import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -763,26 +764,20 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
      * Credit - SmellyModder for Biome Specific Textures
      */
     public static int getRandomTypeForBiome(LevelAccessor world, BlockPos pos) {
-        Biome biome = world.getBiome(pos);
-        switch (biome.getBiomeCategory()) {
-        case DESERT:
-        case MESA:
-            return 1;
-        case ICY:
+        VillagerType type = VillagerType.byBiome(world.getBiomeName(pos));
+        if (type == VillagerType.SNOW)
             return 6;
-        case JUNGLE:
-            return 4;
-        case SAVANNA:
-            return 2;
-        case SWAMP:
-            return 3;
-        case TAIGA:
+        else if (type == VillagerType.TAIGA)
             return 5;
-        case NONE:
-        case PLAINS:
-        default:
-            return 0;
-        }
+        else if (type == VillagerType.JUNGLE)
+            return 4;
+        else if (type == VillagerType.SWAMP)
+            return 3;
+        else if (type == VillagerType.SAVANNA)
+            return 2;
+        if (type == VillagerType.DESERT)
+            return 1;
+        else return 0;
     }
 
     @Override
