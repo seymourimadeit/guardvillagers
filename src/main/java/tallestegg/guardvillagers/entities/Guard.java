@@ -98,7 +98,6 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -106,7 +105,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 import tallestegg.guardvillagers.GuardItems;
 import tallestegg.guardvillagers.GuardLootTables;
 import tallestegg.guardvillagers.GuardPacketHandler;
@@ -494,7 +493,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected void hurtCurrentlyUsedShield(float damage) {
-        if (this.useItem.isShield(this)) {
+        if (this.useItem.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
             if (damage >= 3.0F) {
                 int i = 1 + Mth.floor(damage);
                 InteractionHand hand = this.getUsedItemHand();
@@ -515,7 +514,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void startUsingItem(InteractionHand hand) {
         ItemStack itemstack = this.getItemInHand(hand);
-        if (itemstack.isShield(this)) {
+        if (itemstack.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
             AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
             modifiableattributeinstance.removeModifier(USE_ITEM_SPEED_PENALTY);
             modifiableattributeinstance.addTransientModifier(USE_ITEM_SPEED_PENALTY);

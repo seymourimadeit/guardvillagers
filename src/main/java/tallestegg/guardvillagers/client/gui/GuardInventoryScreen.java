@@ -114,17 +114,16 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
 
         @Override
         public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-            Minecraft minecraft = Minecraft.getInstance();
             ResourceLocation icon = this.requirementsForTexture() ? texture : newTexture;
             RenderSystem.setShaderTexture(0, icon);
             int i = this.yTexStart;
-            if (this.isHovered()) {
+            if (this.isHoveredOrFocused()) {
                 i += this.yDiffTex;
             }
 
             RenderSystem.enableDepthTest();
             blit(matrixStack, this.x, this.y, (float) this.xTexStart, (float) i, this.width, this.height, this.textureWidth, this.textureHeight);
-            if (this.isHovered()) {
+            if (this.isHoveredOrFocused()) {
                 this.renderToolTip(matrixStack, mouseX, mouseY);
             }
         }

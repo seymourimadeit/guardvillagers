@@ -23,8 +23,8 @@ public class RaiseShieldGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return !CrossbowItem.isCharged(guard.getMainHandItem()) && guard.getOffhandItem().getItem().isShield(guard.getOffhandItem(), guard) && raiseShield() && guard.shieldCoolDown == 0
-                && !guard.getOffhandItem().getItem().equals(ForgeRegistries.ITEMS.getValue(new ResourceLocation("bigbrain:buckler")));
+        return !CrossbowItem.isCharged(guard.getMainHandItem()) && (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), net.minecraftforge.common.ToolActions.SHIELD_BLOCK) && raiseShield() && guard.shieldCoolDown == 0
+                && !guard.getOffhandItem().getItem().equals(ForgeRegistries.ITEMS.getValue(new ResourceLocation("bigbrain:buckler"))));
     }
 
     @Override
@@ -34,7 +34,7 @@ public class RaiseShieldGoal extends Goal {
 
     @Override
     public void start() {
-        if (guard.getOffhandItem().getItem().isShield(guard.getOffhandItem(), guard))
+        if (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), net.minecraftforge.common.ToolActions.SHIELD_BLOCK))
             guard.startUsingItem(InteractionHand.OFF_HAND);
     }
 

@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.NonNullSupplier;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.minecraftforge.registries.RegistryObject;
 
 public class DeferredSpawnEggItem extends SpawnEggItem {
     public static final List<DeferredSpawnEggItem> UNADDED_EGGS = new ArrayList<>();
@@ -29,7 +30,7 @@ public class DeferredSpawnEggItem extends SpawnEggItem {
         UNADDED_EGGS.add(this);
     }
 
-    public DeferredSpawnEggItem(final net.minecraftforge.fmllegacy.RegistryObject<? extends EntityType<?>> entityTypeSupplier, final int p_i48465_2_, final int p_i48465_3_, final Properties p_i48465_4_) {
+    public DeferredSpawnEggItem(final RegistryObject<? extends EntityType<?>> entityTypeSupplier, final int p_i48465_2_, final int p_i48465_3_, final Properties p_i48465_4_) {
         super(null, p_i48465_2_, p_i48465_3_, p_i48465_4_);
         this.entityTypeSupplier = Lazy.of(entityTypeSupplier);
         UNADDED_EGGS.add(this);

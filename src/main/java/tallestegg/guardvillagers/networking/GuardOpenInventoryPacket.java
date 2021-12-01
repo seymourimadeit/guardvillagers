@@ -2,7 +2,7 @@ package tallestegg.guardvillagers.networking;
 import java.util.function.Supplier;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 import tallestegg.guardvillagers.GuardPacketHandler;
 
 public class GuardOpenInventoryPacket {
