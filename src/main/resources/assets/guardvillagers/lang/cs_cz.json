@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "Stráž",
+"item.guardvillagers.guard_spawn_egg": "Vajíčko se stráží",
+"item.guardvillagers.illusioner_spawn_egg": "Vajíčko s iluzionistou",
+"item.guardvillagers.iron_golem_spawn_egg": "Vajíčko s železným golemem",
+"item.guardvillagers.snow_golem_spawn_egg": "Vajíčko se sněhulákem",
+"guardinventory.health": "Životy: %s",
+"guardinventory.armor": "Brnění: %s"
+}
