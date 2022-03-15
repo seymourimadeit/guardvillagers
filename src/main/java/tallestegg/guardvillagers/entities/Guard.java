@@ -207,7 +207,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         super.doPush(entityIn);
     }
-    
+
     @Nullable
     public void setPatrolPos(BlockPos position) {
         this.entityData.set(GUARD_POS, Optional.ofNullable(position));
@@ -763,7 +763,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
      * Credit - SmellyModder for Biome Specific Textures
      */
     public static int getRandomTypeForBiome(LevelAccessor world, BlockPos pos) {
-        VillagerType type = VillagerType.byBiome(world.getBiomeName(pos));
+        VillagerType type = VillagerType.byBiome(world.getBiome(pos));
         if (type == VillagerType.SNOW)
             return 6;
         else if (type == VillagerType.TAIGA)
@@ -792,7 +792,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public void onCrossbowAttackPerformed() {
         this.noActionTime = 0;
     }
-    
+
     @Override
     public void setTarget(LivingEntity entity) {
         if (entity instanceof Guard || entity instanceof Villager || entity instanceof IronGolem)
