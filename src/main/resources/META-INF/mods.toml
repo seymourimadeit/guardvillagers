@@ -1,11 +1,11 @@
 modLoader="javafml" #mandatory
-loaderVersion="[38,)" #mandatory (28 is current forge version)
+loaderVersion="[39,)" #mandatory (28 is current forge version)
 issueTrackerURL="https://github.com/seymourimadeit/guardvillagers/issues" #optional
 license="MIT"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 modId="guardvillagers" #mandatory
-version="1.4.0" #mandatory
+version="1.4.1" #mandatory
 displayName="Guard Villagers" #mandatory
 updateJSONURL="https://raw.githubusercontent.com/seymourimadeit/guardvillagers/master/update.json" #optional
 displayURL="https://www.curseforge.com/minecraft/mc-mods/guard-villagers" #optional
