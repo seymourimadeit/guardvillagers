@@ -610,8 +610,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(0, new KickGoal(this));
         this.goalSelector.addGoal(0, new GuardEatFoodGoal(this));
         this.goalSelector.addGoal(0, new RaiseShieldGoal(this));
-        this.goalSelector.addGoal(1, new GuardRunToEatGoal(this));
         this.goalSelector.addGoal(1, new GuardSetRunningToEatGoal(this, 1.0D));
+        this.goalSelector.addGoal(2, new GuardRunToEatGoal(this));
         this.goalSelector.addGoal(2, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, 8.0F));
         this.goalSelector.addGoal(2, new RangedBowAttackPassiveGoal<>(this, 0.5D, 20, 15.0F));
         this.goalSelector.addGoal(2, new Guard.GuardMeleeGoal(this, 0.8D, true));
@@ -636,8 +636,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (GuardConfig.armorerRepairGuardArmor)
             this.goalSelector.addGoal(6, new ArmorerRepairGuardArmorGoal(this));
         this.goalSelector.addGoal(4, new WalkBackToCheckPointGoal(this, 0.5D));
+        this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.5D));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, AbstractVillager.class, 8.0F));
-        this.goalSelector.addGoal(8, new RandomStrollGoal(this, 0.5D));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.targetSelector.addGoal(5, new Guard.DefendVillageGuardGoal(this));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Ravager.class, true));
@@ -776,7 +776,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             return 2;
         if (type == VillagerType.DESERT)
             return 1;
-        else return 0;
+        else
+            return 0;
     }
 
     @Override
@@ -795,7 +796,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-        if (entity instanceof Guard || entity instanceof Villager || entity instanceof IronGolem)
+        if (entity instanceof Guard || entity instanceof Villager || entity instanceof IronGolem || this.isRunningToEat())
             return;
         super.setTarget(entity);
     }
@@ -832,17 +833,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         return super.mobInteract(player, hand);
     }
-
-    /*
-     * @Override public boolean setSlot(int inventorySlot, ItemStack itemStackIn) {
-     * int i = inventorySlot - 400; if (i >= 0 && i < 2 && i <
-     * this.guardInventory.getContainerSize()) { if (i == 0) { return false; } else
-     * if (itemStackIn.getItem() instanceof ArmorItem) {
-     * this.guardInventory.setItem(i, itemStackIn); return true; } else { return
-     * false; } } else { int j = inventorySlot - 500 + 2; if (j >= 2 && j <
-     * this.guardInventory.getContainerSize()) { this.guardInventory.setItem(j,
-     * itemStackIn); return true; } else { return false; } } }
-     */
 
     public static String getNameByType(int id) {
         switch (id) {

@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.CrossbowAttackMob;
 import net.minecraft.world.entity.monster.RangedAttackMob;
@@ -67,7 +68,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
     }
 
     public boolean checkFriendlyFire() {
-        List<LivingEntity> list = this.entity.level.getEntitiesOfClass(LivingEntity.class, this.entity.getBoundingBox().inflate(4.0D, 1.0D, 4.0D));
+        List<LivingEntity> list = this.entity.level.getEntitiesOfClass(LivingEntity.class, this.entity.getBoundingBox().inflate(5.0D, 1.0D, 5.0D));
         for (LivingEntity guard : list) {
             if (entity != guard || guard != entity) {
                 if (guard != entity.getTarget()) {
@@ -76,8 +77,8 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                         Vec3 vector3d = entity.getLookAngle();
                         Vec3 vector3d1 = guard.position().vectorTo(entity.position()).normalize();
                         vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
-                        if (vector3d1.dot(vector3d) < 0.0D && entity.hasLineOfSight(guard))
-                            return GuardConfig.FriendlyFire;
+                        if (vector3d1.dot(vector3d) < 1.0D && entity.hasLineOfSight(guard))
+                            return true;
                     }
                 }
             }

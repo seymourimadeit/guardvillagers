@@ -5,10 +5,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -17,7 +14,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
-import tallestegg.guardvillagers.items.DeferredSpawnEggItem;
 
 @Mod(GuardVillagers.MODID)
 public class GuardVillagers {
@@ -51,13 +47,5 @@ public class GuardVillagers {
     public static boolean hotvChecker(Player player) {
         return player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
                 || !GuardConfig.giveGuardStuffHOTV;
-    }
-
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents {
-        @SubscribeEvent(priority = EventPriority.LOWEST)
-        public static void onEntitiesRegistered(RegistryEvent.Register<EntityType<?>> event) {
-            DeferredSpawnEggItem.initUnaddedEggs();
-        }
     }
 }

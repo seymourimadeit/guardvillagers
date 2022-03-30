@@ -25,7 +25,6 @@ public class GuardArmorModel extends HumanoidModel<Guard> {
     }
     public static LayerDefinition createInnerArmorLayer() {
         MeshDefinition meshdefinition = HumanoidModel.createMesh(new CubeDeformation(0.5F), 0.0F);
-        PartDefinition partdefinition = meshdefinition.getRoot();
         return LayerDefinition.create(meshdefinition, 64, 32);
     }
 }

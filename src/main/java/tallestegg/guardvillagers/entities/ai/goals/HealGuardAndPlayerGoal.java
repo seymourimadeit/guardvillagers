@@ -108,7 +108,6 @@ public class HealGuardAndPlayerGoal extends Goal {
             this.throwPotion(mob, distanceFactor);
             this.rangedAttackTime = Mth.floor(f * (float) (this.maxRangedAttackTime - this.attackIntervalMin) + (float) this.attackIntervalMin);
         } else if (this.rangedAttackTime < 0) {
-            float f2 = Mth.sqrt((float) d0) / this.attackRadius;
             this.rangedAttackTime = Mth.floor(Mth.lerp(Math.sqrt(d0) / (double)this.attackRadius, (double)this.attackIntervalMin, (double)this.maxAttackDistance));
         }
     }
