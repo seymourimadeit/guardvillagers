@@ -63,6 +63,7 @@ import net.minecraft.world.entity.ai.goal.MoveBackToVillageGoal;
 import net.minecraft.world.entity.ai.goal.MoveThroughVillageGoal;
 import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
@@ -636,7 +637,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (GuardConfig.armorerRepairGuardArmor)
             this.goalSelector.addGoal(6, new ArmorerRepairGuardArmorGoal(this));
         this.goalSelector.addGoal(4, new WalkBackToCheckPointGoal(this, 0.5D));
-        this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.5D));
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.5D));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, AbstractVillager.class, 8.0F));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.targetSelector.addGoal(5, new Guard.DefendVillageGuardGoal(this));
@@ -938,8 +939,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20).add(Attributes.MOVEMENT_SPEED, 0.5)
-                .add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, 20);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.MOVEMENT_SPEED, 0.5D)
+                .add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, 20.0D);
     }
 
     private net.minecraftforge.common.util.LazyOptional<?> itemHandler;
@@ -1034,14 +1035,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         public void start() {
             super.start();
             if (guard.getOwner() != null) {
-                guard.getNavigation().moveTo(guard.getOwner(), 0.9D);
+                guard.getNavigation().moveTo(guard.getOwner(), 0.5D);
             }
         }
 
         @Override
         public void tick() {
             if (guard.getOwner() != null) {
-                guard.getNavigation().moveTo(guard.getOwner(), 0.9D);
+                guard.getNavigation().moveTo(guard.getOwner(), 0.5D);
             }
         }
 

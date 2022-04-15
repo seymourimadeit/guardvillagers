@@ -3,20 +3,18 @@ package tallestegg.guardvillagers.entities.ai.goals;
 import java.util.EnumSet;
 import java.util.List;
 
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.CrossbowAttackMob;
-import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.monster.CrossbowAttackMob;
+import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.GuardItems;
-import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
 public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAttackMob & CrossbowAttackMob> extends Goal {
