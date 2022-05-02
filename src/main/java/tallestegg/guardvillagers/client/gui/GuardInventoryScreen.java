@@ -104,8 +104,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
             this.newTexture = newTexture;
             this.isFollowButton = isFollowButton;
         }
-
-        // This is stupid.
+        
         public boolean requirementsForTexture() {
             boolean following = GuardInventoryScreen.this.guard.isFollowing();
             boolean patrol = GuardInventoryScreen.this.guard.isPatrolling();

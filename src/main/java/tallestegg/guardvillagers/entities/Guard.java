@@ -199,8 +199,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected void doPush(Entity entityIn) {
-        if (entityIn instanceof PathfinderMob) {
-            PathfinderMob living = (PathfinderMob) entityIn;
+        if (entityIn instanceof PathfinderMob living) {
             boolean attackTargets = living.getTarget() instanceof Villager || living.getTarget() instanceof IronGolem
                     || living.getTarget() instanceof Guard;
             if (attackTargets)
@@ -1034,15 +1033,15 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         @Override
         public void start() {
             super.start();
-            if (guard.getOwner() != null) {
-                guard.getNavigation().moveTo(guard.getOwner(), 0.5D);
-            }
         }
 
         @Override
         public void tick() {
-            if (guard.getOwner() != null) {
-                guard.getNavigation().moveTo(guard.getOwner(), 0.5D);
+            if (guard.getOwner() != null && guard.getOwner().distanceTo(guard) > 3.0D) {
+                guard.getNavigation().moveTo(guard.getOwner(), 0.7D);
+                guard.getLookControl().setLookAt(guard.getOwner());
+            } else {
+                guard.getNavigation().stop();
             }
         }
 
