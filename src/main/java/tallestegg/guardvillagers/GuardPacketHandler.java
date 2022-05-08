@@ -28,7 +28,7 @@ public class GuardPacketHandler {
     }
 
     @SuppressWarnings("resource")
-    @OnlyIn(Dist.CLIENT) // This should be removed when I find a better solution.
+    @OnlyIn(Dist.CLIENT)
     public static void openGuardInventory(GuardOpenInventoryPacket packet) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {

@@ -2,6 +2,7 @@ package tallestegg.guardvillagers;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -26,10 +27,9 @@ public class VillagerToGuard {
     @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         ItemStack itemstack = event.getPlayer().getMainHandItem();
+        Entity target = event.getTarget();
         if ((itemstack.getItem() instanceof SwordItem || itemstack.getItem() instanceof CrossbowItem) && event.getPlayer().isCrouching()) {
-            Entity target = event.getTarget();
-            if (target instanceof Villager) {
-                Villager villager = (Villager) event.getTarget();
+            if (target instanceof Villager villager) {
                 if (!villager.isBaby()) {
                     if (villager.getVillagerData().getProfession() == VillagerProfession.NONE || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
                         if (!GuardConfig.ConvertVillagerIfHaveHOTV || event.getPlayer().hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.ConvertVillagerIfHaveHOTV) {

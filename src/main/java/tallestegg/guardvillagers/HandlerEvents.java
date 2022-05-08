@@ -1,7 +1,5 @@
 package tallestegg.guardvillagers;
 
-import java.util.List;
-
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -12,12 +10,8 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.monster.AbstractIllager;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Ravager;
-import net.minecraft.world.entity.monster.Spider;
-import net.minecraft.world.entity.monster.Witch;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.animal.PolarBear;
+import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.raid.Raider;
@@ -31,6 +25,9 @@ import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.entities.ai.goals.AttackEntityDaytimeGoal;
 import tallestegg.guardvillagers.entities.ai.goals.HealGolemGoal;
 import tallestegg.guardvillagers.entities.ai.goals.HealGuardAndPlayerGoal;
+import tallestegg.guardvillagers.entities.ai.goals.VillagerGossipToGuardGoal;
+
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = GuardVillagers.MODID)
 public class HandlerEvents {
@@ -59,7 +56,7 @@ public class HandlerEvents {
     @SubscribeEvent
     public static void onEntityHurt(LivingHurtEvent event) {
         LivingEntity entity = (LivingEntity) event.getEntity();
-        Entity trueSource = (Entity) event.getSource().getEntity();
+        Entity trueSource = event.getSource().getEntity();
         if (entity == null || trueSource == null)
             return;
         boolean isVillager = entity.getType() == EntityType.VILLAGER || entity.getType() == GuardEntityType.GUARD.get();
@@ -83,13 +80,9 @@ public class HandlerEvents {
 
     @SubscribeEvent
     public static void onLivingSpawned(EntityJoinWorldEvent event) {
-        if (GuardConfig.RaidAnimals) {
-            if (event.getEntity() instanceof Raider)
-                if (((Raider) event.getEntity()).hasActiveRaid()) {
-                    ((Raider) event.getEntity()).targetSelector.addGoal(5,
-                            new NearestAttackableTargetGoal<>(((Raider) event.getEntity()), Animal.class, false));
-                }
-        }
+        if (event.getEntity() instanceof Raider)
+            if (((Raider) event.getEntity()).hasActiveRaid() && GuardConfig.RaidAnimals)
+                ((Raider) event.getEntity()).targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(((Raider) event.getEntity()), Animal.class, false));
         if (GuardConfig.AttackAllMobs) {
             if (event.getEntity() instanceof Enemy
                     && !GuardConfig.MobBlackList.contains(event.getEntity().getEncodeId())
@@ -99,33 +92,33 @@ public class HandlerEvents {
             }
             if (event.getEntity() instanceof Enemy
                     && !GuardConfig.MobBlackList.contains(event.getEntity().getEncodeId())
-                    && event.getEntity() instanceof Spider) {
-                Spider spider = (Spider) event.getEntity();
+                    && event.getEntity() instanceof Spider spider) {
                 spider.targetSelector.addGoal(3, new AttackEntityDaytimeGoal<>(spider, Guard.class));
             }
         }
 
-        if (event.getEntity() instanceof AbstractIllager) {
-            AbstractIllager illager = (AbstractIllager) event.getEntity();
+        if (event.getEntity() instanceof AbstractIllager illager) {
+            if (GuardConfig.IllagersRunFromPolarBears)
+                illager.goalSelector.addGoal(2, new AvoidEntityGoal<>(illager, PolarBear.class, 6.0F, 1.0D, 1.2D));
             illager.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(illager, Guard.class, false));
         }
 
-        if (event.getEntity() instanceof AbstractVillager) {
-            AbstractVillager villager = (AbstractVillager) event.getEntity();
+        if (event.getEntity() instanceof AbstractVillager abstractvillager) {
+            if (GuardConfig.VillagersRunFromPolarBears)
+                abstractvillager.goalSelector.addGoal(2, new AvoidEntityGoal<>(abstractvillager, PolarBear.class, 6.0F, 1.0D, 1.2D));
             if (GuardConfig.WitchesVillager)
-                villager.goalSelector.addGoal(2, new AvoidEntityGoal<>(villager, Witch.class, 6.0F, 1.0D, 1.2D));
+                abstractvillager.goalSelector.addGoal(2, new AvoidEntityGoal<>(abstractvillager, Witch.class, 6.0F, 1.0D, 1.2D));
         }
 
-        if (event.getEntity() instanceof Villager) {
-            Villager villager = (Villager) event.getEntity();
+        if (event.getEntity() instanceof Villager villager) {
+            villager.goalSelector.addGoal(1, new VillagerGossipToGuardGoal(villager));
             if (GuardConfig.BlackSmithHealing)
                 villager.goalSelector.addGoal(1, new HealGolemGoal(villager));
             if (GuardConfig.ClericHealing)
                 villager.goalSelector.addGoal(1, new HealGuardAndPlayerGoal(villager, 1.0D, 100, 0, 10.0F));
         }
 
-        if (event.getEntity() instanceof IronGolem) {
-            IronGolem golem = (IronGolem) event.getEntity();
+        if (event.getEntity() instanceof IronGolem golem) {
             HurtByTargetGoal tolerateFriendlyFire = new HurtByTargetGoal(golem, Guard.class).setAlertOthers();
             golem.targetSelector.availableGoals.stream().map(it -> it.goal).filter(it -> it instanceof HurtByTargetGoal)
                     .findFirst().ifPresent(angerGoal -> {
@@ -134,13 +127,11 @@ public class HandlerEvents {
                     });
         }
 
-        if (event.getEntity() instanceof Zombie) {
-            Zombie zombie = (Zombie) event.getEntity();
+        if (event.getEntity() instanceof Zombie zombie) {
             zombie.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(zombie, Guard.class, false));
         }
 
-        if (event.getEntity() instanceof Ravager) {
-            Ravager ravager = (Ravager) event.getEntity();
+        if (event.getEntity() instanceof Ravager ravager) {
             ravager.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(ravager, Guard.class, false));
         }
 
@@ -153,8 +144,7 @@ public class HandlerEvents {
             }
         }
 
-        if (event.getEntity() instanceof Cat) {
-            Cat cat = (Cat) event.getEntity();
+        if (event.getEntity() instanceof Cat cat) {
             cat.goalSelector.addGoal(1, new AvoidEntityGoal<>(cat, AbstractIllager.class, 12.0F, 1.0D, 1.2D));
         }
     }

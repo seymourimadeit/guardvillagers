@@ -26,7 +26,7 @@ public class GuardContainer extends AbstractContainerMenu {
         this.addSlot(new Slot(guardInventory, 0, 8, 9) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.canEquip(EquipmentSlot.HEAD, guard) && GuardVillagers.hotvChecker(playerInventory.player);
+                return stack.canEquip(EquipmentSlot.HEAD, guard) && GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
@@ -42,7 +42,7 @@ public class GuardContainer extends AbstractContainerMenu {
 
             @Override
             public boolean mayPickup(Player playerIn) {
-                return GuardVillagers.hotvChecker(playerInventory.player);
+                return GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
@@ -53,7 +53,7 @@ public class GuardContainer extends AbstractContainerMenu {
         this.addSlot(new Slot(guardInventory, 1, 8, 26) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.canEquip(EquipmentSlot.CHEST, guard) && GuardVillagers.hotvChecker(playerInventory.player);
+                return stack.canEquip(EquipmentSlot.CHEST, guard) && GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
@@ -69,7 +69,7 @@ public class GuardContainer extends AbstractContainerMenu {
 
             @Override
             public boolean mayPickup(Player playerIn) {
-                return GuardVillagers.hotvChecker(playerInventory.player);
+                return GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
@@ -80,7 +80,7 @@ public class GuardContainer extends AbstractContainerMenu {
         this.addSlot(new Slot(guardInventory, 2, 8, 44) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.canEquip(EquipmentSlot.LEGS, guard) && GuardVillagers.hotvChecker(playerInventory.player);
+                return stack.canEquip(EquipmentSlot.LEGS, guard) && GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
@@ -96,7 +96,7 @@ public class GuardContainer extends AbstractContainerMenu {
 
             @Override
             public boolean mayPickup(Player playerIn) {
-                return GuardVillagers.hotvChecker(playerInventory.player);
+                return GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
@@ -107,7 +107,7 @@ public class GuardContainer extends AbstractContainerMenu {
         this.addSlot(new Slot(guardInventory, 3, 8, 62) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return stack.canEquip(EquipmentSlot.FEET, guard) && GuardVillagers.hotvChecker(playerInventory.player);
+                return stack.canEquip(EquipmentSlot.FEET, guard) && GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
@@ -123,7 +123,7 @@ public class GuardContainer extends AbstractContainerMenu {
 
             @Override
             public boolean mayPickup(Player playerIn) {
-                return GuardVillagers.hotvChecker(playerInventory.player);
+                return GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
@@ -134,7 +134,7 @@ public class GuardContainer extends AbstractContainerMenu {
         this.addSlot(new Slot(guardInventory, 4, 77, 62) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return GuardVillagers.hotvChecker(playerInventory.player);
+                return GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
@@ -145,7 +145,7 @@ public class GuardContainer extends AbstractContainerMenu {
 
             @Override
             public boolean mayPickup(Player playerIn) {
-                return GuardVillagers.hotvChecker(playerInventory.player);
+                return GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
@@ -157,12 +157,12 @@ public class GuardContainer extends AbstractContainerMenu {
         this.addSlot(new Slot(guardInventory, 5, 77, 44) {
             @Override
             public boolean mayPlace(ItemStack stack) {
-                return GuardVillagers.hotvChecker(playerInventory.player);
+                return GuardVillagers.hotvChecker(playerInventory.player, guard);
             }
 
             @Override
             public boolean mayPickup(Player playerIn) {
-                return GuardVillagers.hotvChecker(playerIn);
+                return GuardVillagers.hotvChecker(playerIn, guard);
             }
 
             @Override

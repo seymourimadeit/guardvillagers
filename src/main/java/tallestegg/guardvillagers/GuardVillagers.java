@@ -44,8 +44,8 @@ public class GuardVillagers {
     private void doClientStuff(final FMLClientSetupEvent event) {
     }
 
-    public static boolean hotvChecker(Player player) {
+    public static boolean hotvChecker(Player player, Guard guard) {
         return player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
-                || !GuardConfig.giveGuardStuffHOTV;
+                || !GuardConfig.giveGuardStuffHOTV || guard.getPlayerReputation(player) > GuardConfig.reputationRequirement && !player.level.isClientSide();
     }
 }

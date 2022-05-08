@@ -1,21 +1,13 @@
 package tallestegg.guardvillagers.entities;
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Predicate;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-
+import com.mojang.serialization.Dynamic;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -28,58 +20,26 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerListener;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.NeutralMob;
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.GolemRandomStrollInVillageGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.MoveBackToVillageGoal;
-import net.minecraft.world.entity.ai.goal.MoveThroughVillageGoal;
-import net.minecraft.world.entity.ai.goal.OpenDoorGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.ai.gossip.GossipContainer;
+import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.animal.PolarBear;
-import net.minecraft.world.entity.monster.AbstractIllager;
-import net.minecraft.world.entity.monster.CrossbowAttackMob;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Illusioner;
-import net.minecraft.world.entity.monster.RangedAttackMob;
-import net.minecraft.world.entity.monster.Ravager;
-import net.minecraft.world.entity.monster.Witch;
-import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.entity.monster.ZombieVillager;
+import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerType;
@@ -88,12 +48,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.raid.Raider;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.BowItem;
-import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.ProjectileWeaponItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -111,22 +66,14 @@ import tallestegg.guardvillagers.GuardItems;
 import tallestegg.guardvillagers.GuardLootTables;
 import tallestegg.guardvillagers.GuardPacketHandler;
 import tallestegg.guardvillagers.configuration.GuardConfig;
-import tallestegg.guardvillagers.entities.ai.goals.ArmorerRepairGuardArmorGoal;
-import tallestegg.guardvillagers.entities.ai.goals.FollowShieldGuards;
-import tallestegg.guardvillagers.entities.ai.goals.GuardEatFoodGoal;
-import tallestegg.guardvillagers.entities.ai.goals.GuardRunToEatGoal;
-import tallestegg.guardvillagers.entities.ai.goals.GuardSetRunningToEatGoal;
-import tallestegg.guardvillagers.entities.ai.goals.HeroHurtByTargetGoal;
-import tallestegg.guardvillagers.entities.ai.goals.HeroHurtTargetGoal;
-import tallestegg.guardvillagers.entities.ai.goals.KickGoal;
-import tallestegg.guardvillagers.entities.ai.goals.RaiseShieldGoal;
-import tallestegg.guardvillagers.entities.ai.goals.RangedBowAttackPassiveGoal;
-import tallestegg.guardvillagers.entities.ai.goals.RangedCrossbowAttackPassiveGoal;
-import tallestegg.guardvillagers.entities.ai.goals.RunToClericGoal;
-import tallestegg.guardvillagers.entities.ai.goals.WalkBackToCheckPointGoal;
+import tallestegg.guardvillagers.entities.ai.goals.*;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 
-public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAttackMob, NeutralMob, ContainerListener {
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Predicate;
+
+public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAttackMob, NeutralMob, ContainerListener, ReputationEventHandler {
     private static final UUID MODIFIER_UUID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
     private static final AttributeModifier USE_ITEM_SPEED_PENALTY = new AttributeModifier(MODIFIER_UUID,
             "Use item speed penalty", -0.25D, AttributeModifier.Operation.ADDITION);
@@ -155,6 +102,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             .put(Pose.SPIN_ATTACK, EntityDimensions.scalable(0.6F, 0.6F))
             .put(Pose.CROUCHING, EntityDimensions.scalable(0.6F, 1.75F))
             .put(Pose.DYING, EntityDimensions.fixed(0.2F, 0.2F)).build();
+    public long lastGossipTime;
+    public long lastGossipDecayTime;
+    private final GossipContainer gossips = new GossipContainer();
     public SimpleContainer guardInventory = new SimpleContainer(6);
     public int kickTicks;
     public int shieldCoolDown;
@@ -215,7 +165,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Nullable
     public BlockPos getPatrolPos() {
-        return this.entityData.get(GUARD_POS).orElse((BlockPos) null);
+        return this.entityData.get(GUARD_POS).orElse(null);
     }
 
     @Override
@@ -282,12 +232,16 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.setRunningToEat(compound.getBoolean("RunningToEat"));
         this.shieldCoolDown = compound.getInt("KickCooldown");
         this.kickCoolDown = compound.getInt("ShieldCooldown");
+        this.lastGossipDecayTime = compound.getLong("LastGossipDecay");
+        this.lastGossipTime = compound.getLong("LastGossipTime");
         if (compound.contains("PatrolPosX")) {
             int x = compound.getInt("PatrolPosX");
             int y = compound.getInt("PatrolPosY");
             int z = compound.getInt("PatrolPosZ");
             this.entityData.set(GUARD_POS, Optional.ofNullable(new BlockPos(x, y, z)));
         }
+        ListTag listtag = compound.getList("Gossips", 10);
+        this.gossips.update(new Dynamic<>(NbtOps.INSTANCE, listtag));
         ListTag listnbt = compound.getList("Inventory", 10);
         for (int i = 0; i < listnbt.size(); ++i) {
             CompoundTag compoundnbt = listnbt.getCompound(i);
@@ -310,7 +264,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             }
         }
         if (!level.isClientSide)
-            this.readPersistentAngerSaveData((ServerLevel) this.level, compound);
+            this.readPersistentAngerSaveData(this.level, compound);
     }
 
     @Override
@@ -325,6 +279,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         compound.putBoolean("Eating", this.isEating());
         compound.putBoolean("Patrolling", this.isPatrolling());
         compound.putBoolean("RunningToEat", this.isRunningToEat());
+        compound.putLong("LastGossipTime", this.lastGossipTime);
+        compound.putLong("LastGossipDecay", this.lastGossipDecayTime);
         if (this.getOwnerId() != null) {
             compound.putUUID("Owner", this.getOwnerId());
         }
@@ -344,15 +300,35 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             compound.putInt("PatrolPosY", this.getPatrolPos().getY());
             compound.putInt("PatrolPosZ", this.getPatrolPos().getZ());
         }
+        compound.put("Gossips", this.gossips.store(NbtOps.INSTANCE).getValue());
         this.addPersistentAngerSaveData(compound);
+    }
+
+    private void maybeDecayGossip() {
+        long i = this.level.getGameTime();
+        if (this.lastGossipDecayTime == 0L) {
+            this.lastGossipDecayTime = i;
+        } else if (i >= this.lastGossipDecayTime + 24000L) {
+            this.gossips.decay();
+            this.lastGossipDecayTime = i;
+        }
+    }
+
+    public GossipContainer getGossips() {
+        return this.gossips;
+    }
+
+    public int getPlayerReputation(Player player) {
+        return this.gossips.getReputation(player.getUUID(), (gossipType) -> {
+            return true;
+        });
     }
 
     @Nullable
     public LivingEntity getOwner() {
         try {
             UUID uuid = this.getOwnerId();
-            return (uuid == null || uuid != null && this.level.getPlayerByUUID(uuid) != null
-                    && !this.level.getPlayerByUUID(uuid).hasEffect(MobEffects.HERO_OF_THE_VILLAGE)) ? null
+            return uuid == null || this.level.getPlayerByUUID(uuid) != null && !this.level.getPlayerByUUID(uuid).hasEffect(MobEffects.HERO_OF_THE_VILLAGE) ? null
                             : this.level.getPlayerByUUID(uuid);
         } catch (IllegalArgumentException illegalargumentexception) {
             return null;
@@ -472,6 +448,12 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
+    public void tick() {
+        this.maybeDecayGossip();
+        super.tick();
+    }
+
+    @Override
     public EntityDimensions getDimensions(Pose poseIn) {
         return SIZE_BY_POSE.getOrDefault(poseIn, EntityDimensions.scalable(0.6F, 1.95F));
     }
@@ -526,6 +508,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public void stopUsingItem() {
         if (this.getAttribute(Attributes.MOVEMENT_SPEED).hasModifier(USE_ITEM_SPEED_PENALTY))
             this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(USE_ITEM_SPEED_PENALTY);
+        this.setEating(false);
         super.stopUsingItem();
     }
 
@@ -611,10 +594,10 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(0, new GuardEatFoodGoal(this));
         this.goalSelector.addGoal(0, new RaiseShieldGoal(this));
         this.goalSelector.addGoal(1, new GuardSetRunningToEatGoal(this, 1.0D));
-        this.goalSelector.addGoal(2, new GuardRunToEatGoal(this));
+        this.goalSelector.addGoal(1, new GuardRunToEatGoal(this));
         this.goalSelector.addGoal(2, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, 8.0F));
         this.goalSelector.addGoal(2, new RangedBowAttackPassiveGoal<>(this, 0.5D, 20, 15.0F));
-        this.goalSelector.addGoal(2, new Guard.GuardMeleeGoal(this, 0.8D, true));
+        this.goalSelector.addGoal(2, new GuardMeleeGoal(this, 0.8D, true));
         this.goalSelector.addGoal(3, new Guard.FollowHeroGoal(this));
         if (GuardConfig.GuardsRunFromPolarBears)
             this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, PolarBear.class, 12.0F, 1.0D, 1.2D));
@@ -774,7 +757,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             return 3;
         else if (type == VillagerType.SAVANNA)
             return 2;
-        if (type == VillagerType.DESERT)
+        else if (type == VillagerType.DESERT)
             return 1;
         else
             return 0;
@@ -796,9 +779,17 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-        if (entity instanceof Guard || entity instanceof Villager || entity instanceof IronGolem || this.isRunningToEat())
+        if (entity instanceof Guard || entity instanceof Villager || entity instanceof IronGolem)
             return;
         super.setTarget(entity);
+    }
+
+    public void gossip(ServerLevel level, Villager villager, long gameTime) {
+        if ((gameTime < this.lastGossipTime || gameTime >= this.lastGossipTime + 1200L) && (gameTime < villager.lastGossipTime || gameTime >= villager.lastGossipTime + 1200L)) {
+            this.gossips.transferFrom(villager.getGossips(), this.random, 10);
+            this.lastGossipTime = gameTime;
+            villager.lastGossipTime = gameTime;
+        }
     }
 
     @Override
@@ -816,14 +807,13 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
-        boolean configValues = !GuardConfig.giveGuardStuffHOTV || !GuardConfig.setGuardPatrolHotv
-                || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
+        boolean configValues = player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
                 || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.setGuardPatrolHotv
                 || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
-                        && GuardConfig.setGuardPatrolHotv;
+                        && GuardConfig.setGuardPatrolHotv || this.getPlayerReputation(player) >= GuardConfig.reputationRequirement || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !GuardConfig.giveGuardStuffHOTV && !GuardConfig.setGuardPatrolHotv;
         boolean inventoryRequirements = !player.isSecondaryUseActive() && this.onGround;
-        if (configValues && inventoryRequirements) {
-            if (this.getTarget() != player && this.isEffectiveAi()) {
+        if (inventoryRequirements) {
+            if (this.getTarget() != player && this.isEffectiveAi() && configValues) {
                 if (player instanceof ServerPlayer) {
                     this.openGui((ServerPlayer) player);
                     return InteractionResult.SUCCESS;
@@ -852,6 +842,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             return "snow";
         }
         return "";
+    }
+
+
+    @Override
+    public void onReputationEventFrom(ReputationEventType reputationEventType, Entity entity) {
     }
 
     @Override
@@ -1001,12 +996,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             AABB axisalignedbb = this.guard.getBoundingBox().inflate(10.0D, 8.0D, 10.0D);
             List<Villager> list = guard.level.getEntitiesOfClass(Villager.class, axisalignedbb);
             List<Player> list1 = guard.level.getEntitiesOfClass(Player.class, axisalignedbb);
-            for (LivingEntity livingentity : list) {
-                Villager villagerentity = (Villager) livingentity;
-                for (Player playerentity : list1) {
-                    int i = villagerentity.getPlayerReputation(playerentity);
+            for (Villager villager : list) {
+                for (Player player : list1) {
+                    int i = villager.getPlayerReputation(player);
                     if (i <= -100) {
-                        this.villageAggressorTarget = playerentity;
+                        this.villageAggressorTarget = player;
                     }
                 }
             }
@@ -1076,7 +1070,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
     }
 
-    public class GuardMeleeGoal extends MeleeAttackGoal {
+    public static class GuardMeleeGoal extends MeleeAttackGoal {
         public final Guard guard;
 
         public GuardMeleeGoal(Guard guard, double speedIn, boolean useLongMemory) {
