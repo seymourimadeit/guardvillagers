@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "Strażnik",
+"item.guardvillagers.guard_spawn_egg": "Jajko Przyzywające Strażnika",
+"item.guardvillagers.illusioner_spawn_egg": "Jajko Przyzywające Iluzjonera",
+"item.guardvillagers.iron_golem_spawn_egg": "Jajko Przyzywające Żelaznego Golema",
+"item.guardvillagers.snow_golem_spawn_egg": "Jajko Przyzywające Śnieżnego Golema",
+"guardinventory.health": "Życie: %s",
+"guardinventory.armor": "Pancerz: %s"
+}
