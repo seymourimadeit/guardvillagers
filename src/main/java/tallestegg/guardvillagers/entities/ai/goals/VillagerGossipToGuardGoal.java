@@ -56,8 +56,6 @@ public class VillagerGossipToGuardGoal extends Goal {
             this.guard.getNavigation().stop();
             guard.gossip((ServerLevel) guard.getLevel(), villager, guard.getLevel().getGameTime());
         }
-        this.guard.getNavigation().stop();
-        BehaviorUtils.lookAtEntity(villager, guard);
         this.guard.lookAt(villager, 30.0F, 30.0F);
         this.guard.getLookControl().setLookAt(villager, 30.0F, 30.0F);
         this.villager.lookAt(guard, 30.0F, 30.0F);
