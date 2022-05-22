@@ -19,13 +19,16 @@ public class VillagerGossipToGuardGoal extends Goal {
 
     @Override
     public boolean canUse() {
+        List<Villager> villagerList = this.villager.level.getEntitiesOfClass(Villager.class, this.villager.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
         List<Guard> list = this.villager.level.getEntitiesOfClass(Guard.class, this.villager.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
-        if (!list.isEmpty()) {
+        if (!list.isEmpty() && !villagerList.isEmpty()) {
             for (Guard mob : list) {
-                long gameTime = mob.getLevel().getGameTime();
-                if (mob.getSensing().hasLineOfSight(villager) && (gameTime < mob.lastGossipTime || gameTime >= mob.lastGossipTime + 1200L)) {
-                    this.guard = mob;
-                    return true;
+                for (Villager villager : villagerList) {
+                    long gameTime = mob.getLevel().getGameTime();
+                    if (mob.getSensing().hasLineOfSight(villager) && (gameTime < mob.lastGossipTime || gameTime >= mob.lastGossipTime + 1200L)) {
+                        this.guard = mob;
+                        return !(villager.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET).orElse(null) == mob) && mob.getTarget() == null;
+                    }
                 }
             }
         }

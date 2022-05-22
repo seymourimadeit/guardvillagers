@@ -34,7 +34,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.gossip.GossipContainer;
-import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.animal.IronGolem;
@@ -74,6 +73,8 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAttackMob, NeutralMob, ContainerListener, ReputationEventHandler {
+    protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData.defineId(Guard.class,
+            EntityDataSerializers.OPTIONAL_UUID);
     private static final UUID MODIFIER_UUID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
     private static final AttributeModifier USE_ITEM_SPEED_PENALTY = new AttributeModifier(MODIFIER_UUID,
             "Use item speed penalty", -0.25D, AttributeModifier.Operation.ADDITION);
@@ -93,8 +94,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> FOLLOWING = SynchedEntityData.defineId(Guard.class,
             EntityDataSerializers.BOOLEAN);
-    protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData.defineId(Guard.class,
-            EntityDataSerializers.OPTIONAL_UUID);
     private static final Map<Pose, EntityDimensions> SIZE_BY_POSE = ImmutableMap.<Pose, EntityDimensions>builder()
             .put(Pose.STANDING, EntityDimensions.scalable(0.6F, 1.95F)).put(Pose.SLEEPING, SLEEPING_DIMENSIONS)
             .put(Pose.FALL_FLYING, EntityDimensions.scalable(0.6F, 0.6F))
@@ -102,17 +101,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             .put(Pose.SPIN_ATTACK, EntityDimensions.scalable(0.6F, 0.6F))
             .put(Pose.CROUCHING, EntityDimensions.scalable(0.6F, 1.75F))
             .put(Pose.DYING, EntityDimensions.fixed(0.2F, 0.2F)).build();
-    public long lastGossipTime;
-    public long lastGossipDecayTime;
-    private final GossipContainer gossips = new GossipContainer();
-    public SimpleContainer guardInventory = new SimpleContainer(6);
-    public int kickTicks;
-    public int shieldCoolDown;
-    public int kickCoolDown;
-    public boolean interacting;
-    private int remainingPersistentAngerTime;
     private static final UniformInt angerTime = TimeUtil.rangeOfSeconds(20, 39);
-    private UUID persistentAngerTarget;
     private static final Map<EquipmentSlot, ResourceLocation> EQUIPMENT_SLOT_ITEMS = Util.make(Maps.newHashMap(),
             (slotItems) -> {
                 slotItems.put(EquipmentSlot.MAINHAND, GuardLootTables.GUARD_MAIN_HAND);
@@ -122,6 +111,17 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 slotItems.put(EquipmentSlot.LEGS, GuardLootTables.GUARD_LEGGINGS);
                 slotItems.put(EquipmentSlot.FEET, GuardLootTables.GUARD_FEET);
             });
+    private final GossipContainer gossips = new GossipContainer();
+    public long lastGossipTime;
+    public long lastGossipDecayTime;
+    public SimpleContainer guardInventory = new SimpleContainer(6);
+    public int kickTicks;
+    public int shieldCoolDown;
+    public int kickCoolDown;
+    public boolean interacting;
+    private int remainingPersistentAngerTime;
+    private UUID persistentAngerTarget;
+    private net.minecraftforge.common.util.LazyOptional<?> itemHandler;
 
     public Guard(EntityType<? extends Guard> type, Level world) {
         super(type, world);
@@ -133,9 +133,71 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             ((GroundPathNavigation) this.getNavigation()).setCanOpenDoors(true);
     }
 
+    public static int slotToInventoryIndex(EquipmentSlot slot) {
+        switch (slot) {
+            case CHEST:
+                return 1;
+            case FEET:
+                return 3;
+            case HEAD:
+                return 0;
+            case LEGS:
+                return 2;
+            default:
+                break;
+        }
+        return 0;
+    }
+
+    /**
+     * Credit - SmellyModder for Biome Specific Textures
+     */
+    public static int getRandomTypeForBiome(LevelAccessor world, BlockPos pos) {
+        VillagerType type = VillagerType.byBiome(world.getBiome(pos));
+        if (type == VillagerType.SNOW)
+            return 6;
+        else if (type == VillagerType.TAIGA)
+            return 5;
+        else if (type == VillagerType.JUNGLE)
+            return 4;
+        else if (type == VillagerType.SWAMP)
+            return 3;
+        else if (type == VillagerType.SAVANNA)
+            return 2;
+        else if (type == VillagerType.DESERT)
+            return 1;
+        else
+            return 0;
+    }
+
+    public static String getNameByType(int id) {
+        switch (id) {
+            case 0:
+                return "plains";
+            case 1:
+                return "desert";
+            case 2:
+                return "savanna";
+            case 3:
+                return "swamp";
+            case 4:
+                return "jungle";
+            case 5:
+                return "taiga";
+            case 6:
+                return "snow";
+        }
+        return "";
+    }
+
+    public static AttributeSupplier.Builder createAttributes() {
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.MOVEMENT_SPEED, 0.5D)
+                .add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, 20.0D);
+    }
+
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn,
-            MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
+                                        MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
         this.setPersistenceRequired();
         int type = Guard.getRandomTypeForBiome(level, this.blockPosition());
         if (spawnDataIn instanceof Guard.GuardData) {
@@ -159,13 +221,13 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Nullable
-    public void setPatrolPos(BlockPos position) {
-        this.entityData.set(GUARD_POS, Optional.ofNullable(position));
+    public BlockPos getPatrolPos() {
+        return this.entityData.get(GUARD_POS).orElse(null);
     }
 
     @Nullable
-    public BlockPos getPatrolPos() {
-        return this.entityData.get(GUARD_POS).orElse(null);
+    public void setPatrolPos(BlockPos position) {
+        this.entityData.set(GUARD_POS, Optional.ofNullable(position));
     }
 
     @Override
@@ -185,22 +247,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     protected SoundEvent getDeathSound() {
         return SoundEvents.VILLAGER_DEATH;
-    }
-
-    public static int slotToInventoryIndex(EquipmentSlot slot) {
-        switch (slot) {
-        case CHEST:
-            return 1;
-        case FEET:
-            return 3;
-        case HEAD:
-            return 0;
-        case LEGS:
-            return 2;
-        default:
-            break;
-        }
-        return 0;
     }
 
     @Override
@@ -329,7 +375,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         try {
             UUID uuid = this.getOwnerId();
             return uuid == null || this.level.getPlayerByUUID(uuid) != null && !this.level.getPlayerByUUID(uuid).hasEffect(MobEffects.HERO_OF_THE_VILLAGE) ? null
-                            : this.level.getPlayerByUUID(uuid);
+                    : this.level.getPlayerByUUID(uuid);
         } catch (IllegalArgumentException illegalargumentexception) {
             return null;
         }
@@ -684,30 +730,30 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public void setItemSlot(EquipmentSlot slotIn, ItemStack stack) {
         super.setItemSlot(slotIn, stack);
         switch (slotIn) {
-        case CHEST:
-            if (this.guardInventory.getItem(1).isEmpty())
-                this.guardInventory.setItem(1, this.armorItems.get(slotIn.getIndex()));
-            break;
-        case FEET:
-            if (this.guardInventory.getItem(3).isEmpty())
-                this.guardInventory.setItem(3, this.armorItems.get(slotIn.getIndex()));
-            break;
-        case HEAD:
-            if (this.guardInventory.getItem(0).isEmpty())
-                this.guardInventory.setItem(0, this.armorItems.get(slotIn.getIndex()));
-            break;
-        case LEGS:
-            if (this.guardInventory.getItem(2).isEmpty())
-                this.guardInventory.setItem(2, this.armorItems.get(slotIn.getIndex()));
-            break;
-        case MAINHAND:
-            if (this.guardInventory.getItem(5).isEmpty())
-                this.guardInventory.setItem(5, this.handItems.get(slotIn.getIndex()));
-            break;
-        case OFFHAND:
-            if (this.guardInventory.getItem(4).isEmpty())
-                this.guardInventory.setItem(4, this.handItems.get(slotIn.getIndex()));
-            break;
+            case CHEST:
+                if (this.guardInventory.getItem(1).isEmpty())
+                    this.guardInventory.setItem(1, this.armorItems.get(slotIn.getIndex()));
+                break;
+            case FEET:
+                if (this.guardInventory.getItem(3).isEmpty())
+                    this.guardInventory.setItem(3, this.armorItems.get(slotIn.getIndex()));
+                break;
+            case HEAD:
+                if (this.guardInventory.getItem(0).isEmpty())
+                    this.guardInventory.setItem(0, this.armorItems.get(slotIn.getIndex()));
+                break;
+            case LEGS:
+                if (this.guardInventory.getItem(2).isEmpty())
+                    this.guardInventory.setItem(2, this.armorItems.get(slotIn.getIndex()));
+                break;
+            case MAINHAND:
+                if (this.guardInventory.getItem(5).isEmpty())
+                    this.guardInventory.setItem(5, this.handItems.get(slotIn.getIndex()));
+                break;
+            case OFFHAND:
+                if (this.guardInventory.getItem(4).isEmpty())
+                    this.guardInventory.setItem(4, this.handItems.get(slotIn.getIndex()));
+                break;
         }
     }
 
@@ -740,27 +786,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 && !target.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !this.isOwner(target)
                 && !(target instanceof Villager) && !(target instanceof IronGolem) && !(target instanceof Guard)
                 && super.canAttack(target);
-    }
-
-    /**
-     * Credit - SmellyModder for Biome Specific Textures
-     */
-    public static int getRandomTypeForBiome(LevelAccessor world, BlockPos pos) {
-        VillagerType type = VillagerType.byBiome(world.getBiome(pos));
-        if (type == VillagerType.SNOW)
-            return 6;
-        else if (type == VillagerType.TAIGA)
-            return 5;
-        else if (type == VillagerType.JUNGLE)
-            return 4;
-        else if (type == VillagerType.SWAMP)
-            return 3;
-        else if (type == VillagerType.SAVANNA)
-            return 2;
-        else if (type == VillagerType.DESERT)
-            return 1;
-        else
-            return 0;
     }
 
     @Override
@@ -810,7 +835,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         boolean configValues = player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
                 || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.setGuardPatrolHotv
                 || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
-                        && GuardConfig.setGuardPatrolHotv || this.getPlayerReputation(player) >= GuardConfig.reputationRequirement || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !GuardConfig.giveGuardStuffHOTV && !GuardConfig.setGuardPatrolHotv;
+                && GuardConfig.setGuardPatrolHotv || this.getPlayerReputation(player) >= GuardConfig.reputationRequirement || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !GuardConfig.giveGuardStuffHOTV && !GuardConfig.setGuardPatrolHotv;
         boolean inventoryRequirements = !player.isSecondaryUseActive() && this.onGround;
         if (inventoryRequirements) {
             if (this.getTarget() != player && this.isEffectiveAi() && configValues) {
@@ -823,27 +848,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         return super.mobInteract(player, hand);
     }
-
-    public static String getNameByType(int id) {
-        switch (id) {
-        case 0:
-            return "plains";
-        case 1:
-            return "desert";
-        case 2:
-            return "savanna";
-        case 3:
-            return "swamp";
-        case 4:
-            return "jungle";
-        case 5:
-            return "taiga";
-        case 6:
-            return "snow";
-        }
-        return "";
-    }
-
 
     @Override
     public void onReputationEventFrom(ReputationEventType reputationEventType, Entity entity) {
@@ -899,13 +903,13 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    public int getRemainingPersistentAngerTime() {
-        return this.remainingPersistentAngerTime;
+    public void setPersistentAngerTarget(UUID arg0) {
+        this.persistentAngerTarget = arg0;
     }
 
     @Override
-    public void setPersistentAngerTarget(UUID arg0) {
-        this.persistentAngerTarget = arg0;
+    public int getRemainingPersistentAngerTime() {
+        return this.remainingPersistentAngerTime;
     }
 
     @Override
@@ -931,13 +935,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         player.initMenu(player.containerMenu);
         MinecraftForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, player.containerMenu));
     }
-
-    public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.MOVEMENT_SPEED, 0.5D)
-                .add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, 20.0D);
-    }
-
-    private net.minecraftforge.common.util.LazyOptional<?> itemHandler;
 
     @Override
     public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(

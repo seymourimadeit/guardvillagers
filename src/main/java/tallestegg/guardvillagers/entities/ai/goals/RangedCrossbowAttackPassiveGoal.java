@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.GuardItems;
+import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
 public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAttackMob & CrossbowAttackMob> extends Goal {
@@ -76,7 +77,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                         Vec3 vector3d1 = guard.position().vectorTo(entity.position()).normalize();
                         vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
                         if (vector3d1.dot(vector3d) < 1.0D && entity.hasLineOfSight(guard))
-                            return true;
+                            return GuardConfig.FriendlyFire;
                     }
                 }
             }
