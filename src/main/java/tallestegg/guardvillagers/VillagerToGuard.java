@@ -4,6 +4,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
@@ -74,6 +75,7 @@ public class VillagerToGuard {
         guard.setDropChance(EquipmentSlot.LEGS, 100.0F);
         guard.setDropChance(EquipmentSlot.MAINHAND, 100.0F);
         guard.setDropChance(EquipmentSlot.OFFHAND, 100.0F);
+        guard.getGossips().add(player.getUUID(), GossipType.MINOR_POSITIVE, GuardConfig.reputationRequirement);
         villager.level.addFreshEntity(guard);
         villager.releasePoi(MemoryModuleType.HOME);
         villager.releasePoi(MemoryModuleType.JOB_SITE);

@@ -47,10 +47,13 @@ public class VillagerGossipToGuardGoal extends Goal {
 
     @Override
     public void tick() {
-        if (this.villager.distanceTo(guard) > 5.0D) {
+        BehaviorUtils.lookAtEntity(villager, guard);
+        if (this.villager.distanceTo(guard) > 2.0D) {
             this.villager.getNavigation().moveTo(guard, 0.5D);
+            this.guard.getNavigation().moveTo(guard, 0.5D);
         } else {
             this.villager.getNavigation().stop();
+            this.guard.getNavigation().stop();
             guard.gossip((ServerLevel) guard.getLevel(), villager, guard.getLevel().getGameTime());
         }
         this.guard.getNavigation().stop();
