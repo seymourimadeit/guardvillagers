@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "Guardia",
+"item.guardvillagers.guard_spawn_egg": "Uovo generatore di guardia",
+"item.guardvillagers.illusioner_spawn_egg": "Uovo generatore di illusionista",
+"item.guardvillagers.iron_golem_spawn_egg": "Uovo generatore di golem di ferro",
+"item.guardvillagers.snow_golem_spawn_egg": "Uovo generatore di pupazzo di neve",
+"guardinventory.health": "Salute: %s",
+"guardinventory.armor": "Armatura: %s"
+}
