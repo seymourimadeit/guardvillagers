@@ -20,7 +20,7 @@ apply plugin: 'maven-publish'
   //  add sourceSets.main, "guardvillagers.refmap.json"
 //}
 
-version = '1.18.2.1.4.2'
+version = '1.18.2.1.4.3'
 group = 'tallestegg.guardvillagers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'guardvillagers'
 
