@@ -18,6 +18,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.*;
@@ -205,7 +206,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             spawnDataIn = new Guard.GuardData(type);
         }
         this.setGuardVariant(type);
-        this.populateDefaultEquipmentSlots(difficultyIn);
+        RandomSource randomsource = worldIn.getRandom();
+        this.populateDefaultEquipmentSlots(randomsource, difficultyIn);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
@@ -600,7 +602,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+    protected void populateDefaultEquipmentSlots(RandomSource source, DifficultyInstance instance) {
         for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
             for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype)) {
                 this.setItemSlot(equipmentslottype, stack);

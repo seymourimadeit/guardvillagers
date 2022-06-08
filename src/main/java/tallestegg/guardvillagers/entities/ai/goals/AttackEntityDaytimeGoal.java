@@ -12,7 +12,7 @@ public class AttackEntityDaytimeGoal<T extends LivingEntity> extends NearestAtta
 
     @Override
     public boolean canUse() {
-        float f = this.mob.getBrightness();
+        float f = this.mob.getLightLevelDependentMagicValue();
         return f >= 0.5F ? false : super.canUse();
     }
 }

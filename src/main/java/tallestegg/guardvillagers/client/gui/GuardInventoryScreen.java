@@ -1,29 +1,24 @@
 package tallestegg.guardvillagers.client.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-
-import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import tallestegg.guardvillagers.GuardPacketHandler;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.configuration.GuardConfig;
-import tallestegg.guardvillagers.entities.GuardContainer;
 import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.entities.GuardContainer;
 import tallestegg.guardvillagers.networking.GuardFollowPacket;
 import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
-
-import net.minecraft.client.gui.components.Button.OnPress;
 
 public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer> {
     private static final ResourceLocation GUARD_GUI_TEXTURES = new ResourceLocation(GuardVillagers.MODID, "textures/container/inventory.png");
@@ -78,8 +73,8 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         super.renderLabels(matrixStack, x, y);
         int health = Mth.ceil(guard.getHealth());
         int armor = guard.getArmorValue();
-        Component guardHealthText = new TranslatableComponent("guardinventory.health", health);
-        Component guardArmorText = new TranslatableComponent("guardinventory.armor", armor);
+        Component guardHealthText = Component.translatable("guardinventory.health", health);
+        Component guardArmorText = Component.translatable("guardinventory.armor", armor);
         this.font.draw(matrixStack, guardHealthText, 80.0F, 20.0F, 4210752);
         this.font.draw(matrixStack, guardArmorText, 80.0F, 30.0F, 4210752);
     }
@@ -104,7 +99,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
             this.newTexture = newTexture;
             this.isFollowButton = isFollowButton;
         }
-        
+
         public boolean requirementsForTexture() {
             boolean following = GuardInventoryScreen.this.guard.isFollowing();
             boolean patrol = GuardInventoryScreen.this.guard.isPatrolling();
