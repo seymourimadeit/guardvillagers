@@ -61,6 +61,7 @@ public class GuardConfig {
         AttackAllMobs = COMMON.AttackAllMobs.get();
         VillagersRunFromPolarBears = COMMON.VillagersRunFromPolarBears.get();
         IllagersRunFromPolarBears = COMMON.IllagersRunFromPolarBears.get();
+        GuardsRunFromPolarBears = COMMON.GuardsRunFromPolarBears.get();
         GuardsOpenDoors = COMMON.GuardsOpenDoors.get();
         GuardAlwaysShield = COMMON.GuardRaiseShield.get();
         GuardFormation = COMMON.GuardFormation.get();
