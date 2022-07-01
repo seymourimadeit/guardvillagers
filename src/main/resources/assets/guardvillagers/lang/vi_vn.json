@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "Lính canh",
+"item.guardvillagers.guard_spawn_egg": "Trứng sinh ra Lính canh",
+"item.guardvillagers.illusioner_spawn_egg": "Trứng sinh ra Kẻ Gây Ảo Giác",
+"item.guardvillagers.iron_golem_spawn_egg": "Trứng sinh ra Người sắt",
+"item.guardvillagers.snow_golem_spawn_egg": "Trứng sinh ra Người tuyết",
+"guardinventory.health": "Máu: %s",
+"guardinventory.armor": "Giáp: %s"
+}
