@@ -171,26 +171,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             return 0;
     }
 
-    public static String getNameByType(int id) {
-        switch (id) {
-            case 0:
-                return "plains";
-            case 1:
-                return "desert";
-            case 2:
-                return "savanna";
-            case 3:
-                return "swamp";
-            case 4:
-                return "jungle";
-            case 5:
-                return "taiga";
-            case 6:
-                return "snow";
-        }
-        return "";
-    }
-
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.MOVEMENT_SPEED, 0.5D)
                 .add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, 20.0D);
@@ -367,9 +347,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public int getPlayerReputation(Player player) {
-        return this.gossips.getReputation(player.getUUID(), (gossipType) -> {
-            return true;
-        });
+        return this.gossips.getReputation(player.getUUID(), (gossipType) -> true);
     }
 
     @Nullable
