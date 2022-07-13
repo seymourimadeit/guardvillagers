@@ -27,15 +27,16 @@ import tallestegg.guardvillagers.entities.Guard;
 public class VillagerToGuard {
     @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
-        ItemStack itemstack = event.getPlayer().getMainHandItem();
+        Player player = event.getEntity();
+        ItemStack itemstack = event.getEntity().getMainHandItem();
         Entity target = event.getTarget();
-        if ((itemstack.getItem() instanceof SwordItem || itemstack.getItem() instanceof CrossbowItem) && event.getPlayer().isCrouching()) {
+        if ((itemstack.getItem() instanceof SwordItem || itemstack.getItem() instanceof CrossbowItem) && player.isCrouching()) {
             if (target instanceof Villager villager) {
                 if (!villager.isBaby()) {
                     if (villager.getVillagerData().getProfession() == VillagerProfession.NONE || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
-                        if (!GuardConfig.ConvertVillagerIfHaveHOTV || event.getPlayer().hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.ConvertVillagerIfHaveHOTV) {
-                            VillagerToGuard.convertVillager(villager, event.getPlayer());
-                            if (!event.getPlayer().getAbilities().instabuild)
+                        if (!GuardConfig.ConvertVillagerIfHaveHOTV || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.ConvertVillagerIfHaveHOTV) {
+                            VillagerToGuard.convertVillager(villager, player);
+                            if (!player.getAbilities().instabuild)
                                 itemstack.shrink(1);
                         }
                     }

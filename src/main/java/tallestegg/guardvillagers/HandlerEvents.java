@@ -15,7 +15,7 @@ import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.raid.Raider;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -79,7 +79,7 @@ public class HandlerEvents {
     }
 
     @SubscribeEvent
-    public static void onLivingSpawned(EntityJoinWorldEvent event) {
+    public static void onLivingSpawned(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Raider)
             if (((Raider) event.getEntity()).hasActiveRaid() && GuardConfig.RaidAnimals)
                 ((Raider) event.getEntity()).targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(((Raider) event.getEntity()), Animal.class, false));
