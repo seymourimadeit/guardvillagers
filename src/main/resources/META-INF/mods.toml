@@ -17,7 +17,7 @@ Need some help with pest control? The Guards are ready to help!
 [[dependencies.guardvillagers]] #optional
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[41.0.0,)" #mandatory
+    versionRange="[41.0.94,)" #mandatory
     ordering="NONE"
     side="BOTH"
 # Here's another dependency
