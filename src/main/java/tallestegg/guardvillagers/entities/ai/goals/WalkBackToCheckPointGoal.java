@@ -14,6 +14,7 @@ public class WalkBackToCheckPointGoal extends Goal {
     public WalkBackToCheckPointGoal(Guard guard, double speedIn) {
         this.guard = guard;
         this.speed = speedIn;
+
     }
 
     @Override

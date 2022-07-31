@@ -90,7 +90,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     private static final EntityDataAccessor<Boolean> DATA_CHARGING_STATE = SynchedEntityData.defineId(Guard.class,
             EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> EATING = SynchedEntityData.defineId(Guard.class,
-            EntityDataSerializers.BOOLEAN);
+            EntityDataSerializers.BOOLEAN); // TODO, remove this
     private static final EntityDataAccessor<Boolean> KICKING = SynchedEntityData.defineId(Guard.class,
             EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> FOLLOWING = SynchedEntityData.defineId(Guard.class,
@@ -648,15 +648,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.5D));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, AbstractVillager.class, 8.0F));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(8, new GuardLookAtAndStopMovingWhenBeingTheInteractionTarget(this));
         this.targetSelector.addGoal(5, new Guard.DefendVillageGuardGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Ravager.class, true));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Ravager.class, true)); // To make witches and ravagers have a priority than other mobs this has to be done
         this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, Guard.class, IronGolem.class)).setAlertOthers());
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Witch.class, true));
         this.targetSelector.addGoal(3, new HeroHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractIllager.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Illusioner.class, true));
         if (GuardConfig.AttackAllMobs) {
             this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> {
                 return mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId());
