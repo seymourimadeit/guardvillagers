@@ -1,15 +1,17 @@
 package tallestegg.guardvillagers.configuration;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.tuple.Pair;
-
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.WritingMode;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
+import org.apache.commons.lang3.tuple.Pair;
 import tallestegg.guardvillagers.GuardVillagers;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @EventBusSubscriber(modid = GuardVillagers.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class GuardConfig {
@@ -17,19 +19,6 @@ public class GuardConfig {
     public static final CommonConfig COMMON;
     public static final ForgeConfigSpec CLIENT_SPEC;
     public static final ClientConfig CLIENT;
-    static {
-        {
-            final Pair<CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
-            COMMON = specPair.getLeft();
-            COMMON_SPEC = specPair.getRight();
-        }
-        {
-            final Pair<ClientConfig, ForgeConfigSpec> specPair1 = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
-            CLIENT = specPair1.getLeft();
-            CLIENT_SPEC = specPair1.getRight();
-        }
-    }
-
     public static boolean RaidAnimals;
     public static boolean WitchesVillager;
     public static boolean IllusionerRaids;
@@ -54,6 +43,25 @@ public class GuardConfig {
     public static int reputationRequirement;
     public static List<String> MobBlackList;
 
+    static {
+        final Pair<CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
+        COMMON = specPair.getLeft();
+        COMMON_SPEC = specPair.getRight();
+        final Pair<ClientConfig, ForgeConfigSpec> specPair1 = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+        CLIENT = specPair1.getLeft();
+        CLIENT_SPEC = specPair1.getRight();
+    }
+
+    /*
+     *Thanks to AzureDoom and Tslat for letting me know that this is possible on the MMD discord
+     */
+    public static void loadConfig(ForgeConfigSpec config, String path) {
+        final CommentedFileConfig file = CommentedFileConfig.builder(new File(path)).sync().autosave()
+                .writingMode(WritingMode.REPLACE).build();
+        file.load();
+        config.setConfig(file);
+    }
+
     public static void bakeCommonConfig() {
         RaidAnimals = COMMON.RaidAnimals.get();
         WitchesVillager = COMMON.WitchesVillager.get();
@@ -77,7 +85,6 @@ public class GuardConfig {
         giveGuardStuffHOTV = COMMON.giveGuardStuffHOTV.get();
         setGuardPatrolHotv = COMMON.setGuardPatrolHotv.get();
         reputationRequirement = COMMON.reputationRequirement.get();
-
     }
 
     public static void bakeClientConfig() {
@@ -110,6 +117,9 @@ public class GuardConfig {
         public final ForgeConfigSpec.BooleanValue ClericHealing;
         public final ForgeConfigSpec.DoubleValue GuardVillagerHelpRange;
         public final ForgeConfigSpec.DoubleValue amountOfHealthRegenerated;
+        public final ForgeConfigSpec.DoubleValue healthModifier;
+        public final ForgeConfigSpec.DoubleValue speedModifier;
+        public final ForgeConfigSpec.DoubleValue followRangeModifier;
         public final ForgeConfigSpec.BooleanValue guardArrowsHurtVillagers;
         public final ForgeConfigSpec.BooleanValue armorersRepairGuardArmor;
         public final ForgeConfigSpec.ConfigValue<List<String>> MobBlackList;
@@ -150,6 +160,9 @@ public class GuardConfig {
             giveGuardStuffHOTV = builder.translation(GuardVillagers.MODID + ".config.hotvArmor").define("Allow players to give guards stuff only if they have the hero of the village effect?", false);
             setGuardPatrolHotv = builder.translation(GuardVillagers.MODID + ".config.hotvPatrolPoint").define("Allow players to set guard patrol points only if they have hero of the village", false);
             reputationRequirement = builder.defineInRange("Minimum reputation requirement for guards to give you access to their inventories", 15, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            healthModifier = builder.defineInRange("Guard health", 20.0D, -500.0D, 900.0D);
+            speedModifier = builder.defineInRange("Guard speed", 0.5D, -500.0D, 900.0D);
+            followRangeModifier = builder.defineInRange("Guard follow range", 20.0D, 0.0D, 900.0D);
             builder.pop();
         }
     }

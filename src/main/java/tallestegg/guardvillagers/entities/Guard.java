@@ -172,8 +172,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20.0D).add(Attributes.MOVEMENT_SPEED, 0.5D)
-                .add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, 20.0D);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, GuardConfig.COMMON.healthModifier.get()).add(Attributes.MOVEMENT_SPEED, GuardConfig.COMMON.speedModifier.get())
+                .add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, GuardConfig.COMMON.followRangeModifier.get());
     }
 
     @Override
@@ -522,11 +522,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void startUsingItem(InteractionHand hand) {
         ItemStack itemstack = this.getItemInHand(hand);
-        if (itemstack.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
-            AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
-            modifiableattributeinstance.removeModifier(USE_ITEM_SPEED_PENALTY);
-            modifiableattributeinstance.addTransientModifier(USE_ITEM_SPEED_PENALTY);
-        }
+            if (itemstack.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
+                AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
+                modifiableattributeinstance.removeModifier(USE_ITEM_SPEED_PENALTY);
+                modifiableattributeinstance.addTransientModifier(USE_ITEM_SPEED_PENALTY);
+            }
         super.startUsingItem(hand);
     }
 
