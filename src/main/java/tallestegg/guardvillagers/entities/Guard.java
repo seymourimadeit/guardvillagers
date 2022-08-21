@@ -354,7 +354,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public LivingEntity getOwner() {
         try {
             UUID uuid = this.getOwnerId();
-            return uuid == null || this.level.getPlayerByUUID(uuid) != null && !this.level.getPlayerByUUID(uuid).hasEffect(MobEffects.HERO_OF_THE_VILLAGE) ? null
+            boolean heroOfTheVillage = uuid != null && this.level.getPlayerByUUID(uuid) != null && this.level.getPlayerByUUID(uuid).hasEffect(MobEffects.HERO_OF_THE_VILLAGE);
+            return uuid == null || (this.level.getPlayerByUUID(uuid) != null && (!heroOfTheVillage && GuardConfig.followHero) || !GuardConfig.followHero && this.level.getPlayerByUUID(uuid) == null) ? null
                     : this.level.getPlayerByUUID(uuid);
         } catch (IllegalArgumentException illegalargumentexception) {
             return null;
@@ -522,11 +523,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void startUsingItem(InteractionHand hand) {
         ItemStack itemstack = this.getItemInHand(hand);
-            if (itemstack.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
-                AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
-                modifiableattributeinstance.removeModifier(USE_ITEM_SPEED_PENALTY);
-                modifiableattributeinstance.addTransientModifier(USE_ITEM_SPEED_PENALTY);
-            }
+        if (itemstack.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
+            AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
+            modifiableattributeinstance.removeModifier(USE_ITEM_SPEED_PENALTY);
+            modifiableattributeinstance.addTransientModifier(USE_ITEM_SPEED_PENALTY);
+        }
         super.startUsingItem(hand);
     }
 
@@ -657,9 +658,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
         if (GuardConfig.AttackAllMobs) {
-            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> {
-                return mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId());
-            }));
+            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId())));
         }
         this.targetSelector.addGoal(3,
                 new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
@@ -814,8 +813,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         boolean configValues = player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
                 || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.setGuardPatrolHotv
                 || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
-                && GuardConfig.setGuardPatrolHotv || this.getPlayerReputation(player) >= GuardConfig.reputationRequirement || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !GuardConfig.giveGuardStuffHOTV && !GuardConfig.setGuardPatrolHotv;
-        boolean inventoryRequirements = !player.isSecondaryUseActive() && this.onGround;
+                && GuardConfig.setGuardPatrolHotv || this.getPlayerReputation(player) >= GuardConfig.reputationRequirement || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !GuardConfig.giveGuardStuffHOTV && !GuardConfig.setGuardPatrolHotv || this.getOwnerId().equals(player.getUUID());
+        boolean inventoryRequirements = !player.isSecondaryUseActive();
         if (inventoryRequirements) {
             if (this.getTarget() != player && this.isEffectiveAi() && configValues) {
                 if (player instanceof ServerPlayer) {
@@ -902,6 +901,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public void openGui(ServerPlayer player) {
+        this.setOwnerId(player.getUUID());
         if (player.containerMenu != player.inventoryMenu) {
             player.closeContainer();
         }
@@ -996,13 +996,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         public final Guard guard;
 
         public FollowHeroGoal(Guard mob) {
-            guard = mob;
+            this.guard = mob;
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
-        }
-
-        @Override
-        public void start() {
-            super.start();
         }
 
         @Override
@@ -1017,32 +1012,17 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canContinueToUse() {
-            return guard.isFollowing() && this.canUse();
+            return this.canUse();
         }
 
         @Override
         public boolean canUse() {
-            List<Player> list = this.guard.level.getEntitiesOfClass(Player.class,
-                    this.guard.getBoundingBox().inflate(10.0D));
-            if (!list.isEmpty()) {
-                for (LivingEntity mob : list) {
-                    Player player = (Player) mob;
-                    if (!player.isInvisible() && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE)) {
-                        guard.setOwnerId(player.getUUID());
-                        return guard.isFollowing();
-                    }
-                }
-            }
-            return false;
+            return guard.isFollowing() && guard.getOwner() != null;
         }
 
         @Override
         public void stop() {
             this.guard.getNavigation().stop();
-            if (guard.getOwner() != null && !guard.getOwner().hasEffect(MobEffects.HERO_OF_THE_VILLAGE)) {
-                guard.setOwnerId(null);
-                guard.setFollowing(false);
-            }
         }
     }
 

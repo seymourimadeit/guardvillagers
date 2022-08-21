@@ -44,7 +44,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     @Override
     public void init() {
         super.init();
-        if (player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE)) {
+        if (GuardConfig.followHero && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.followHero) {
             this.addRenderableWidget(new GuardGuiButton(this.leftPos + 100, this.height / 2 - 40, 20, 18, 0, 0, 19, GUARD_FOLLOWING_ICON, GUARD_NOT_FOLLOWING_ICON, true, (p_214086_1_) -> {
                 GuardPacketHandler.INSTANCE.sendToServer(new GuardFollowPacket(guard.getId()));
             }));

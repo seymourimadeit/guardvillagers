@@ -39,6 +39,7 @@ public class GuardConfig {
     public static boolean armorerRepairGuardArmor;
     public static boolean giveGuardStuffHOTV;
     public static boolean setGuardPatrolHotv;
+    public static boolean followHero;
     public static boolean guardSteve;
     public static int reputationRequirement;
     public static List<String> MobBlackList;
@@ -85,6 +86,7 @@ public class GuardConfig {
         giveGuardStuffHOTV = COMMON.giveGuardStuffHOTV.get();
         setGuardPatrolHotv = COMMON.setGuardPatrolHotv.get();
         reputationRequirement = COMMON.reputationRequirement.get();
+        followHero = COMMON.followHero.get();
     }
 
     public static void bakeClientConfig() {
@@ -125,6 +127,8 @@ public class GuardConfig {
         public final ForgeConfigSpec.ConfigValue<List<String>> MobBlackList;
         public final ForgeConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ForgeConfigSpec.BooleanValue setGuardPatrolHotv;
+        public final ForgeConfigSpec.BooleanValue followHero;
+        public final ForgeConfigSpec.BooleanValue defendHero;
         public final ForgeConfigSpec.IntValue reputationRequirement;
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
@@ -163,6 +167,7 @@ public class GuardConfig {
             healthModifier = builder.defineInRange("Guard health", 20.0D, -500.0D, 900.0D);
             speedModifier = builder.defineInRange("Guard speed", 0.5D, -500.0D, 900.0D);
             followRangeModifier = builder.defineInRange("Guard follow range", 20.0D, 0.0D, 900.0D);
+            followHero = builder.define("Have guards only follow the player if they have hero of the village?", true);
             builder.pop();
         }
     }
