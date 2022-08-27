@@ -1,5 +1,6 @@
 package tallestegg.guardvillagers.client.models;
 
+import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -12,6 +13,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.monster.piglin.Piglin;
+import net.minecraft.world.entity.monster.piglin.PiglinArmPose;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileWeaponItem;
@@ -82,6 +85,10 @@ public class GuardModel extends HumanoidModel<Guard> {
         if (entityIn.getKickTicks() > 0) {
             float f1 = 1.0F - (float) Mth.abs(10 - 2 * entityIn.getKickTicks()) / 10.0F;
             this.rightLeg.xRot = Mth.lerp(f1, this.rightLeg.xRot, -1.40F);
+        }
+        double speed = 0.005D;
+        if (this.attackTime == 0.0F && entityIn.isAggressive() && !isHoldingShootable && entityIn.getDeltaMovement().horizontalDistanceSqr() > speed) {
+            AnimationUtils.swingWeaponDown(this.rightArm, this.leftArm, entityIn, this.attackTime, ageInTicks);
         }
         if (entityIn.getMainArm() == HumanoidArm.RIGHT) {
             this.eatingAnimationRightHand(InteractionHand.MAIN_HAND, entityIn, ageInTicks);

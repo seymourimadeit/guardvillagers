@@ -949,6 +949,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.entityData.set(RUNNING_TO_EAT, running);
     }
 
+    @Override
+    public boolean canFireProjectileWeapon(ProjectileWeaponItem item) {
+        return item instanceof BowItem || item instanceof CrossbowItem || super.canFireProjectileWeapon(item);
+    }
+
     public static class GuardData implements SpawnGroupData {
         public final int variantData;
 
@@ -1042,8 +1047,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canContinueToUse() {
-            return super.canContinueToUse() && this.guard.getTarget() != null
-                    && !(this.guard.getMainHandItem().getItem() instanceof CrossbowItem);
+            return super.canContinueToUse() && this.guard.getTarget() != null;
         }
 
         @Override

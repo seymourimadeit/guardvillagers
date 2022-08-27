@@ -128,7 +128,6 @@ public class GuardConfig {
         public final ForgeConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ForgeConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ForgeConfigSpec.BooleanValue followHero;
-        public final ForgeConfigSpec.BooleanValue defendHero;
         public final ForgeConfigSpec.IntValue reputationRequirement;
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
