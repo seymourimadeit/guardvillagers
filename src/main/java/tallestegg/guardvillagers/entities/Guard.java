@@ -5,6 +5,8 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -331,14 +333,20 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public ItemStack getItemBySlot(EquipmentSlot pSlot) {
         switch (pSlot) {
-            case HEAD: return this.guardInventory.getItem(0);
-            case CHEST: return this.guardInventory.getItem(1);
-            case LEGS: return this.guardInventory.getItem(2);
-            case FEET: return this.guardInventory.getItem(3);
-            case OFFHAND: return this.guardInventory.getItem(4);
-            case MAINHAND: return this.guardInventory.getItem(5);
+            case HEAD:
+                return this.guardInventory.getItem(0);
+            case CHEST:
+                return this.guardInventory.getItem(1);
+            case LEGS:
+                return this.guardInventory.getItem(2);
+            case FEET:
+                return this.guardInventory.getItem(3);
+            case OFFHAND:
+                return this.guardInventory.getItem(4);
+            case MAINHAND:
+                return this.guardInventory.getItem(5);
         }
-            return ItemStack.EMPTY;
+        return ItemStack.EMPTY;
     }
 
     public GossipContainer getGossips() {
@@ -855,7 +863,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
+    public <
+            T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
         if (this.isAlive() && capability == ForgeCapabilities.ITEM_HANDLER && itemHandler != null)
             return itemHandler.cast();
         return super.getCapability(capability, facing);
