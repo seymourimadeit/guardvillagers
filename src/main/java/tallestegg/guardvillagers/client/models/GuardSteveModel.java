@@ -1,5 +1,6 @@
 package tallestegg.guardvillagers.client.models;
 
+import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -9,6 +10,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.UseAnim;
 import tallestegg.guardvillagers.entities.Guard;
 
@@ -24,6 +26,12 @@ public class GuardSteveModel extends PlayerModel<Guard> {
         if (entityIn.getKickTicks() > 0) {
             float f1 = 1.0F - (float) Mth.abs(10 - 2 * entityIn.getKickTicks()) / 10.0F;
             this.rightLeg.xRot = Mth.lerp(f1, this.rightLeg.xRot, -1.40F);
+        }
+        ItemStack itemstack = entityIn.getItemInHand(InteractionHand.MAIN_HAND);
+        boolean isHoldingShootable = itemstack.getItem() instanceof ProjectileWeaponItem;
+        double speed = 0.005D;
+        if (this.attackTime == 0.0F && entityIn.isAggressive() && !isHoldingShootable && entityIn.getDeltaMovement().horizontalDistanceSqr() > speed && !entityIn.getMainHandItem().isEmpty() && !entityIn.isBlocking()) {
+            AnimationUtils.swingWeaponDown(this.rightArm, this.leftArm, entityIn, this.attackTime, ageInTicks);
         }
         if (entityIn.getMainArm() == HumanoidArm.RIGHT) {
             this.eatingAnimationRightHand(InteractionHand.MAIN_HAND, entityIn, ageInTicks);
@@ -43,8 +51,7 @@ public class GuardSteveModel extends PlayerModel<Guard> {
         ItemStack itemstack = entity.getItemInHand(hand);
         boolean drinkingoreating = itemstack.getUseAnimation() == UseAnim.EAT
                 || itemstack.getUseAnimation() == UseAnim.DRINK;
-        if (entity.isEating() && drinkingoreating
-                || entity.getUseItemRemainingTicks() > 0 && drinkingoreating && entity.getUsedItemHand() == hand) {
+        if (entity.isEating() && drinkingoreating) {
             this.rightArm.yRot = -0.5F;
             this.rightArm.xRot = -1.3F;
             this.rightArm.zRot = Mth.cos(ageInTicks) * 0.1F;
@@ -58,8 +65,7 @@ public class GuardSteveModel extends PlayerModel<Guard> {
         ItemStack itemstack = entity.getItemInHand(hand);
         boolean drinkingoreating = itemstack.getUseAnimation() == UseAnim.EAT
                 || itemstack.getUseAnimation() == UseAnim.DRINK;
-        if (entity.isEating() && drinkingoreating
-                || entity.getUseItemRemainingTicks() > 0 && drinkingoreating && entity.getUsedItemHand() == hand) {
+        if (entity.isEating() && drinkingoreating) {
             this.leftArm.yRot = 0.5F;
             this.leftArm.xRot = -1.3F;
             this.leftArm.zRot = Mth.cos(ageInTicks) * 0.1F;

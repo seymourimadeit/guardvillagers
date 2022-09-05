@@ -87,7 +87,7 @@ public class GuardModel extends HumanoidModel<Guard> {
             this.rightLeg.xRot = Mth.lerp(f1, this.rightLeg.xRot, -1.40F);
         }
         double speed = 0.005D;
-        if (this.attackTime == 0.0F && entityIn.isAggressive() && !isHoldingShootable && entityIn.getDeltaMovement().horizontalDistanceSqr() > speed && !entityIn.getMainHandItem().isEmpty()) {
+        if (this.attackTime == 0.0F && entityIn.isAggressive() && !isHoldingShootable && entityIn.getDeltaMovement().horizontalDistanceSqr() > speed && !entityIn.getMainHandItem().isEmpty() && !entityIn.isBlocking()) {
             AnimationUtils.swingWeaponDown(this.rightArm, this.leftArm, entityIn, this.attackTime, ageInTicks);
         }
         if (entityIn.getMainArm() == HumanoidArm.RIGHT) {
