@@ -87,7 +87,7 @@ public class GuardModel extends HumanoidModel<Guard> {
             this.rightLeg.xRot = Mth.lerp(f1, this.rightLeg.xRot, -1.40F);
         }
         double speed = 0.005D;
-        if (this.attackTime == 0.0F && entityIn.isAggressive() && !isHoldingShootable && entityIn.getDeltaMovement().horizontalDistanceSqr() > speed) {
+        if (this.attackTime == 0.0F && entityIn.isAggressive() && !isHoldingShootable && entityIn.getDeltaMovement().horizontalDistanceSqr() > speed && !entityIn.getMainHandItem().isEmpty()) {
             AnimationUtils.swingWeaponDown(this.rightArm, this.leftArm, entityIn, this.attackTime, ageInTicks);
         }
         if (entityIn.getMainArm() == HumanoidArm.RIGHT) {
@@ -103,8 +103,7 @@ public class GuardModel extends HumanoidModel<Guard> {
         ItemStack itemstack = entity.getItemInHand(hand);
         boolean drinkingoreating = itemstack.getUseAnimation() == UseAnim.EAT
                 || itemstack.getUseAnimation() == UseAnim.DRINK;
-        if (entity.isEating() && drinkingoreating
-                || entity.getUseItemRemainingTicks() > 0 && drinkingoreating && entity.getUsedItemHand() == hand) {
+        if (entity.isEating() && drinkingoreating) {
             this.rightArm.yRot = -0.5F;
             this.rightArm.xRot = -1.3F;
             this.rightArm.zRot = Mth.cos(ageInTicks) * 0.1F;
@@ -118,8 +117,7 @@ public class GuardModel extends HumanoidModel<Guard> {
         ItemStack itemstack = entity.getItemInHand(hand);
         boolean drinkingoreating = itemstack.getUseAnimation() == UseAnim.EAT
                 || itemstack.getUseAnimation() == UseAnim.DRINK;
-        if (entity.isEating() && drinkingoreating
-                || entity.getUseItemRemainingTicks() > 0 && drinkingoreating && entity.getUsedItemHand() == hand) {
+        if (entity.isEating() && drinkingoreating) {
             this.leftArm.yRot = 0.5F;
             this.leftArm.xRot = -1.3F;
             this.leftArm.zRot = Mth.cos(ageInTicks) * 0.1F;

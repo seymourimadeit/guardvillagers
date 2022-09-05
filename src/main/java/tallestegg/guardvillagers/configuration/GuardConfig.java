@@ -129,6 +129,7 @@ public class GuardConfig {
         public final ForgeConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ForgeConfigSpec.BooleanValue followHero;
         public final ForgeConfigSpec.IntValue reputationRequirement;
+        public final ForgeConfigSpec.IntValue reputationRequirementToBeAttacked;
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
             builder.push("raids and illagers");
@@ -167,6 +168,7 @@ public class GuardConfig {
             speedModifier = builder.defineInRange("Guard speed", 0.5D, -500.0D, 900.0D);
             followRangeModifier = builder.defineInRange("Guard follow range", 20.0D, 0.0D, 900.0D);
             followHero = builder.define("Have guards only follow the player if they have hero of the village?", true);
+            reputationRequirementToBeAttacked = builder.defineInRange("How low of a reputation of a player should have to be instantly aggroed upon by guards and golems?", -100, -9999, 9999);
             builder.pop();
         }
     }

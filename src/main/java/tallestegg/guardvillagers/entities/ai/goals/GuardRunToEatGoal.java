@@ -3,6 +3,7 @@ package tallestegg.guardvillagers.entities.ai.goals;
 import java.util.EnumSet;
 import java.util.List;
 
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -14,7 +15,6 @@ import tallestegg.guardvillagers.entities.Guard;
 public class GuardRunToEatGoal extends RandomStrollGoal {
     private final Guard guard;
     private int walkTimer;
-    private boolean startedRunning;
 
     public GuardRunToEatGoal(Guard guard) {
         super(guard, 1.0D);
@@ -24,26 +24,21 @@ public class GuardRunToEatGoal extends RandomStrollGoal {
 
     @Override
     public boolean canUse() {
-        return this.guard.isRunningToEat() && this.getPosition() != null;
+        return guard.getHealth() < (guard.getMaxHealth() / 2) && GuardEatFoodGoal.isConsumable(guard.getOffhandItem()) && !guard.isEating() && guard.getTarget() != null && this.getPosition() != null;
     }
 
     @Override
     public void start() {
         super.start();
-        if (this.walkTimer <= 0 && !startedRunning) {
+        this.guard.setTarget(null);
+        if (this.walkTimer <= 0) {
             this.walkTimer = 20;
-            startedRunning = true;
         }
     }
 
     @Override
     public void tick() {
-        if (--walkTimer <= 0 && guard.isRunningToEat()) {
-            this.guard.setRunningToEat(false);
-            this.guard.setEating(true);
-            startedRunning = false;
-            this.guard.getNavigation().stop();
-        }
+       --walkTimer;
         List<LivingEntity> list = this.guard.level.getEntitiesOfClass(LivingEntity.class, this.guard.getBoundingBox().inflate(5.0D, 3.0D, 5.0D));
         if (!list.isEmpty()) {
             for (LivingEntity mob : list) {
@@ -74,6 +69,13 @@ public class GuardRunToEatGoal extends RandomStrollGoal {
 
     @Override
     public boolean canContinueToUse() {
-        return super.canContinueToUse() && this.walkTimer > 0 && this.guard.isRunningToEat() && !guard.isEating() && startedRunning;
+        return super.canContinueToUse() && this.walkTimer > 0 && !guard.isEating();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        this.guard.startUsingItem(InteractionHand.OFF_HAND);
+        this.guard.getNavigation().stop();
     }
 }
