@@ -21,11 +21,11 @@ import tallestegg.guardvillagers.networking.GuardFollowPacket;
 import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
 
 public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer> {
-    private static final ResourceLocation GUARD_GUI_TEXTURES = new ResourceLocation(GuardVillagers.MODID, "textures/container/inventory.png");
-    private static final ResourceLocation GUARD_FOLLOWING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/following_icons.png");
-    private static final ResourceLocation GUARD_NOT_FOLLOWING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/not_following_icons.png");
-    private static final ResourceLocation PATROL_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/patrollingui.png");
-    private static final ResourceLocation NOT_PATROLLING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/notpatrollingui.png");
+    private static final ResourceLocation GUARD_INVENTORY = new ResourceLocation(GuardVillagers.MODID, "textures/container/inventory.png");
+    private static final ResourceLocation FOLLOWING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/icon_following.png");
+    private static final ResourceLocation NOT_FOLLOWING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/icon_not_following.png");
+    private static final ResourceLocation PATROLLING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/icon_patrolling.png");
+    private static final ResourceLocation NOT_PATROLLING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/icon_not_patrolling.png");
     private final Guard guard;
     private Player player;
     private float mousePosX;
@@ -45,12 +45,12 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     public void init() {
         super.init();
         if (GuardConfig.followHero && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.followHero) {
-            this.addRenderableWidget(new GuardGuiButton(this.leftPos + 100, this.height / 2 - 40, 20, 18, 0, 0, 19, GUARD_FOLLOWING_ICON, GUARD_NOT_FOLLOWING_ICON, true, (p_214086_1_) -> {
+            this.addRenderableWidget(new GuardGuiButton(this.leftPos + 100, this.height / 2 - 40, 18, 18, 0, 0, 18, FOLLOWING_ICON, NOT_FOLLOWING_ICON, true, (p_214086_1_) -> {
                 GuardPacketHandler.INSTANCE.sendToServer(new GuardFollowPacket(guard.getId()));
             }));
         }
         if (GuardConfig.setGuardPatrolHotv && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.setGuardPatrolHotv) {
-            this.addRenderableWidget(new GuardGuiButton(this.leftPos + 120, this.height / 2 - 40, 20, 18, 0, 0, 19, PATROL_ICON, NOT_PATROLLING_ICON, false, (p_214086_1_) -> {
+            this.addRenderableWidget(new GuardGuiButton(this.leftPos + 119, this.height / 2 - 40, 18, 18, 0, 0, 18, PATROLLING_ICON, NOT_PATROLLING_ICON, false, (p_214086_1_) -> {
                 buttonPressed = !buttonPressed;
                 GuardPacketHandler.INSTANCE.sendToServer(new GuardSetPatrolPosPacket(guard.getId(), buttonPressed));
             }));
@@ -61,7 +61,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, GUARD_GUI_TEXTURES);
+        RenderSystem.setShaderTexture(0, GUARD_INVENTORY);
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         this.blit(matrixStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
