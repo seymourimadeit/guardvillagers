@@ -16,8 +16,8 @@ import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import tallestegg.guardvillagers.configuration.GuardConfig;
@@ -32,9 +32,9 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = GuardVillagers.MODID)
 public class HandlerEvents {
     @SubscribeEvent
-    public static void onEntityTarget(LivingSetAttackTargetEvent event) {
+    public static void onEntityTarget(LivingChangeTargetEvent event) {
         LivingEntity entity = (LivingEntity) event.getEntity();
-        LivingEntity target = event.getTarget();
+        LivingEntity target = event.getNewTarget();
         if (target == null || entity.getType() == GuardEntityType.GUARD.get())
             return;
         boolean isVillager = target.getType() == EntityType.VILLAGER || target.getType() == GuardEntityType.GUARD.get();
