@@ -4,7 +4,9 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -13,6 +15,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
@@ -29,7 +32,12 @@ public class GuardVillagers {
         MinecraftForge.EVENT_BUS.register(this);
         GuardEntityType.ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         GuardItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        GuardSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener((CreativeModeTabEvent.BuildContents event) -> event.registerSimple(CreativeModeTabs.SPAWN_EGGS,
+                GuardItems.GUARD_SPAWN_EGG.get()));
+        FMLJavaModLoadingContext.get().getModEventBus().addListener((CreativeModeTabEvent.BuildContents event) -> event.registerSimple(CreativeModeTabs.SPAWN_EGGS,
+                GuardItems.ILLUSIONER_SPAWN_EGG.get()));
         GuardPacketHandler.registerPackets();
     }
 

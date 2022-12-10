@@ -1,0 +1,25 @@
+{
+	"entity.guard.ambient": {
+		"sounds": [
+			"mob/villager/idle1",
+			"mob/villager/idle2",
+			"mob/villager/idle3"
+		],
+		"subtitle": "subtitles.entity.guard.ambient"
+	},
+	"entity.guard.hurt": {
+		"sounds": [
+			"mob/villager/hit1",
+			"mob/villager/hit2",
+			"mob/villager/hit3",
+			"mob/villager/hit4"
+		],
+		"subtitle": "subtitles.entity.guard.hurt"
+	},
+	"entity.guard.death": {
+		"sounds": [
+			"mob/villager/death"
+		],
+		"subtitle": "subtitles.entity.guard.death"
+	}
+}

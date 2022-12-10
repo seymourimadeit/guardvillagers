@@ -68,6 +68,7 @@ import net.minecraftforge.network.PacketDistributor;
 import tallestegg.guardvillagers.GuardItems;
 import tallestegg.guardvillagers.GuardLootTables;
 import tallestegg.guardvillagers.GuardPacketHandler;
+import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.ai.goals.*;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
@@ -186,7 +187,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.VILLAGER_AMBIENT;
+        return GuardSounds.GUARD_AMBIENT.get();
     }
 
     @Override
@@ -194,15 +195,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (this.isBlocking()) {
             return SoundEvents.SHIELD_BLOCK;
         } else {
-            return SoundEvents.VILLAGER_HURT;
+            return GuardSounds.GUARD_HURT.get();
         }
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.VILLAGER_DEATH;
+        return GuardSounds.GUARD_DEATH.get();
     }
-
     @Override
     protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
         for (int i = 0; i < this.guardInventory.getContainerSize(); ++i) {
@@ -316,7 +316,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             compound.putInt("PatrolPosY", this.getPatrolPos().getY());
             compound.putInt("PatrolPosZ", this.getPatrolPos().getZ());
         }
-        compound.put("Gossips", this.gossips.store(NbtOps.INSTANCE).getValue());
+        compound.put("Gossips", this.gossips.store(NbtOps.INSTANCE));
         this.addPersistentAngerSaveData(compound);
     }
 
@@ -659,7 +659,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             double d2 = target.getZ() - this.getZ();
             double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
             abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - this.level.getDifficulty().getId() * 4));
-            this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+            this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
             this.level.addFreshEntity(abstractarrowentity);
             hand.hurtAndBreak(1, this, (entity) -> entity.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         }

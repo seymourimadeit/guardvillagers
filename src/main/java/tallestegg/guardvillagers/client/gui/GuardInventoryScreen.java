@@ -116,10 +116,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
             }
 
             RenderSystem.enableDepthTest();
-            blit(matrixStack, this.x, this.y, (float) this.xTexStart, (float) i, this.width, this.height, this.textureWidth, this.textureHeight);
-            if (this.isHoveredOrFocused()) {
-                this.renderToolTip(matrixStack, mouseX, mouseY);
-            }
+            blit(matrixStack, this.getX(), this.getY(), (float) this.xTexStart, (float) i, this.width, this.height, this.textureWidth, this.textureHeight);
         }
     }
 
