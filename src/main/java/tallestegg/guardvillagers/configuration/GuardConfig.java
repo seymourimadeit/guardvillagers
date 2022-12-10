@@ -130,6 +130,7 @@ public class GuardConfig {
         public final ForgeConfigSpec.BooleanValue followHero;
         public final ForgeConfigSpec.IntValue reputationRequirement;
         public final ForgeConfigSpec.IntValue reputationRequirementToBeAttacked;
+        public final ForgeConfigSpec.DoubleValue chanceToDropEquipment;
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
             builder.push("raids and illagers");
@@ -151,6 +152,7 @@ public class GuardConfig {
             VillagersRunFromPolarBears = builder.comment("This makes villagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.VillagersRunFromPolarBears").define("Have Villagers have some common sense?", true);
             builder.pop();
             builder.push("guard stuff");
+            chanceToDropEquipment = builder.defineInRange("Chance to drop equipment", 100.0F, -999.9F, 999.0F);
             GuardsRunFromPolarBears = builder.comment("This makes Guards run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.IllagersRunFromPolarBears").define("Have Guards have some common sense?", false);
             GuardsOpenDoors = builder.comment("This lets Guards open doors.").translation(GuardVillagers.MODID + ".config.GuardsOpenDoors").define("Have Guards open doors?", true);
             GuardRaiseShield = builder.comment("This will make guards raise their shields all the time, on default they will only raise their shields under certain conditions").translation(GuardVillagers.MODID + ".config.GuardRaiseShield").define("Have Guards raise their shield all the time?",

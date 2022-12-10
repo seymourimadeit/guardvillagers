@@ -207,7 +207,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
         for (int i = 0; i < this.guardInventory.getContainerSize(); ++i) {
             ItemStack itemstack = this.guardInventory.getItem(i);
-            if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack))
+            RandomSource randomsource = this.getLevel().getRandom();
+            if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && randomsource.nextFloat() < GuardConfig.COMMON.chanceToDropEquipment.get().floatValue())
                 this.spawnAtLocation(itemstack);
         }
     }
