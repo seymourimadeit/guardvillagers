@@ -34,16 +34,18 @@ public class GuardVillagers {
         GuardItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         GuardSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((CreativeModeTabEvent.BuildContents event) -> event.registerSimple(CreativeModeTabs.SPAWN_EGGS,
-                GuardItems.GUARD_SPAWN_EGG.get()));
-        FMLJavaModLoadingContext.get().getModEventBus().addListener((CreativeModeTabEvent.BuildContents event) -> event.registerSimple(CreativeModeTabs.SPAWN_EGGS,
-                GuardItems.ILLUSIONER_SPAWN_EGG.get()));
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addCreativeTabs);
         GuardPacketHandler.registerPackets();
     }
 
     public static boolean hotvChecker(Player player, Guard guard) {
         return player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
                 || !GuardConfig.giveGuardStuffHOTV || guard.getPlayerReputation(player) > GuardConfig.reputationRequirement && !player.level.isClientSide();
+    }
+
+    private void addCreativeTabs(final CreativeModeTabEvent.BuildContents event) {
+        event.registerSimple(CreativeModeTabs.SPAWN_EGGS, GuardItems.GUARD_SPAWN_EGG.get());
+        event.registerSimple(CreativeModeTabs.SPAWN_EGGS, GuardItems.ILLUSIONER_SPAWN_EGG.get());
     }
 
     private void setup(final FMLCommonSetupEvent event) {
