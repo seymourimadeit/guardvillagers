@@ -44,8 +44,10 @@ public class GuardVillagers {
     }
 
     private void addCreativeTabs(final CreativeModeTabEvent.BuildContents event) {
-        event.registerSimple(CreativeModeTabs.SPAWN_EGGS, GuardItems.GUARD_SPAWN_EGG.get());
-        event.registerSimple(CreativeModeTabs.SPAWN_EGGS, GuardItems.ILLUSIONER_SPAWN_EGG.get());
+        if (event.getTab() == CreativeModeTabs.SPAWN_EGGS) {
+            event.accept(GuardItems.GUARD_SPAWN_EGG.get());
+            event.accept(GuardItems.ILLUSIONER_SPAWN_EGG.get());
+        }
     }
 
     private void setup(final FMLCommonSetupEvent event) {
