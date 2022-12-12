@@ -16,7 +16,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-version = '1.19.3-1.5.3'
+version = '1.19.3-1.5.4'
 group = 'tallestegg.guardvillagers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'guardvillagers'
 
