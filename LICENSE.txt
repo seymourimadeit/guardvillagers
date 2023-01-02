@@ -4,7 +4,7 @@ The above written directories in this repository, including sub-directories, and
 
 All Rights Reserved
 
-Copyright (c) 2022 seymourimadeit
+Copyright (c) 2023 seymourimadeit
 
 - These assets may be copied over to a seperate repository only in use for a pull request to the mod or for a port
 - These assets may be used in a modpack as long as proper credit is given and said assets stay within the mod itself
@@ -21,7 +21,7 @@ Any other files are subject to the below license.
 
 MIT License
 
-Copyright (c) 2022 seymourimadeit
+Copyright (c) 2023 seymourimadeit
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
