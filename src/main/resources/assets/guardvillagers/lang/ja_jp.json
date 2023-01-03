@@ -1,0 +1,9 @@
+{
+"entity.guardvillagers.guard": "衛兵",
+"item.guardvillagers.guard_spawn_egg": "衛兵のスポーンエッグ",
+"item.guardvillagers.illusioner_spawn_egg": "イリュージョナーのスポーンエッグ",
+"item.guardvillagers.iron_golem_spawn_egg": "アイアンゴーレムのスポーンエッグ",
+"item.guardvillagers.snow_golem_spawn_egg": "スノーゴーレムのスポーンエッグ",
+"guardinventory.health": "体力: %s",
+"guardinventory.armor": "鎧: %s"
+}
