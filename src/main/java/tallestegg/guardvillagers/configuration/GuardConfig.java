@@ -177,9 +177,11 @@ public class GuardConfig {
 
     public static class ClientConfig {
         public final ForgeConfigSpec.BooleanValue GuardSteve;
+        public final ForgeConfigSpec.BooleanValue bigHeadBabyVillager;
 
         public ClientConfig(ForgeConfigSpec.Builder builder) {
             GuardSteve = builder.comment("Textures not included, make your own textures by making a resource pack that adds guard_steve_0 - 6").translation(GuardVillagers.MODID + ".config.steveModel").define("Have guards use the steve model?", false);
+            bigHeadBabyVillager = builder.define("Have baby villagers have big heads like in bedrock?", true);
         }
     }
 }

@@ -5,8 +5,6 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -203,6 +201,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     protected SoundEvent getDeathSound() {
         return GuardSounds.GUARD_DEATH.get();
     }
+
     @Override
     protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
         for (int i = 0; i < this.guardInventory.getContainerSize(); ++i) {
@@ -626,9 +625,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.targetSelector.addGoal(3, new HeroHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
-        if (GuardConfig.AttackAllMobs) {
+        if (GuardConfig.AttackAllMobs)
             this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId())));
-        }
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new ResetUniversalAngerTargetGoal<>(this, false));

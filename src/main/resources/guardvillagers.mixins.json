@@ -6,6 +6,9 @@
   "mixins": [
     "VillagerGoalPackagesMixin"
   ],
+  "client":[
+    "VillagerModelMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },
