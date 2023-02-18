@@ -19,7 +19,7 @@ public class GuardContainer extends AbstractContainerMenu {
     private final Guard guard;
 
     public GuardContainer(int id, Inventory playerInventory, Container guardInventory, final Guard guard) {
-        super((MenuType<?>) null, id);
+        super(null, id);
         this.guardInventory = guardInventory;
         this.guard = guard;
         guardInventory.startOpen(playerInventory.player);

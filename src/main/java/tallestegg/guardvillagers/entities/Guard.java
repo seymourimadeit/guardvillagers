@@ -410,7 +410,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void die(DamageSource source) {
-        if ((this.level.getDifficulty() == Difficulty.NORMAL || this.level.getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie) {
+        if ((this.level.getDifficulty() == Difficulty.NORMAL || this.level.getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie &&  net.minecraftforge.event.ForgeEventFactory.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
             if (this.level.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
                 return;
             }
@@ -807,7 +807,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void thunderHit(ServerLevel p_241841_1_, LightningBolt p_241841_2_) {
-        if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL) {
+        if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
             Witch witchentity = EntityType.WITCH.create(p_241841_1_);
             if (witchentity == null) return;
             witchentity.copyPosition(this);

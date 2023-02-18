@@ -12,7 +12,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public class GuardLootTables {
     public static final BiMap<ResourceLocation, LootContextParamSet> REGISTRY = HashBiMap.create();
-    public static final LootContextParamSet SLOT = LootContextParamSets.register("slot", (p_216252_0_) -> {
+    public static final LootContextParamSet SLOT = register("slot", (p_216252_0_) -> {
         p_216252_0_.required(LootContextParams.THIS_ENTITY);
     });
     

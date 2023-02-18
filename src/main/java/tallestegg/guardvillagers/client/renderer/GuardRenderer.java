@@ -25,7 +25,6 @@ import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guard>> {
-
     private final HumanoidModel<Guard> steve;
     private final HumanoidModel<Guard> normal = this.getModel();
 
