@@ -603,13 +603,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(3, new MoveBackToVillageGoal(this, 0.5D, false));
         this.goalSelector.addGoal(3, new GolemRandomStrollInVillageGoal(this, 0.5D));
         this.goalSelector.addGoal(3, new MoveThroughVillageGoal(this, 0.5D, false, 4, () -> false));
-        if (GuardConfig.GuardsOpenDoors) this.goalSelector.addGoal(3, new OpenDoorGoal(this, true) {
-            @Override
-            public void start() {
-                this.mob.swing(InteractionHand.MAIN_HAND);
-                super.start();
-            }
-        });
+        if (GuardConfig.GuardsOpenDoors) this.goalSelector.addGoal(3, new GuardInteractDoorGoal(this, true));
         if (GuardConfig.GuardFormation) this.goalSelector.addGoal(5, new FollowShieldGuards(this)); // phalanx
         if (GuardConfig.ClericHealing) this.goalSelector.addGoal(6, new RunToClericGoal(this));
         if (GuardConfig.armorerRepairGuardArmor) this.goalSelector.addGoal(6, new ArmorerRepairGuardArmorGoal(this));
