@@ -411,12 +411,12 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void die(DamageSource source) {
         if ((this.level.getDifficulty() == Difficulty.NORMAL || this.level.getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie &&  net.minecraftforge.event.ForgeEventFactory.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
-            if (this.level.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
+            ZombieVillager zombieguard = this.convertTo(EntityType.ZOMBIE_VILLAGER, true);
+            if (this.level.getDifficulty() != Difficulty.HARD && this.random.nextBoolean() || zombieguard == null) {
                 return;
             }
-            ZombieVillager zombieguard = this.convertTo(EntityType.ZOMBIE_VILLAGER, true);
             zombieguard.finalizeSpawn((ServerLevelAccessor) this.level, this.level.getCurrentDifficultyAt(zombieguard.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), (CompoundTag) null);
-            if (!this.isSilent()) this.level.levelEvent((Player) null, 1026, this.blockPosition(), 0);
+            if (!this.isSilent()) this.level.levelEvent(null, 1026, this.blockPosition(), 0);
             this.discard();
         }
         super.die(source);

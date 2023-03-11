@@ -43,20 +43,17 @@ public class GuardSetPatrolPosPacket {
     public static void handle(GuardSetPatrolPosPacket msg, Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> {
             if (msg != null) {
-                ((NetworkEvent.Context) context.get()).enqueueWork(new Runnable() {
-                    @Override
-                    public void run() {
-                        ServerPlayer player = ((NetworkEvent.Context) context.get()).getSender();
-                        if (player != null && player.level instanceof ServerLevel) {
-                            Entity entity = player.level.getEntity(msg.getEntityId());
-                            if (entity instanceof Guard) {
-                                Guard guard = (Guard) entity;
-                                BlockPos pos = msg.isPressed() ? null : guard.blockPosition();
-                                if (guard.blockPosition() != null)
-                                    guard.setPatrolPos(pos);
-                                guard.setPatrolling(!msg.isPressed());
-                                msg.setPressed(!msg.isPressed());
-                            }
+                context.get().enqueueWork(() -> {
+                    ServerPlayer player = ((NetworkEvent.Context) context.get()).getSender();
+                    if (player != null && player.level instanceof ServerLevel) {
+                        Entity entity = player.level.getEntity(msg.getEntityId());
+                        if (entity instanceof Guard) {
+                            Guard guard = (Guard) entity;
+                            BlockPos pos = msg.isPressed() ? null : guard.blockPosition();
+                            if (guard.blockPosition() != null)
+                                guard.setPatrolPos(pos);
+                            guard.setPatrolling(!msg.isPressed());
+                            msg.setPressed(!msg.isPressed());
                         }
                     }
                 });

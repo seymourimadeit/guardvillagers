@@ -135,8 +135,7 @@ public class HandlerEvents {
             ravager.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(ravager, Guard.class, false));
         }
 
-        if (event.getEntity() instanceof Witch) {
-            Witch witch = (Witch) event.getEntity();
+        if (event.getEntity() instanceof Witch witch) {
             if (GuardConfig.WitchesVillager) {
                 witch.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witch, AbstractVillager.class, true));
                 witch.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witch, IronGolem.class, true));
