@@ -316,7 +316,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             compound.putInt("PatrolPosY", this.getPatrolPos().getY());
             compound.putInt("PatrolPosZ", this.getPatrolPos().getZ());
         }
-        compound.put("Gossips", this.gossips.store(NbtOps.INSTANCE));
+        compound.put("Gossips", this.gossips.store(NbtOps.INSTANCE).getValue());
         this.addPersistentAngerSaveData(compound);
     }
 

@@ -11,7 +11,7 @@ import tallestegg.guardvillagers.GuardVillagers;
 @Mod.EventBusSubscriber(modid = GuardVillagers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class GuardSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, GuardVillagers.MODID);
-    public static final RegistryObject<SoundEvent> GUARD_AMBIENT = SOUNDS.register("entity.guard.ambient", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.ambient")));
-    public static final RegistryObject<SoundEvent> GUARD_DEATH = SOUNDS.register("entity.guard.death", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.death")));
-    public static final RegistryObject<SoundEvent> GUARD_HURT = SOUNDS.register("entity.guard.hurt", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.hurt")));
+    public static final RegistryObject<SoundEvent> GUARD_AMBIENT = SOUNDS.register("entity.guard.ambient", () -> new SoundEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.ambient")));
+    public static final RegistryObject<SoundEvent> GUARD_DEATH = SOUNDS.register("entity.guard.death", () -> new SoundEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.death")));
+    public static final RegistryObject<SoundEvent> GUARD_HURT = SOUNDS.register("entity.guard.hurt", () -> new SoundEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.hurt")));
 }
