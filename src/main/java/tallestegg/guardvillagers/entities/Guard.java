@@ -23,6 +23,7 @@ import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -789,7 +790,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             }
             for (int i = 0; i < this.guardInventory.getContainerSize(); ++i) {
                 ItemStack itemstack = this.guardInventory.getItem(i);
-                if ((!damageSource.isFire() || !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem) {
+                if ((!damageSource.is(DamageTypes.ON_FIRE)|| !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem) {
                     int j = i;
                     itemstack.hurtAndBreak((int) damage, this, (p_214023_1_) -> {
                         p_214023_1_.broadcastBreakEvent(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, j));

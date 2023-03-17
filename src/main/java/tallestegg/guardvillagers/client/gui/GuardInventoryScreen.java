@@ -65,7 +65,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         this.blit(matrixStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
-        InventoryScreen.renderEntityInInventory(i + 51, j + 75, 30, (float) (i + 51) - this.mousePosX, (float) (j + 75 - 50) - this.mousePosY, this.guard);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(matrixStack,i + 51, j + 75, 30, (float) (i + 51) - this.mousePosX, (float) (j + 75 - 50) - this.mousePosY, this.guard);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         }
 
         @Override
-        public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
             ResourceLocation icon = this.requirementsForTexture() ? texture : newTexture;
             RenderSystem.setShaderTexture(0, icon);
             int i = this.yTexStart;

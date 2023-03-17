@@ -24,7 +24,7 @@ mixin {
 }
 
 
-version = '1.19.3-1.5.5'
+version = '1.19.4-1.5.6'
 group = 'tallestegg.guardvillagers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'guardvillagers'
 
@@ -36,7 +36,7 @@ minecraft {
     // stable_#            Stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
-    mappings channel: 'parchment', version: "1.19.2-2022.11.27-1.19.3"
+    mappings channel: 'parchment', version: "1.19.3-2023.03.12-1.19.4"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
     
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -100,7 +100,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.19.3-44.0.18'
+    minecraft 'net.minecraftforge:forge:1.19.4-45.0.9'
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }
 
