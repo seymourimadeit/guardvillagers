@@ -24,15 +24,11 @@ public abstract class VillagerModelMixin<T extends Entity> extends HierarchicalM
     private ModelPart head;
 
     @Override
-    public void renderToBuffer(PoseStack p_170625_, VertexConsumer p_170626_, int p_170627_, int p_170628_, float p_170629_, float p_170630_, float p_170631_, float p_170632_) {
-        if (this.young && GuardConfig.CLIENT.bigHeadBabyVillager.get()) {
-            float f = 1.5F;
-            this.head.xScale = f;
-            this.head.yScale = f;
-            this.head.zScale = f;
-        } else {
-            this.head.resetPose();
-        }
-        super.renderToBuffer(p_170625_, p_170626_, p_170627_, p_170628_, p_170629_, p_170630_, p_170631_, p_170632_);
+    public void renderToBuffer(PoseStack pose, VertexConsumer consumer, int light, int packedOverlay, float red, float blue, float green, float alpha) {
+        float scale = this.young && GuardConfig.CLIENT.bigHeadBabyVillager.get() ? 1.5F : 1.0F;
+        this.head.xScale = scale;
+        this.head.yScale = scale;
+        this.head.zScale = scale;
+        super.renderToBuffer(pose, consumer, light, packedOverlay, red, blue, green, alpha);
     }
 }
