@@ -1,0 +1,12 @@
+{
+"entity.guardvillagers.guard": "Guwardiya",
+"item.guardvillagers.guard_spawn_egg": "Panlikhaang Itlog ng Guwardiya",
+"item.guardvillagers.illusioner_spawn_egg": "Panlikhaang Itlog ng Illusioner",
+"item.guardvillagers.iron_golem_spawn_egg": "Panlikhaang Itlog ng Bakal na Golem",
+"item.guardvillagers.snow_golem_spawn_egg": "Panlikhaang Itlog ng snow golem",
+"guardinventory.health": "Kalusugan: %s",
+"guardinventory.armor": "Baluti: %s",
+"subtitles.entity.guard.ambient": "Umuungot ang Guwardiya",
+"subtitles.entity.guard.hurt": "Nasaktan ang Guwardiya",
+"subtitles.entity.guard.death": "Namatay ang Guwardiya"
+}
