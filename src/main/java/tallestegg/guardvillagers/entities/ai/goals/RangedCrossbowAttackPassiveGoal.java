@@ -14,6 +14,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import tallestegg.guardvillagers.GuardEntityType;
+import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
 import javax.annotation.Nullable;
@@ -121,9 +122,9 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
             }
             this.mob.lookAt(livingentity, 30.0F, 30.0F);
             this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-            if (this.friendlyInLineOfSight())
+            if (this.friendlyInLineOfSight() && GuardConfig.FriendlyFire)
                 this.crossbowState = CrossbowState.FIND_NEW_POSITION;
-            if (this.crossbowState == CrossbowState.FIND_NEW_POSITION) {
+            if (this.crossbowState == CrossbowState.FIND_NEW_POSITION && GuardConfig.FriendlyFire) {
                 this.mob.stopUsingItem();
                 this.mob.setChargingCrossbow(false);
                 if (this.findPosition())
