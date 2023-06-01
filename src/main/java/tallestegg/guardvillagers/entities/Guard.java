@@ -595,7 +595,21 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(0, new RaiseShieldGoal(this));
         this.goalSelector.addGoal(1, new GuardRunToEatGoal(this));
         this.goalSelector.addGoal(2, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, 8.0F));
-        this.goalSelector.addGoal(2, new RangedBowAttackPassiveGoal<>(this, 0.5D, 20, 15.0F));
+        this.goalSelector.addGoal(2, new RangedBowAttackGoal(this, 0.5D, 20, 15.0F) {
+            @Override
+            public boolean canUse() {
+                return Guard.this.getTarget() != null && this.isBowInMainhand() && !Guard.this.isEating() && !Guard.this.isBlocking();
+            }
+
+            protected boolean isBowInMainhand() {
+                return Guard.this.getMainHandItem().getItem() instanceof BowItem;
+            }
+
+            @Override
+            public boolean canContinueToUse() {
+                return (this.canUse() || !Guard.this.getNavigation().isDone()) && this.isBowInMainhand();
+            }
+        });
         this.goalSelector.addGoal(2, new GuardMeleeGoal(this, 0.8D, true));
         this.goalSelector.addGoal(3, new Guard.FollowHeroGoal(this));
         if (GuardConfig.GuardsRunFromPolarBears)

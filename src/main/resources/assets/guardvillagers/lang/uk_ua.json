@@ -1,9 +1,12 @@
 {
-"entity.guardvillagers.guard": "Стражник",
-"item.guardvillagers.guard_spawn_egg": "Яйце призову стражника",
-"item.guardvillagers.illusioner_spawn_egg": "Яйце призову ілюзора",
-"item.guardvillagers.iron_golem_spawn_egg": "Яйце призову залізного голема",
-"item.guardvillagers.snow_golem_spawn_egg": "Яйце призову сніговика",
+"entity.guardvillagers.guard": "Сторожовий",
+"item.guardvillagers.guard_spawn_egg": "Яйце виклику сторожового",
+"item.guardvillagers.illusioner_spawn_egg": "Яйце виклику ілюзіонина",
+"item.guardvillagers.iron_golem_spawn_egg": "Яйце виклику залізного ґолема",
+"item.guardvillagers.snow_golem_spawn_egg": "Яйце виклики снігового ґолема",
 "guardinventory.health": "Здоров'я: %s",
-"guardinventory.armor": "Броня: %s"
+"guardinventory.armor": "Броня: %s",
+"subtitles.entity.guard.ambient": "Сторожовий бурмоче",
+"subtitles.entity.guard.hurt": "Сторожового поранено",
+"subtitles.entity.guard.death": "Сторожовий гине"
 }
