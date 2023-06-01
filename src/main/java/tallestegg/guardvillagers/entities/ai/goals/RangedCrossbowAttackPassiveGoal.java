@@ -79,7 +79,6 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
 
     @Override
     public void start() {
-        super.start();
         this.mob.setAggressive(true);
     }
 
@@ -120,14 +119,15 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                 this.updatePathDelay = 0;
                 this.mob.getNavigation().stop();
             }
+            this.mob.lookAt(livingentity, 30.0F, 30.0F);
             this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
             if (this.friendlyInLineOfSight())
                 this.crossbowState = CrossbowState.FIND_NEW_POSITION;
             if (this.crossbowState == CrossbowState.FIND_NEW_POSITION) {
                 this.mob.stopUsingItem();
                 this.mob.setChargingCrossbow(false);
-                if (this.findPosition() && !this.mob.isPathFinding())
-                    this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, 1.0D);
+                if (this.findPosition())
+                    this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, 1.5D);
                 this.crossbowState = CrossbowState.UNCHARGED;
             } else if (this.crossbowState == CrossbowState.UNCHARGED) {
                 if (hasSeenEntityRecently) {
@@ -166,12 +166,12 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
         List<Entity> list = this.mob.level.getEntities(this.mob, this.mob.getBoundingBox().inflate(5.0D));
         for (Entity guard : list) {
                 if (guard != this.mob.getTarget()) {
-                    boolean isVillager = guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
+                    boolean isVillager = ((Guard)this.mob).getOwner() == guard || guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
                     if (isVillager) {
                         Vec3 vector3d = this.mob.getLookAngle();
                         Vec3 vector3d1 = guard.position().vectorTo(this.mob.position()).normalize();
                         vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
-                        if (vector3d1.dot(vector3d) < 1.0D && this.mob.hasLineOfSight(guard))
+                        if (vector3d1.dot(vector3d) < 1.0D && this.mob.hasLineOfSight(guard) && guard.distanceTo(this.mob) <= 4.0D)
                             return true;
                     }
                 }

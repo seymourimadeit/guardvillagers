@@ -51,7 +51,7 @@ public class VillagerGossipToGuardGoal extends Goal {
                 this.villager.getNavigation().moveTo(guard, 0.5D);
             } else {
                 this.villager.getNavigation().stop();
-                guard.gossip((ServerLevel) guard.getLevel(), villager, guard.getLevel().getGameTime());
+                guard.gossip(villager, guard.getLevel().getGameTime());
             }
             this.villager.lookAt(guard, 30.0F, 30.0F);
             this.villager.getLookControl().setLookAt(guard, 30.0F, 30.0F);

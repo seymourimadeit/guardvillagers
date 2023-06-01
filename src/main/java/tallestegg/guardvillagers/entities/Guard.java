@@ -30,6 +30,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
@@ -37,6 +38,7 @@ import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.gossip.GossipContainer;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.animal.PolarBear;
@@ -428,23 +430,19 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (stack.isEdible()) {
             this.heal(stack.getItem().getFoodProperties(stack, this).getNutrition());
         }
-        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F,
-                world.random.nextFloat() * 0.1F + 0.9F);
+        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
         super.eat(world, stack);
         return stack;
     }
 
     @Override
     public void aiStep() {
-        if (this.kickTicks > 0) {
+        if (this.kickTicks > 0)
             --this.kickTicks;
-        }
-        if (this.kickCoolDown > 0) {
+        if (this.kickCoolDown > 0)
             --this.kickCoolDown;
-        }
-        if (this.shieldCoolDown > 0) {
+        if (this.shieldCoolDown > 0)
             --this.shieldCoolDown;
-        }
         if (this.getHealth() < this.getMaxHealth() && this.tickCount % 200 == 0) {
             this.heal(GuardConfig.amountOfHealthRegenerated);
         }
@@ -581,11 +579,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     public void setGuardVariant(int typeId) {
         this.entityData.set(GUARD_VARIANT, typeId);
-    }
-
-    // Credit : the abnormals people for discovering this
-    public ItemStack getPickedResult(HitResult target) {
-        return new ItemStack(GuardItems.GUARD_SPAWN_EGG.get());
     }
 
     @Override
@@ -726,6 +719,12 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
+    public double getMyRidingOffset() {
+        return -0.35D;
+    }
+
+
+    @Override
     public void onCrossbowAttackPerformed() {
         this.noActionTime = 0;
     }
@@ -736,7 +735,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         super.setTarget(entity);
     }
 
-    public void gossip(ServerLevel level, Villager villager, long gameTime) {
+    public void gossip(Villager villager, long gameTime) {
         if ((gameTime < this.lastGossipTime || gameTime >= this.lastGossipTime + 1200L) && (gameTime < villager.lastGossipTime || gameTime >= villager.lastGossipTime + 1200L)) {
             this.gossips.transferFrom(villager.getGossips(), this.random, 10);
             this.lastGossipTime = gameTime;
@@ -841,6 +840,16 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void startPersistentAngerTimer() {
         this.setRemainingPersistentAngerTime(angerTime.sample(random));
+    }
+
+    @Override
+    public PathNavigation getNavigation() {
+        return this.navigation;
+    }
+
+    @Override
+    public MoveControl getMoveControl() {
+        return this.moveControl;
     }
 
     public void openGui(ServerPlayer player) {

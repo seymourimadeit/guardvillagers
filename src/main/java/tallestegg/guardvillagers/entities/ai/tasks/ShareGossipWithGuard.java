@@ -37,7 +37,7 @@ public class ShareGossipWithGuard extends Behavior<Villager> {
         Guard guard = (Guard) pOwner.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET).get();
         if (pOwner.distanceToSqr(guard) < 5.0D) {
             BehaviorUtils.lockGazeAndWalkToEachOther(pOwner, guard, 0.5F);
-            guard.gossip(pLevel, pOwner, pGameTime);
+            guard.gossip(pOwner, pGameTime);
         }
     }
 
