@@ -855,6 +855,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.setRemainingPersistentAngerTime(angerTime.sample(random));
     }
 
+    /*
     @Override
     public PathNavigation getNavigation() {
         return this.navigation;
@@ -864,7 +865,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public MoveControl getMoveControl() {
         return this.moveControl;
     }
-
+     */
     public void openGui(ServerPlayer player) {
         this.setOwnerId(player.getUUID());
         if (player.containerMenu != player.inventoryMenu) {
