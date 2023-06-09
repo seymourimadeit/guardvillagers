@@ -39,7 +39,7 @@ public class HandlerEvents {
             return;
         boolean isVillager = target.getType() == EntityType.VILLAGER || target.getType() == GuardEntityType.GUARD.get();
         if (isVillager) {
-            List<Mob> list = entity.level.getEntitiesOfClass(Mob.class, entity.getBoundingBox()
+            List<Mob> list = entity.level().getEntitiesOfClass(Mob.class, entity.getBoundingBox()
                     .inflate(GuardConfig.GuardVillagerHelpRange, 5.0D, GuardConfig.GuardVillagerHelpRange));
             for (Mob mob : list) {
                 if ((mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM)
@@ -66,7 +66,7 @@ public class HandlerEvents {
             event.setCanceled(true);
         }
         if (isVillager && event.getSource().getEntity() instanceof Mob) {
-            List<Mob> list = trueSource.level.getEntitiesOfClass(Mob.class, trueSource.getBoundingBox()
+            List<Mob> list = trueSource.level().getEntitiesOfClass(Mob.class, trueSource.getBoundingBox()
                     .inflate(GuardConfig.GuardVillagerHelpRange, 5.0D, GuardConfig.GuardVillagerHelpRange));
             for (Mob mob : list) {
                 boolean type = mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM;

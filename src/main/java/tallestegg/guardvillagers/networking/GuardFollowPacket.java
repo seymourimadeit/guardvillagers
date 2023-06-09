@@ -36,8 +36,8 @@ public class GuardFollowPacket {
                     @Override
                     public void run() {
                         ServerPlayer player = ((NetworkEvent.Context) context.get()).getSender();
-                        if (player != null && player.level instanceof ServerLevel) {
-                            Entity entity = player.level.getEntity(msg.getEntityId());
+                        if (player != null && player.level() instanceof ServerLevel) {
+                            Entity entity = player.level().getEntity(msg.getEntityId());
                             if (entity instanceof Guard) {
                                 Guard guard = (Guard) entity;
                                 guard.setFollowing(!guard.isFollowing());

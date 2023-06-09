@@ -2,6 +2,7 @@ package tallestegg.guardvillagers.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -37,7 +38,6 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         this.guard = guard;
         this.titleLabelX = 80;
         this.inventoryLabelX = 100;
-        this.passEvents = false;
         this.player = playerInventory.player;
     }
 
@@ -58,34 +58,34 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int x, int y) {
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, GUARD_GUI_TEXTURES);
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        this.blit(matrixStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
-        InventoryScreen.renderEntityInInventoryFollowsMouse(matrixStack,i + 51, j + 75, 30, (float) (i + 51) - this.mousePosX, (float) (j + 75 - 50) - this.mousePosY, this.guard);
+        graphics.blit(GUARD_GUI_TEXTURES, i, j, 0, 0, this.imageWidth, this.imageHeight);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics,i + 51, j + 75, 30, (float) (i + 51) - this.mousePosX, (float) (j + 75 - 50) - this.mousePosY, this.guard);
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int x, int y) {
-        super.renderLabels(matrixStack, x, y);
+    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+        super.renderLabels(graphics, x, y);
         int health = Mth.ceil(guard.getHealth());
         int armor = guard.getArmorValue();
         Component guardHealthText = Component.translatable("guardinventory.health", health);
         Component guardArmorText = Component.translatable("guardinventory.armor", armor);
-        this.font.draw(matrixStack, guardHealthText, 80.0F, 20.0F, 4210752);
-        this.font.draw(matrixStack, guardArmorText, 80.0F, 30.0F, 4210752);
+        graphics.drawString(font, guardHealthText, 80, 20, 4210752, false);
+        graphics.drawString(font, guardArmorText, 80, 30, 4210752, false);
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(graphics);
         this.mousePosX = (float) mouseX;
         this.mousePosY = (float) mouseY;
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderTooltip(matrixStack, mouseX, mouseY);
+        super.render(graphics, mouseX, mouseY, partialTicks);
+        this.renderTooltip(graphics, mouseX, mouseY);
     }
 
     class GuardGuiButton extends ImageButton {
@@ -107,7 +107,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         }
 
         @Override
-        public void renderWidget(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
             ResourceLocation icon = this.requirementsForTexture() ? texture : newTexture;
             RenderSystem.setShaderTexture(0, icon);
             int i = this.yTexStart;
@@ -116,7 +116,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
             }
 
             RenderSystem.enableDepthTest();
-            blit(matrixStack, this.getX(), this.getY(), (float) this.xTexStart, (float) i, this.width, this.height, this.textureWidth, this.textureHeight);
+            graphics.blit(icon, this.getX(), this.getY(), (float) this.xTexStart, (float) i, this.width, this.height, this.textureWidth, this.textureHeight);
         }
     }
 

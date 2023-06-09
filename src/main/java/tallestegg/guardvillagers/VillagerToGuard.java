@@ -48,24 +48,24 @@ public class VillagerToGuard {
      private static void convertVillager(LivingEntity entity, Player player) {
         player.swing(InteractionHand.MAIN_HAND);
         ItemStack itemstack = player.getItemBySlot(EquipmentSlot.MAINHAND);
-        Guard guard = GuardEntityType.GUARD.get().create(entity.level);
+        Guard guard = GuardEntityType.GUARD.get().create(entity.level());
         Villager villager = (Villager) entity;
         if (guard == null)
             return;
-        if (entity.level.isClientSide) {
+        if (entity.level().isClientSide) {
             ParticleOptions iparticledata = ParticleTypes.HAPPY_VILLAGER;
             for (int i = 0; i < 10; ++i) {
                 double d0 = villager.getRandom().nextGaussian() * 0.02D;
                 double d1 = villager.getRandom().nextGaussian() * 0.02D;
                 double d2 = villager.getRandom().nextGaussian() * 0.02D;
-                villager.level.addParticle(iparticledata, villager.getX() + (double) (villager.getRandom().nextFloat() * villager.getBbWidth() * 2.0F) - (double) villager.getBbWidth(), villager.getY() + 0.5D + (double) (villager.getRandom().nextFloat() * villager.getBbHeight()),
+                villager.level().addParticle(iparticledata, villager.getX() + (double) (villager.getRandom().nextFloat() * villager.getBbWidth() * 2.0F) - (double) villager.getBbWidth(), villager.getY() + 0.5D + (double) (villager.getRandom().nextFloat() * villager.getBbHeight()),
                         villager.getZ() + (double) (villager.getRandom().nextFloat() * villager.getBbWidth() * 2.0F) - (double) villager.getBbWidth(), d0, d1, d2);
             }
         }
         guard.copyPosition(villager);
         guard.playSound(SoundEvents.VILLAGER_YES, 1.0F, 1.0F);
         guard.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copy());
-        int i = Guard.getRandomTypeForBiome(guard.level, guard.blockPosition());
+        int i = Guard.getRandomTypeForBiome(guard.level(), guard.blockPosition());
         guard.setGuardVariant(i);
         guard.setPersistenceRequired();
         guard.setCustomName(villager.getCustomName());
@@ -77,7 +77,7 @@ public class VillagerToGuard {
         guard.setDropChance(EquipmentSlot.MAINHAND, 100.0F);
         guard.setDropChance(EquipmentSlot.OFFHAND, 100.0F);
         guard.getGossips().add(player.getUUID(), GossipType.MINOR_POSITIVE, GuardConfig.reputationRequirement);
-        villager.level.addFreshEntity(guard);
+        villager.level().addFreshEntity(guard);
         villager.releasePoi(MemoryModuleType.HOME);
         villager.releasePoi(MemoryModuleType.JOB_SITE);
         villager.releasePoi(MemoryModuleType.MEETING_POINT);

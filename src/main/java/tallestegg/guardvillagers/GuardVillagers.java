@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.CreativeModeTabEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -40,11 +40,11 @@ public class GuardVillagers {
 
     public static boolean hotvChecker(Player player, Guard guard) {
         return player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
-                || !GuardConfig.giveGuardStuffHOTV || guard.getPlayerReputation(player) > GuardConfig.reputationRequirement && !player.level.isClientSide();
+                || !GuardConfig.giveGuardStuffHOTV || guard.getPlayerReputation(player) > GuardConfig.reputationRequirement && !player.level().isClientSide();
     }
 
-    private void addCreativeTabs(final CreativeModeTabEvent.BuildContents event) {
-        if (event.getTab() == CreativeModeTabs.SPAWN_EGGS) {
+    private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(GuardItems.GUARD_SPAWN_EGG.get());
             event.accept(GuardItems.ILLUSIONER_SPAWN_EGG.get());
         }

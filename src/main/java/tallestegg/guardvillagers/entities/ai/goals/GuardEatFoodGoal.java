@@ -29,7 +29,7 @@ public class GuardEatFoodGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        List<LivingEntity> list = this.guard.level.getEntitiesOfClass(LivingEntity.class, this.guard.getBoundingBox().inflate(5.0D, 3.0D, 5.0D));
+        List<LivingEntity> list = this.guard.level().getEntitiesOfClass(LivingEntity.class, this.guard.getBoundingBox().inflate(5.0D, 3.0D, 5.0D));
         if (!list.isEmpty()) {
             for (LivingEntity mob : list) {
                 if (mob != null) {

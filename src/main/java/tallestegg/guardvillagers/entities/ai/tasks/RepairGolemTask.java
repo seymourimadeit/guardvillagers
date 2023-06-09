@@ -23,7 +23,7 @@ public class RepairGolemTask extends WorkAtPoi {
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, Villager owner) {
-        List<IronGolem> list = owner.level.getEntitiesOfClass(IronGolem.class, owner.getBoundingBox().inflate(10.0D, 5.0D, 10.0D));
+        List<IronGolem> list = owner.level().getEntitiesOfClass(IronGolem.class, owner.getBoundingBox().inflate(10.0D, 5.0D, 10.0D));
         if (!list.isEmpty()) {
             for (IronGolem golem : list) {
                 if (!golem.isInvisible() && golem.isAlive() && golem.getType() == EntityType.IRON_GOLEM) { // Check if the entity is an Iron Golem, not any other golem.

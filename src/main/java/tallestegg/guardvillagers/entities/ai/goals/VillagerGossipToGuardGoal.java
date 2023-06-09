@@ -25,9 +25,9 @@ public class VillagerGossipToGuardGoal extends Goal {
     public boolean canUse() {
         if (this.villager.getBrain().hasMemoryValue(MemoryModuleType.INTERACTION_TARGET) && this.villager.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET).get() instanceof Guard guard) {
             this.guard = guard;
-            long gameTime = guard.getLevel().getGameTime();
+            long gameTime = guard.level().getGameTime();
             if (!nearbyVillagersInteractingWithGuards() && (gameTime < this.guard.lastGossipTime || gameTime >= this.guard.lastGossipTime + 1200L))
-                return this.guard.getTarget() == null && !this.villager.level.isNight(); // Check if no other villager in a 10 block radius is interacting with the guar
+                return this.guard.getTarget() == null && !this.villager.level().isNight(); // Check if no other villager in a 10 block radius is interacting with the guar
         }
         return false;
     }
@@ -51,7 +51,7 @@ public class VillagerGossipToGuardGoal extends Goal {
                 this.villager.getNavigation().moveTo(guard, 0.5D);
             } else {
                 this.villager.getNavigation().stop();
-                guard.gossip(villager, guard.getLevel().getGameTime());
+                guard.gossip(villager, guard.level().getGameTime());
             }
             this.villager.lookAt(guard, 30.0F, 30.0F);
             this.villager.getLookControl().setLookAt(guard, 30.0F, 30.0F);

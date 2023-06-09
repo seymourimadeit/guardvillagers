@@ -19,7 +19,7 @@ public class ArmorerRepairGuardArmorGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        List<Villager> list = this.guard.level.getEntitiesOfClass(Villager.class, this.guard.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
+        List<Villager> list = this.guard.level().getEntitiesOfClass(Villager.class, this.guard.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
         if (!list.isEmpty()) {
             for (Villager mob : list) {
                 if (mob != null) {

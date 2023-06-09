@@ -128,7 +128,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                 this.mob.stopUsingItem();
                 this.mob.setChargingCrossbow(false);
                 if (this.findPosition())
-                    this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, 1.5D);
+                    this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, this.mob.isCrouching() ? 0.5F : 1.2D);
                 this.crossbowState = CrossbowState.UNCHARGED;
             } else if (this.crossbowState == CrossbowState.UNCHARGED) {
                 if (hasSeenEntityRecently) {
@@ -164,7 +164,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
     }
 
     private boolean friendlyInLineOfSight() {
-        List<Entity> list = this.mob.level.getEntities(this.mob, this.mob.getBoundingBox().inflate(5.0D));
+        List<Entity> list = this.mob.level().getEntities(this.mob, this.mob.getBoundingBox().inflate(5.0D));
         for (Entity guard : list) {
                 if (guard != this.mob.getTarget()) {
                     boolean isVillager = ((Guard)this.mob).getOwner() == guard || guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;

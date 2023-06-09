@@ -19,7 +19,7 @@ public class GuardLookAtAndStopMovingWhenBeingTheInteractionTarget extends Goal 
 
     @Override
     public boolean canUse() {
-        List<Villager> list = this.guard.level.getEntitiesOfClass(Villager.class, guard.getBoundingBox().inflate(10.0D));
+        List<Villager> list = this.guard.level().getEntitiesOfClass(Villager.class, guard.getBoundingBox().inflate(10.0D));
         if (!list.isEmpty()) {
             for (Villager villager : list) {
                 if (villager.getBrain().hasMemoryValue(MemoryModuleType.INTERACTION_TARGET) && villager.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET).get().is(guard)) {

@@ -25,12 +25,12 @@ public class FollowShieldGuards extends Goal {
 
     @Override
     public boolean canUse() {
-        List<? extends Guard> list = this.taskOwner.level.getEntitiesOfClass(this.taskOwner.getClass(),
+        List<? extends Guard> list = this.taskOwner.level().getEntitiesOfClass(this.taskOwner.getClass(),
                 this.taskOwner.getBoundingBox().inflate(8.0D, 8.0D, 8.0D));
         if (!list.isEmpty()) {
             for (Guard guard : list) {
                 if (!guard.isInvisible() && guard.getOffhandItem().canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK) && guard.isBlocking()
-                        && this.taskOwner.level
+                        && this.taskOwner.level()
                                 .getNearbyEntities(Guard.class, NEARBY_GUARDS.range(3.0D), guard,
                                         this.taskOwner.getBoundingBox().inflate(5.0D))
                                 .size() < 5) {

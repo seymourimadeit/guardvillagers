@@ -32,7 +32,7 @@ public class GuardInteractDoorGoal extends OpenDoorGoal {
     }
 
     private boolean areOtherMobsComingThroughDoor(Guard pEntity) {
-        List<? extends PathfinderMob> nearbyEntityList = pEntity.level.getEntitiesOfClass(PathfinderMob.class,
+        List<? extends PathfinderMob> nearbyEntityList = pEntity.level().getEntitiesOfClass(PathfinderMob.class,
                 pEntity.getBoundingBox().inflate(4.0D));
         if (!nearbyEntityList.isEmpty()) {
             for (PathfinderMob mob : nearbyEntityList) {

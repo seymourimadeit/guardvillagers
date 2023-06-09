@@ -45,8 +45,8 @@ public class GuardSetPatrolPosPacket {
             if (msg != null) {
                 context.get().enqueueWork(() -> {
                     ServerPlayer player = ((NetworkEvent.Context) context.get()).getSender();
-                    if (player != null && player.level instanceof ServerLevel) {
-                        Entity entity = player.level.getEntity(msg.getEntityId());
+                    if (player != null && player.level() instanceof ServerLevel) {
+                        Entity entity = player.level().getEntity(msg.getEntityId());
                         if (entity instanceof Guard) {
                             Guard guard = (Guard) entity;
                             BlockPos pos = msg.isPressed() ? null : guard.blockPosition();
