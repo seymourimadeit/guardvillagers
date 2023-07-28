@@ -588,8 +588,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(0, new GuardEatFoodGoal(this));
         this.goalSelector.addGoal(0, new RaiseShieldGoal(this));
         this.goalSelector.addGoal(1, new GuardRunToEatGoal(this));
-        this.goalSelector.addGoal(2, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, 8.0F));
-        this.goalSelector.addGoal(2, new RangedBowAttackGoal(this, 0.5D, 20, 15.0F) {
+        this.goalSelector.addGoal(3, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, 8.0F));
+        this.goalSelector.addGoal(3, new RangedBowAttackGoal(this, 0.5D, 20, 15.0F) {
             @Override
             public boolean canUse() {
                 return Guard.this.getTarget() != null && this.isBowInMainhand() && !Guard.this.isEating() && !Guard.this.isBlocking();
@@ -604,19 +604,19 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 return (this.canUse() || !Guard.this.getNavigation().isDone()) && this.isBowInMainhand();
             }
         });
-        this.goalSelector.addGoal(2, new GuardMeleeGoal(this, 0.8D, true));
-        this.goalSelector.addGoal(3, new Guard.FollowHeroGoal(this));
+        this.goalSelector.addGoal(3, new GuardMeleeGoal(this, 0.8D, true));
+        this.goalSelector.addGoal(4, new Guard.FollowHeroGoal(this));
         if (GuardConfig.GuardsRunFromPolarBears)
-            this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, PolarBear.class, 12.0F, 1.0D, 1.2D));
-        this.goalSelector.addGoal(3, new MoveBackToVillageGoal(this, 0.5D, false));
-        this.goalSelector.addGoal(3, new GolemRandomStrollInVillageGoal(this, 0.5D));
-        this.goalSelector.addGoal(3, new MoveThroughVillageGoal(this, 0.5D, false, 4, () -> false));
-        if (GuardConfig.GuardsOpenDoors) this.goalSelector.addGoal(3, new GuardInteractDoorGoal(this, true));
-        if (GuardConfig.GuardFormation) this.goalSelector.addGoal(5, new FollowShieldGuards(this)); // phalanx
+            this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, PolarBear.class, 12.0F, 1.0D, 1.2D));
+        this.goalSelector.addGoal(4, new MoveBackToVillageGoal(this, 0.5D, false));
+        this.goalSelector.addGoal(4, new GolemRandomStrollInVillageGoal(this, 0.5D));
+        this.goalSelector.addGoal(4, new MoveThroughVillageGoal(this, 0.5D, false, 4, () -> false));
+        if (GuardConfig.GuardsOpenDoors) this.goalSelector.addGoal(4, new GuardInteractDoorGoal(this, true));
+        if (GuardConfig.GuardFormation) this.goalSelector.addGoal(6, new FollowShieldGuards(this)); // phalanx
         if (GuardConfig.ClericHealing) this.goalSelector.addGoal(6, new RunToClericGoal(this));
         if (GuardConfig.armorerRepairGuardArmor) this.goalSelector.addGoal(6, new ArmorerRepairGuardArmorGoal(this));
-        this.goalSelector.addGoal(4, new WalkBackToCheckPointGoal(this, 0.5D));
-        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.5D));
+        this.goalSelector.addGoal(7, new WalkBackToCheckPointGoal(this, 0.5D));
+        this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 0.5D));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, AbstractVillager.class, 8.0F));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new GuardLookAtAndStopMovingWhenBeingTheInteractionTarget(this));
