@@ -30,7 +30,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
@@ -38,7 +37,6 @@ import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.gossip.GossipContainer;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.animal.PolarBear;
@@ -57,7 +55,6 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -267,28 +264,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    protected void completeUsingItem() {
-        if (this.isUsingItem()) {
-            InteractionHand interactionhand = this.getUsedItemHand();
-            if (!this.useItem.equals(this.getItemInHand(interactionhand))) {
-                this.releaseUsingItem();
-            } else {
-                if (!this.useItem.isEmpty() && this.isUsingItem()) {
-                    this.triggerItemUseEffects(this.useItem, 16);
-                    ItemStack copy = this.useItem.copy();
-                    ItemStack itemstack = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(level(), this));
-                    if (itemstack != this.useItem) {
-                        this.setItemInHand(interactionhand, itemstack);
-                    }
-                    if (!this.useItem.isEdible()) this.useItem.shrink(1);
-                    this.stopUsingItem();
-                }
-
-            }
-        }
-    }
-
-    @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Type", this.getGuardVariant());
@@ -330,6 +305,28 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         } else if (i >= this.lastGossipDecayTime + 24000L) {
             this.gossips.decay();
             this.lastGossipDecayTime = i;
+        }
+    }
+
+    @Override
+    protected void completeUsingItem() {
+        if (this.isUsingItem()) {
+            InteractionHand interactionhand = this.getUsedItemHand();
+            if (!this.useItem.equals(this.getItemInHand(interactionhand))) {
+                this.releaseUsingItem();
+            } else {
+                if (!this.useItem.isEmpty() && this.isUsingItem()) {
+                    this.triggerItemUseEffects(this.useItem, 16);
+                    ItemStack copy = this.useItem.copy();
+                    ItemStack itemstack = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(level(), this));
+                    if (itemstack != this.useItem) {
+                        this.setItemInHand(interactionhand, itemstack);
+                    }
+                    if (!this.useItem.isEdible()) this.useItem.shrink(1);
+                    this.stopUsingItem();
+                }
+
+            }
         }
     }
 
@@ -413,7 +410,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void die(DamageSource source) {
-        if ((level().getDifficulty() == Difficulty.NORMAL || level().getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie &&  net.minecraftforge.event.ForgeEventFactory.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
+        if ((level().getDifficulty() == Difficulty.NORMAL || level().getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie && net.minecraftforge.event.ForgeEventFactory.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {
+        })) {
             ZombieVillager zombieguard = this.convertTo(EntityType.ZOMBIE_VILLAGER, true);
             if (level().getDifficulty() != Difficulty.HARD && this.random.nextBoolean() || zombieguard == null) {
                 return;
@@ -567,7 +565,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public List<ItemStack> getItemsFromLootTable(EquipmentSlot slot) {
         if (EQUIPMENT_SLOT_ITEMS.containsKey(slot)) {
             LootTable loot = level().getServer().getLootData().getLootTable(EQUIPMENT_SLOT_ITEMS.get(slot));
-            LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel)level()).withParameter(LootContextParams.THIS_ENTITY, this));
+            LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) level()).withParameter(LootContextParams.THIS_ENTITY, this));
             return loot.getRandomItems(lootcontext$builder.create(GuardLootTables.SLOT));
         }
         return null;
@@ -629,6 +627,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
         if (GuardConfig.AttackAllMobs)
             this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId())));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> GuardConfig.COMMON.MobWhiteList.get().contains(mob.getEncodeId())));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new ResetUniversalAngerTargetGoal<>(this, false));
@@ -720,7 +719,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public boolean canAttack(LivingEntity target) {
-        return !GuardConfig.MobBlackList.contains(target.getEncodeId()) && !target.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !this.isOwner(target) && !(target instanceof Villager) && !(target instanceof IronGolem) && !(target instanceof Guard) && super.canAttack(target);
+        return (GuardConfig.MobBlackList.contains(target.getEncodeId()) || target.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(target) || (target instanceof Villager) || (target instanceof IronGolem) || (target instanceof Guard)) ? false : super.canAttack(target);
     }
 
     @Override
@@ -803,7 +802,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             }
             for (int i = 0; i < this.guardInventory.getContainerSize(); ++i) {
                 ItemStack itemstack = this.guardInventory.getItem(i);
-                if ((!damageSource.is(DamageTypes.ON_FIRE)|| !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem) {
+                if ((!damageSource.is(DamageTypes.ON_FIRE) || !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem) {
                     int j = i;
                     itemstack.hurtAndBreak((int) damage, this, (p_214023_1_) -> {
                         p_214023_1_.broadcastBreakEvent(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, j));
@@ -815,7 +814,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void thunderHit(ServerLevel p_241841_1_, LightningBolt p_241841_2_) {
-        if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.WITCH, (timer) -> {})) {
+        if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.WITCH, (timer) -> {
+        })) {
             Witch witchentity = EntityType.WITCH.create(p_241841_1_);
             if (witchentity == null) return;
             witchentity.copyPosition(this);

@@ -125,6 +125,7 @@ public class GuardConfig {
         public final ForgeConfigSpec.BooleanValue guardArrowsHurtVillagers;
         public final ForgeConfigSpec.BooleanValue armorersRepairGuardArmor;
         public final ForgeConfigSpec.ConfigValue<List<String>> MobBlackList;
+        public final ForgeConfigSpec.ConfigValue<List<String>> MobWhiteList;
         public final ForgeConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ForgeConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ForgeConfigSpec.BooleanValue followHero;
@@ -141,7 +142,8 @@ public class GuardConfig {
             builder.pop();
             builder.push("mob ai in general");
             AttackAllMobs = builder.comment("Guards will attack all hostiles with this option").translation(GuardVillagers.MODID + ".config.AttackAllMobs").define("Guards attack all mobs?", false);
-            MobBlackList = builder.comment("Guards won't attack mobs in this list if AttackAllMobs is enabled, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").define("Mob BlackList", new ArrayList<>());
+            MobBlackList = builder.comment("Guards won't attack mobs in this list if AttackAllMobs is enabled, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").define("Mob Blacklist", new ArrayList<>());
+            MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").define("Mob Whitelist", new ArrayList<>());
             builder.pop();
             builder.push("villager stuff");
             armorersRepairGuardArmor = builder.translation(GuardVillagers.MODID + ".config.armorvillager").define("Allow armorers and weaponsmiths repair guard items when down below half durability?", true);
