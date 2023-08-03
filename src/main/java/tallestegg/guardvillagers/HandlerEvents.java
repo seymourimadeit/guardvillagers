@@ -55,7 +55,7 @@ public class HandlerEvents {
 
     @SubscribeEvent
     public static void onEntityHurt(LivingHurtEvent event) {
-        LivingEntity entity = (LivingEntity) event.getEntity();
+        LivingEntity entity = event.getEntity();
         Entity trueSource = event.getSource().getEntity();
         if (entity == null || trueSource == null)
             return;
@@ -80,9 +80,10 @@ public class HandlerEvents {
 
     @SubscribeEvent
     public static void onLivingSpawned(EntityJoinLevelEvent event) {
-        if (event.getEntity() instanceof Raider)
+        if (event.getEntity() instanceof Raider) {
             if (((Raider) event.getEntity()).hasActiveRaid() && GuardConfig.RaidAnimals)
                 ((Raider) event.getEntity()).targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(((Raider) event.getEntity()), Animal.class, false));
+        }
         if (GuardConfig.AttackAllMobs) {
             if (event.getEntity() instanceof Enemy
                     && !GuardConfig.MobBlackList.contains(event.getEntity().getEncodeId())
@@ -111,7 +112,6 @@ public class HandlerEvents {
         }
 
         if (event.getEntity() instanceof Villager villager) {
-           // villager.goalSelector.addGoal(1, new VillagerGossipToGuardGoal(villager));
             if (GuardConfig.BlackSmithHealing)
                 villager.goalSelector.addGoal(1, new HealGolemGoal(villager));
             if (GuardConfig.ClericHealing)
