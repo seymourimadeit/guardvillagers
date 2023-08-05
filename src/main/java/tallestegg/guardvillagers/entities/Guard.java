@@ -30,6 +30,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
@@ -37,6 +38,7 @@ import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.gossip.GossipContainer;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.animal.PolarBear;
@@ -856,17 +858,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.setRemainingPersistentAngerTime(angerTime.sample(random));
     }
 
-    /*
-    @Override
-    public PathNavigation getNavigation() {
-        return this.navigation;
-    }
-
-    @Override
-    public MoveControl getMoveControl() {
-        return this.moveControl;
-    }
-     */
     public void openGui(ServerPlayer player) {
         this.setOwnerId(player.getUUID());
         if (player.containerMenu != player.inventoryMenu) {
