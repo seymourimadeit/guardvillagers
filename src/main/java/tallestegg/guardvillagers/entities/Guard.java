@@ -160,6 +160,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         this.setGuardVariant(type);
         RandomSource randomsource = worldIn.getRandom();
+        for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
+            for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype, (ServerLevel) worldIn)) {
+                this.setItemSlot(equipmentslottype, stack);
+            }
+        }
         this.populateDefaultEquipmentSlots(randomsource, difficultyIn);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
@@ -553,19 +558,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected void populateDefaultEquipmentSlots(RandomSource source, DifficultyInstance instance) {
-        for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
-            for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype)) {
-                this.setItemSlot(equipmentslottype, stack);
-            }
-        }
         this.handDropChances[EquipmentSlot.MAINHAND.getIndex()] = 100.0F;
         this.handDropChances[EquipmentSlot.OFFHAND.getIndex()] = 100.0F;
     }
 
-    public List<ItemStack> getItemsFromLootTable(EquipmentSlot slot) {
+    public List<ItemStack> getItemsFromLootTable(EquipmentSlot slot, ServerLevel level) {
         if (EQUIPMENT_SLOT_ITEMS.containsKey(slot)) {
             LootTable loot = level().getServer().getLootData().getLootTable(EQUIPMENT_SLOT_ITEMS.get(slot));
-            LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) level()).withParameter(LootContextParams.THIS_ENTITY, this));
+            LootParams.Builder lootcontext$builder = (new LootParams.Builder(level).withParameter(LootContextParams.THIS_ENTITY, this));
             return loot.getRandomItems(lootcontext$builder.create(GuardLootTables.SLOT));
         }
         return null;
