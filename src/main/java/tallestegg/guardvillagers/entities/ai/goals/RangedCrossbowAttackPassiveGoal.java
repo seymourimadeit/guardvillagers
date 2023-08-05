@@ -112,7 +112,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
             boolean canSee2 = (d0 > (double) this.attackRadiusSqr || this.seeTime < 5) && this.attackDelay == 0;
             if (canSee2) {
                 --this.updatePathDelay;
-                if (this.updatePathDelay <= 0) {
+                if (this.updatePathDelay <= 0 && !((Guard)this.mob).isPatrolling()) {
                     this.mob.getNavigation().moveTo(livingentity, this.canRun() ? this.speedModifier : this.speedModifier * 0.5D);
                     this.updatePathDelay = PATHFINDING_DELAY_RANGE.sample(this.mob.getRandom());
                 }
