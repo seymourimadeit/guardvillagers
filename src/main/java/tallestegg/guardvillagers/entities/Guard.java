@@ -104,6 +104,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public int shieldCoolDown;
     public int kickCoolDown;
     public boolean interacting;
+    protected boolean spawnWithArmor;
     private int remainingPersistentAngerTime;
     private UUID persistentAngerTarget;
     private net.minecraftforge.common.util.LazyOptional<?> itemHandler;
@@ -232,6 +233,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.kickCoolDown = compound.getInt("ShieldCooldown");
         this.lastGossipDecayTime = compound.getLong("LastGossipDecay");
         this.lastGossipTime = compound.getLong("LastGossipTime");
+        this.spawnWithArmor = compound.getBoolean("SpawnWithArmor");
         if (compound.contains("PatrolPosX")) {
             int x = compound.getInt("PatrolPosX");
             int y = compound.getInt("PatrolPosY");
@@ -273,6 +275,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         compound.putBoolean("Following", this.isFollowing());
         compound.putBoolean("Interacting", this.interacting);
         compound.putBoolean("Patrolling", this.isPatrolling());
+        compound.putBoolean("SpawnWithArmor", this.spawnWithArmor);
         compound.putLong("LastGossipTime", this.lastGossipTime);
         compound.putLong("LastGossipDecay", this.lastGossipDecayTime);
         if (this.getOwnerId() != null) {
@@ -410,8 +413,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void die(DamageSource source) {
-        if ((level().getDifficulty() == Difficulty.NORMAL || level().getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie && net.minecraftforge.event.ForgeEventFactory.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {
-        })) {
+        if ((level().getDifficulty() == Difficulty.NORMAL || level().getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie && net.minecraftforge.event.ForgeEventFactory.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
             ZombieVillager zombieguard = this.convertTo(EntityType.ZOMBIE_VILLAGER, true);
             if (level().getDifficulty() != Difficulty.HARD && this.random.nextBoolean() || zombieguard == null) {
                 return;
@@ -440,6 +442,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (this.shieldCoolDown > 0) --this.shieldCoolDown;
         if (this.getHealth() < this.getMaxHealth() && this.tickCount % 200 == 0) {
             this.heal(GuardConfig.amountOfHealthRegenerated);
+        }
+        if (spawnWithArmor) {
+            for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
+                for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype, (ServerLevel) this.level())) {
+                    this.setItemSlot(equipmentslottype, stack);
+                }
+            }
+            this.spawnWithArmor = false;
         }
         if (!level().isClientSide) this.updatePersistentAnger((ServerLevel) level(), true);
         this.updateSwingTime();
@@ -552,16 +562,13 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     protected void populateDefaultEquipmentSlots(RandomSource source, DifficultyInstance instance) {
         this.handDropChances[EquipmentSlot.MAINHAND.getIndex()] = 100.0F;
         this.handDropChances[EquipmentSlot.OFFHAND.getIndex()] = 100.0F;
-        for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
-            for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype, (ServerLevel) this.level())) {
-                this.setItemSlot(equipmentslottype, stack);
-            }
-        }
+        this.spawnWithArmor = true;
     }
 
     public List<ItemStack> getItemsFromLootTable(EquipmentSlot slot, ServerLevel level) {
         if (EQUIPMENT_SLOT_ITEMS.containsKey(slot)) {
-            LootTable loot = level().getServer().getLootData().getLootTable(EQUIPMENT_SLOT_ITEMS.get(slot));
+            ServerLevel serverlevel = (ServerLevel) this.level();
+            LootTable loot = serverlevel.getServer().getLootData().getLootTable(EQUIPMENT_SLOT_ITEMS.get(slot));
             LootParams.Builder lootcontext$builder = (new LootParams.Builder(level).withParameter(LootContextParams.THIS_ENTITY, this));
             return loot.getRandomItems(lootcontext$builder.create(GuardLootTables.SLOT));
         }
