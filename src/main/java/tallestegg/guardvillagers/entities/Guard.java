@@ -160,11 +160,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         this.setGuardVariant(type);
         RandomSource randomsource = worldIn.getRandom();
-        for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
-            for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype, (ServerLevel) worldIn)) {
-                this.setItemSlot(equipmentslottype, stack);
-            }
-        }
         this.populateDefaultEquipmentSlots(randomsource, difficultyIn);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
@@ -440,12 +435,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void aiStep() {
-        if (this.kickTicks > 0)
-            --this.kickTicks;
-        if (this.kickCoolDown > 0)
-            --this.kickCoolDown;
-        if (this.shieldCoolDown > 0)
-            --this.shieldCoolDown;
+        if (this.kickTicks > 0) --this.kickTicks;
+        if (this.kickCoolDown > 0) --this.kickCoolDown;
+        if (this.shieldCoolDown > 0) --this.shieldCoolDown;
         if (this.getHealth() < this.getMaxHealth() && this.tickCount % 200 == 0) {
             this.heal(GuardConfig.amountOfHealthRegenerated);
         }
@@ -560,6 +552,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     protected void populateDefaultEquipmentSlots(RandomSource source, DifficultyInstance instance) {
         this.handDropChances[EquipmentSlot.MAINHAND.getIndex()] = 100.0F;
         this.handDropChances[EquipmentSlot.OFFHAND.getIndex()] = 100.0F;
+        for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
+            for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype, (ServerLevel) this.level())) {
+                this.setItemSlot(equipmentslottype, stack);
+            }
+        }
     }
 
     public List<ItemStack> getItemsFromLootTable(EquipmentSlot slot, ServerLevel level) {
@@ -570,6 +567,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         return null;
     }
+
 
     public int getGuardVariant() {
         return this.entityData.get(GUARD_VARIANT);
@@ -879,8 +877,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    public <
-            T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
+    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
         if (this.isAlive() && capability == ForgeCapabilities.ITEM_HANDLER && itemHandler != null)
             return itemHandler.cast();
         return super.getCapability(capability, facing);
