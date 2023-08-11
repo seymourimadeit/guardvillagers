@@ -3,13 +3,14 @@ package tallestegg.guardvillagers.entities.ai.goals;
 import java.util.EnumSet;
 import java.util.List;
 
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.util.TimeUtil;
+import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.monster.CrossbowAttackMob;
 import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -18,149 +19,196 @@ import tallestegg.guardvillagers.GuardItems;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
-public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAttackMob & CrossbowAttackMob> extends Goal {
-    private final T entity;
-    private RangedCrossbowAttackPassiveGoal.CrossbowState crossbowState = RangedCrossbowAttackPassiveGoal.CrossbowState.UNCHARGED;
-    private final double speed;
-    private final float distanceMoveToEntity;
-    private int seeTicks;
-    private int timeUntilStrike;
+import javax.annotation.Nullable;
 
-    public RangedCrossbowAttackPassiveGoal(T entity, double p_i50322_2_, float p_i50322_4_) {
-        this.entity = entity;
-        this.speed = p_i50322_2_;
-        this.distanceMoveToEntity = p_i50322_4_ * p_i50322_4_;
+public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAttackMob & CrossbowAttackMob> extends Goal {
+    public static final UniformInt PATHFINDING_DELAY_RANGE = TimeUtil.rangeOfSeconds(1, 2);
+    private final T mob;
+    private final double speedModifier;
+    private final float attackRadiusSqr;
+    protected double wantedX;
+    protected double wantedY;
+    protected double wantedZ;
+    private CrossbowState crossbowState = CrossbowState.UNCHARGED;
+    private int seeTime;
+    private int attackDelay;
+    private int updatePathDelay;
+    private int runTime;
+
+    public RangedCrossbowAttackPassiveGoal(T pMob, double pSpeedModifier, float pAttackRadius) {
+        this.mob = pMob;
+        this.speedModifier = pSpeedModifier;
+        this.attackRadiusSqr = pAttackRadius * pAttackRadius;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
     @Override
     public boolean canUse() {
-        return this.hasAttackTarget() && this.isHoldingCrossbow() && !((Guard) this.entity).isEating();
+        return this.isValidTarget() && this.isHoldingCrossbow();
     }
 
     private boolean isHoldingCrossbow() {
-        return this.entity.getMainHandItem().getItem() instanceof CrossbowItem;
+        return this.mob.getMainHandItem().getItem() instanceof CrossbowItem;
     }
 
     @Override
     public boolean canContinueToUse() {
-        return this.hasAttackTarget() && (this.canUse() || !this.entity.getNavigation().isDone()) && this.isHoldingCrossbow();
+        return this.isValidTarget() && (this.canUse() || !this.mob.getNavigation().isDone()) && this.isHoldingCrossbow();
     }
 
-    private boolean hasAttackTarget() {
-        return this.entity.getTarget() != null && this.entity.getTarget().isAlive();
+    private boolean isValidTarget() {
+        return this.mob.getTarget() != null && this.mob.getTarget().isAlive();
     }
 
     @Override
     public void stop() {
         super.stop();
-        this.entity.setAggressive(false);
-        this.entity.setTarget((LivingEntity) null);
-        ((Guard) this.entity).setKicking(false);
-        this.seeTicks = 0;
-        if (this.entity.getPose() == Pose.CROUCHING)
-            this.entity.setPose(Pose.STANDING);
-        if (this.entity.isUsingItem()) {
-            this.entity.stopUsingItem();
-            ((CrossbowAttackMob) this.entity).setChargingCrossbow(false);
+        this.mob.setAggressive(true);
+        this.mob.setTarget(null);
+        this.seeTime = 0;
+        if (this.mob.isUsingItem()) {
+            this.mob.stopUsingItem();
+            this.mob.setChargingCrossbow(false);
+        }
+        this.mob.setPose(Pose.STANDING);
+    }
+
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
+
+    @Override
+    public void start() {
+        this.mob.setAggressive(true);
+    }
+
+    @Override
+    public void tick() {
+        LivingEntity livingentity = this.mob.getTarget();
+        if (livingentity != null) {
+            boolean canSee = this.mob.getSensing().hasLineOfSight(livingentity);
+            boolean hasSeenEntityRecently = this.seeTime > 0;
+            if (canSee != hasSeenEntityRecently) {
+                this.seeTime = 0;
+            }
+            if (canSee) {
+                ++this.seeTime;
+            } else {
+                --this.seeTime;
+            }
+            double d0 = this.mob.distanceToSqr(livingentity);
+            double d1 = livingentity.distanceTo(this.mob);
+            if (d1 <= 4.0D) {
+                this.mob.getMoveControl().strafe(this.mob.isUsingItem() ? -0.5F : -3.0F, 0.0F);
+                this.mob.lookAt(livingentity, 30.0F, 30.0F);
+            }
+            if (this.mob.getRandom().nextInt(50) == 0) {
+                if (this.mob.hasPose(Pose.STANDING))
+                    this.mob.setPose(Pose.CROUCHING);
+                else
+                    this.mob.setPose(Pose.STANDING);
+            }
+            boolean canSee2 = (d0 > (double) this.attackRadiusSqr || this.seeTime < 5) && this.attackDelay == 0;
+            if (canSee2) {
+                --this.updatePathDelay;
+                if (this.updatePathDelay <= 0) {
+                    this.mob.getNavigation().moveTo(livingentity, this.canRun() ? this.speedModifier : this.speedModifier * 0.5D);
+                    this.updatePathDelay = PATHFINDING_DELAY_RANGE.sample(this.mob.getRandom());
+                }
+            } else {
+                this.updatePathDelay = 0;
+                this.mob.getNavigation().stop();
+            }
+            this.mob.lookAt(livingentity, 30.0F, 30.0F);
+            this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
+            if (this.friendlyInLineOfSight() && GuardConfig.FriendlyFire)
+                this.crossbowState = CrossbowState.FIND_NEW_POSITION;
+            if (this.crossbowState == CrossbowState.FIND_NEW_POSITION && GuardConfig.FriendlyFire) {
+                this.mob.stopUsingItem();
+                this.mob.setChargingCrossbow(false);
+                if (this.findPosition())
+                    this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, 1.5D);
+                this.crossbowState = CrossbowState.UNCHARGED;
+            } else if (this.crossbowState == CrossbowState.UNCHARGED) {
+                if (hasSeenEntityRecently) {
+                    this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
+                    this.crossbowState = CrossbowState.CHARGING;
+                    this.mob.setChargingCrossbow(true);
+                }
+            } else if (this.crossbowState == CrossbowState.CHARGING) {
+                if (!this.mob.isUsingItem()) {
+                    this.crossbowState = CrossbowState.UNCHARGED;
+                }
+                int i = this.mob.getTicksUsingItem();
+                ItemStack itemstack = this.mob.getUseItem();
+                if (i >= CrossbowItem.getChargeDuration(itemstack) || CrossbowItem.isCharged(itemstack)) {
+                    this.mob.releaseUsingItem();
+                    this.crossbowState = CrossbowState.CHARGED;
+                    this.attackDelay = 10 + this.mob.getRandom().nextInt(5);
+                    this.mob.setChargingCrossbow(false);
+                }
+            } else if (this.crossbowState == CrossbowState.CHARGED) {
+                --this.attackDelay;
+                if (this.attackDelay == 0) {
+                    this.crossbowState = CrossbowState.READY_TO_ATTACK;
+                }
+            } else if (this.crossbowState == CrossbowState.READY_TO_ATTACK && canSee) {
+                this.mob.performRangedAttack(livingentity, 1.0F);
+                ItemStack itemstack1 = this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
+                CrossbowItem.setCharged(itemstack1, false);
+                this.crossbowState = CrossbowState.UNCHARGED;
+            }
         }
     }
 
-    public boolean checkFriendlyFire() {
-        List<LivingEntity> list = this.entity.level.getEntitiesOfClass(LivingEntity.class, this.entity.getBoundingBox().inflate(5.0D, 1.0D, 5.0D));
-        for (LivingEntity guard : list) {
-            if (entity != guard || guard != entity) {
-                if (guard != entity.getTarget()) {
-                    boolean isVillager = guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
-                    if (isVillager) {
-                        Vec3 vector3d = entity.getLookAngle();
-                        Vec3 vector3d1 = guard.position().vectorTo(entity.position()).normalize();
-                        vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
-                        if (vector3d1.dot(vector3d) < 1.0D && entity.hasLineOfSight(guard))
-                            return GuardConfig.FriendlyFire;
-                    }
+    private boolean friendlyInLineOfSight() {
+        List<Entity> list = this.mob.level.getEntities(this.mob, this.mob.getBoundingBox().inflate(5.0D));
+        for (Entity guard : list) {
+            if (guard != this.mob.getTarget()) {
+                boolean isVillager = ((Guard)this.mob).getOwner() == guard || guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
+                if (isVillager) {
+                    Vec3 vector3d = this.mob.getLookAngle();
+                    Vec3 vector3d1 = guard.position().vectorTo(this.mob.position()).normalize();
+                    vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
+                    if (vector3d1.dot(vector3d) < 1.0D && this.mob.hasLineOfSight(guard) && guard.distanceTo(this.mob) < 4.0D)
+                        return true;
                 }
             }
         }
         return false;
     }
 
-    @Override
-    public void tick() {
-        LivingEntity livingentity = this.entity.getTarget();
-        if (livingentity != null) {
-            this.entity.setAggressive(true);
-            boolean flag = this.entity.getSensing().hasLineOfSight(livingentity);
-            boolean flag1 = this.seeTicks > 0;
-            if (flag != flag1) {
-                this.seeTicks = 0;
-            }
-
-            if (flag) {
-                ++this.seeTicks;
-            } else {
-                --this.seeTicks;
-            }
-
-            if (this.entity.getPose() == Pose.STANDING && this.entity.level.random.nextInt(4) == 0 && entity.tickCount % 50 == 0) {
-                this.entity.setPose(Pose.CROUCHING);
-            }
-
-            if (this.entity.getPose() == Pose.CROUCHING && this.entity.level.random.nextInt(4) == 0 && entity.tickCount % 100 == 0) {
-                this.entity.setPose(Pose.STANDING);
-            }
-
-            double d1 = livingentity.distanceTo(entity);
-            if (d1 <= 2.0D) {
-                this.entity.getMoveControl().strafe(this.entity.isUsingItem() ?- 0.5F : -3.0F, 0.0F);
-                this.entity.lookAt(livingentity, 30.0F, 30.0F);
-            }
-
-            double d0 = this.entity.distanceToSqr(livingentity);
-            boolean flag2 = (d0 > (double) this.distanceMoveToEntity || this.seeTicks < 5) && this.timeUntilStrike == 0;
-            if (flag2) {
-                this.entity.getNavigation().moveTo(livingentity, this.isCrossbowUncharged() ? this.speed : this.speed * 0.5D);
-            } else {
-                this.entity.getNavigation().stop();
-            }
-            this.entity.lookAt(livingentity, 30.0F, 30.0F);
-            this.entity.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-            if (this.crossbowState == RangedCrossbowAttackPassiveGoal.CrossbowState.UNCHARGED && !CrossbowItem.isCharged(entity.getUseItem()) && !entity.isBlocking()) {
-                if (flag) {
-                    this.entity.startUsingItem(GuardItems.getHandWith(entity, item -> item instanceof CrossbowItem));
-                    this.crossbowState = RangedCrossbowAttackPassiveGoal.CrossbowState.CHARGING;
-                    ((CrossbowAttackMob) this.entity).setChargingCrossbow(true);
-                }
-            } else if (this.crossbowState == RangedCrossbowAttackPassiveGoal.CrossbowState.CHARGING) {
-                if (!this.entity.isUsingItem())
-                    this.crossbowState = RangedCrossbowAttackPassiveGoal.CrossbowState.UNCHARGED;
-                int i = this.entity.getTicksUsingItem();
-                ItemStack itemstack = this.entity.getUseItem();
-                if (i >= CrossbowItem.getChargeDuration(itemstack) || CrossbowItem.isCharged(entity.getUseItem())) {
-                    this.entity.releaseUsingItem();
-                    this.crossbowState = RangedCrossbowAttackPassiveGoal.CrossbowState.CHARGED;
-                    this.timeUntilStrike = 20 + this.entity.getRandom().nextInt(20);
-                    ((CrossbowAttackMob) this.entity).setChargingCrossbow(false);
-                }
-            } else if (this.crossbowState == RangedCrossbowAttackPassiveGoal.CrossbowState.CHARGED) {
-                --this.timeUntilStrike;
-                if (this.timeUntilStrike == 0) {
-                    this.crossbowState = RangedCrossbowAttackPassiveGoal.CrossbowState.READY_TO_ATTACK;
-                }
-            } else if (this.crossbowState == RangedCrossbowAttackPassiveGoal.CrossbowState.READY_TO_ATTACK && flag && !checkFriendlyFire() && !entity.isBlocking()) {
-                ((RangedAttackMob) this.entity).performRangedAttack(livingentity, 1.0F);
-                ItemStack itemstack1 = this.entity.getItemInHand(GuardItems.getHandWith(entity, item -> item instanceof CrossbowItem));
-                CrossbowItem.setCharged(itemstack1, false);
-                this.crossbowState = RangedCrossbowAttackPassiveGoal.CrossbowState.UNCHARGED;
-            }
+    public boolean findPosition() {
+        Vec3 vector3d = this.getPosition();
+        if (vector3d == null) {
+            return false;
+        } else {
+            this.wantedX = vector3d.x;
+            this.wantedY = vector3d.y;
+            this.wantedZ = vector3d.z;
+            return true;
         }
     }
 
-    private boolean isCrossbowUncharged() {
-        return this.crossbowState == RangedCrossbowAttackPassiveGoal.CrossbowState.UNCHARGED;
+    @Nullable
+    protected Vec3 getPosition() {
+        if (this.isValidTarget())
+            return DefaultRandomPos.getPosAway(this.mob, 16, 7, this.mob.getTarget().position());
+        else
+            return DefaultRandomPos.getPos(this.mob, 16, 7);
+    }
+
+    private boolean canRun() {
+        return this.crossbowState == CrossbowState.UNCHARGED;
     }
 
     static enum CrossbowState {
-        UNCHARGED, CHARGING, CHARGED, READY_TO_ATTACK;
+        UNCHARGED,
+        CHARGING,
+        CHARGED,
+        READY_TO_ATTACK,
+        FIND_NEW_POSITION
     }
 }

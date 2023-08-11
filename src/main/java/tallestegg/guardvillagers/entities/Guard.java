@@ -582,11 +582,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.entityData.set(GUARD_VARIANT, typeId);
     }
 
-    // Credit : the abnormals people for discovering this
-    public ItemStack getPickedResult(HitResult target) {
-        return new ItemStack(GuardItems.GUARD_SPAWN_EGG.get());
-    }
-
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
@@ -736,6 +731,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             PathfinderMob creatureentity = (PathfinderMob) this.getVehicle();
             this.yBodyRot = creatureentity.yBodyRot;
         }
+    }
+
+    @Override
+    public double getMyRidingOffset() {
+        return -0.35D;
     }
 
     @Override
