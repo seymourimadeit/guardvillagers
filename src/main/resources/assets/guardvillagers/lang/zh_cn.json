@@ -1,0 +1,12 @@
+{
+  "entity.guardvillagers.guard": "警卫",
+  "item.guardvillagers.guard_spawn_egg": "警卫刷怪蛋",
+  "item.guardvillagers.illusioner_spawn_egg": "幻术师刷怪蛋",
+  "item.guardvillagers.iron_golem_spawn_egg": "铁傀儡刷怪蛋",
+  "item.guardvillagers.snow_golem_spawn_egg": "雪傀儡刷怪蛋",
+  "guardinventory.health": "生命值: %s",
+  "guardinventory.armor": "护甲值: %s",
+  "subtitles.entity.guard.ambient": "警卫：喃喃自语",
+  "subtitles.entity.guard.hurt": "警卫：受伤",
+  "subtitles.entity.guard.death": "警卫：死亡"
+}
