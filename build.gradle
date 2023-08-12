@@ -24,7 +24,7 @@ mixin {
 }
 
 
-version = '1.19.4-1.5.7'
+version = '1.19.4-1.6.1'
 group = 'tallestegg.guardvillagers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'guardvillagers'
 

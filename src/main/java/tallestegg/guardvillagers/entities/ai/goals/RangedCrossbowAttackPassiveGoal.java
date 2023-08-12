@@ -112,7 +112,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
             boolean canSee2 = (d0 > (double) this.attackRadiusSqr || this.seeTime < 5) && this.attackDelay == 0;
             if (canSee2) {
                 --this.updatePathDelay;
-                if (this.updatePathDelay <= 0) {
+                if (this.updatePathDelay <= 0 && !((Guard)this.mob).isPatrolling()) {
                     this.mob.getNavigation().moveTo(livingentity, this.canRun() ? this.speedModifier : this.speedModifier * 0.5D);
                     this.updatePathDelay = PATHFINDING_DELAY_RANGE.sample(this.mob.getRandom());
                 }
@@ -128,7 +128,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                 this.mob.stopUsingItem();
                 this.mob.setChargingCrossbow(false);
                 if (this.findPosition())
-                    this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, 1.5D);
+                    this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, this.mob.isCrouching() ? 0.5F : 1.2D);
                 this.crossbowState = CrossbowState.UNCHARGED;
             } else if (this.crossbowState == CrossbowState.UNCHARGED) {
                 if (hasSeenEntityRecently) {

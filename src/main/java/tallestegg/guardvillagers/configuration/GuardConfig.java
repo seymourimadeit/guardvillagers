@@ -42,7 +42,8 @@ public class GuardConfig {
     public static boolean followHero;
     public static boolean guardSteve;
     public static int reputationRequirement;
-    public static List<String> MobBlackList;
+    public static List<? extends String> MobBlackList;
+    public static List<? extends String> MobWhiteList;
 
     static {
         final Pair<CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
@@ -76,6 +77,7 @@ public class GuardConfig {
         GuardFormation = COMMON.GuardFormation.get();
         FriendlyFire = COMMON.FriendlyFire.get();
         MobBlackList = COMMON.MobBlackList.get();
+        MobWhiteList = COMMON.MobWhiteList.get();
         ConvertVillagerIfHaveHOTV = COMMON.ConvertVillagerIfHaveHOTV.get();
         BlackSmithHealing = COMMON.BlacksmithHealing.get();
         ClericHealing = COMMON.ClericHealing.get();
@@ -124,7 +126,8 @@ public class GuardConfig {
         public final ForgeConfigSpec.DoubleValue followRangeModifier;
         public final ForgeConfigSpec.BooleanValue guardArrowsHurtVillagers;
         public final ForgeConfigSpec.BooleanValue armorersRepairGuardArmor;
-        public final ForgeConfigSpec.ConfigValue<List<String>> MobBlackList;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> MobBlackList;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> MobWhiteList;
         public final ForgeConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ForgeConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ForgeConfigSpec.BooleanValue followHero;
@@ -140,8 +143,9 @@ public class GuardConfig {
             IllagersRunFromPolarBears = builder.comment("This makes Illagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.IllagersRunFromPolarBears").define("Have Illagers have some common sense?", true);
             builder.pop();
             builder.push("mob ai in general");
-            AttackAllMobs = builder.comment("Guards will attack all hostiles with this option").translation(GuardVillagers.MODID + ".config.AttackAllMobs").define("Guards attack all mobs?", false);
-            MobBlackList = builder.comment("Guards won't attack mobs in this list if AttackAllMobs is enabled, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").define("Mob BlackList", new ArrayList<>());
+            AttackAllMobs = builder.comment("Guards will attack all hostiles with this option, when set to false guards will only attack zombies and illagers.").translation(GuardVillagers.MODID + ".config.AttackAllMobs").define("Guards attack all mobs?", true);
+            MobBlackList = builder.comment("Guards won't attack mobs in this list at all, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").defineList("Mob BlackList", new ArrayList<>(), entry -> true);
+            MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").defineList("Mob WhiteList", new ArrayList<>(), entry -> true);
             builder.pop();
             builder.push("villager stuff");
             armorersRepairGuardArmor = builder.translation(GuardVillagers.MODID + ".config.armorvillager").define("Allow armorers and weaponsmiths repair guard items when down below half durability?", true);
@@ -158,7 +162,7 @@ public class GuardConfig {
             GuardRaiseShield = builder.comment("This will make guards raise their shields all the time, on default they will only raise their shields under certain conditions").translation(GuardVillagers.MODID + ".config.GuardRaiseShield").define("Have Guards raise their shield all the time?",
                     false);
             GuardFormation = builder.comment("This makes guards form a phalanx").translation(GuardVillagers.MODID + ".config.GuardFormation").define("Have guards form a phalanx?", true);
-            FriendlyFire = builder.comment("This will make guards attempt to avoid friendly fire.").translation(GuardVillagers.MODID + ".config.FriendlyFire").define("Have guards attempt to avoid firing into other friendlies? (Experimental)", false);
+            FriendlyFire = builder.comment("This will make guards attempt to avoid friendly fire.").translation(GuardVillagers.MODID + ".config.FriendlyFire").define("Have guards attempt to avoid firing into other friendlies? (Experimental)", true);
             GuardVillagerHelpRange = builder.translation(GuardVillagers.MODID + ".config.range").comment("This is the range in which the guards will be aggroed to mobs that are attacking villagers. Higher values are more resource intensive, and setting this to zero will disable the goal.")
                     .defineInRange("Range", 50.0D, -500.0D, 500.0D);
             amountOfHealthRegenerated = builder.translation(GuardVillagers.MODID + ".config.amountofHealthRegenerated").comment("How much health a guard regenerates.").defineInRange("Guard health regeneration amount", 1.0D, -500.0D, 500.0D);
