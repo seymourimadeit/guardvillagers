@@ -459,6 +459,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             }
             this.spawnWithArmor = false;
         }
+        if (!level.isClientSide) this.updatePersistentAnger((ServerLevel) level, true);
         this.updateSwingTime();
         super.aiStep();
     }
@@ -767,7 +768,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         super.setTarget(entity);
     }
 
-    public void gossip(ServerLevel level, Villager villager, long gameTime) {
+    public void gossip(Villager villager, long gameTime) {
         if ((gameTime < this.lastGossipTime || gameTime >= this.lastGossipTime + 1200L) && (gameTime < villager.lastGossipTime || gameTime >= villager.lastGossipTime + 1200L)) {
             this.gossips.transferFrom(villager.getGossips(), this.random, 10);
             this.lastGossipTime = gameTime;
