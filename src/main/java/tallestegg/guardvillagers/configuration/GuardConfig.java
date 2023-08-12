@@ -42,7 +42,8 @@ public class GuardConfig {
     public static boolean followHero;
     public static boolean guardSteve;
     public static int reputationRequirement;
-    public static List<String> MobBlackList;
+    public static List<? extends String> MobBlackList;
+    public static List<? extends String> MobWhiteList;
 
     static {
         final Pair<CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
@@ -76,6 +77,7 @@ public class GuardConfig {
         GuardFormation = COMMON.GuardFormation.get();
         FriendlyFire = COMMON.FriendlyFire.get();
         MobBlackList = COMMON.MobBlackList.get();
+        MobWhiteList = COMMON.MobWhiteList.get();
         ConvertVillagerIfHaveHOTV = COMMON.ConvertVillagerIfHaveHOTV.get();
         BlackSmithHealing = COMMON.BlacksmithHealing.get();
         ClericHealing = COMMON.ClericHealing.get();
@@ -124,7 +126,8 @@ public class GuardConfig {
         public final ForgeConfigSpec.DoubleValue followRangeModifier;
         public final ForgeConfigSpec.BooleanValue guardArrowsHurtVillagers;
         public final ForgeConfigSpec.BooleanValue armorersRepairGuardArmor;
-        public final ForgeConfigSpec.ConfigValue<List<String>> MobBlackList;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> MobBlackList;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> MobWhiteList;
         public final ForgeConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ForgeConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ForgeConfigSpec.BooleanValue followHero;
@@ -141,7 +144,8 @@ public class GuardConfig {
             builder.pop();
             builder.push("mob ai in general");
             AttackAllMobs = builder.comment("Guards will attack all hostiles with this option").translation(GuardVillagers.MODID + ".config.AttackAllMobs").define("Guards attack all mobs?", false);
-            MobBlackList = builder.comment("Guards won't attack mobs in this list if AttackAllMobs is enabled, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").define("Mob BlackList", new ArrayList<>());
+            MobBlackList = builder.comment("Guards won't attack mobs in this list if AttackAllMobs is enabled, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").defineList("Mob BlackList", new ArrayList<String>(), entry -> true);
+            MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").defineList("Mob WhiteList", new ArrayList<String>(), entry -> true);
             builder.pop();
             builder.push("villager stuff");
             armorersRepairGuardArmor = builder.translation(GuardVillagers.MODID + ".config.armorvillager").define("Allow armorers and weaponsmiths repair guard items when down below half durability?", true);

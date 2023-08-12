@@ -7,6 +7,8 @@ import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.phys.Vec3;
 import tallestegg.guardvillagers.entities.Guard;
 
+import java.util.EnumSet;
+
 public class WalkBackToCheckPointGoal extends Goal {
     private final Guard guard;
     private final double speed;
@@ -14,7 +16,7 @@ public class WalkBackToCheckPointGoal extends Goal {
     public WalkBackToCheckPointGoal(Guard guard, double speedIn) {
         this.guard = guard;
         this.speed = speedIn;
-
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
 
     @Override
