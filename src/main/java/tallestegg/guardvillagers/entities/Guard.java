@@ -104,6 +104,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public int shieldCoolDown;
     public int kickCoolDown;
     public boolean interacting;
+    protected boolean spawnWithArmor;
     private int remainingPersistentAngerTime;
     private UUID persistentAngerTarget;
     private net.minecraftforge.common.util.LazyOptional<?> itemHandler;
@@ -232,6 +233,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.kickCoolDown = compound.getInt("ShieldCooldown");
         this.lastGossipDecayTime = compound.getLong("LastGossipDecay");
         this.lastGossipTime = compound.getLong("LastGossipTime");
+        this.spawnWithArmor = compound.getBoolean("SpawnWithArmor");
         if (compound.contains("PatrolPosX")) {
             int x = compound.getInt("PatrolPosX");
             int y = compound.getInt("PatrolPosY");
@@ -264,28 +266,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    protected void completeUsingItem() {
-        if (this.isUsingItem()) {
-            InteractionHand interactionhand = this.getUsedItemHand();
-            if (!this.useItem.equals(this.getItemInHand(interactionhand))) {
-                this.releaseUsingItem();
-            } else {
-                if (!this.useItem.isEmpty() && this.isUsingItem()) {
-                    this.triggerItemUseEffects(this.useItem, 16);
-                    ItemStack copy = this.useItem.copy();
-                    ItemStack itemstack = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level, this));
-                    if (itemstack != this.useItem) {
-                        this.setItemInHand(interactionhand, itemstack);
-                    }
-                    if (!this.useItem.isEdible()) this.useItem.shrink(1);
-                    this.stopUsingItem();
-                }
-
-            }
-        }
-    }
-
-    @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Type", this.getGuardVariant());
@@ -295,6 +275,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         compound.putBoolean("Following", this.isFollowing());
         compound.putBoolean("Interacting", this.interacting);
         compound.putBoolean("Patrolling", this.isPatrolling());
+        compound.putBoolean("SpawnWithArmor", this.spawnWithArmor);
         compound.putLong("LastGossipTime", this.lastGossipTime);
         compound.putLong("LastGossipDecay", this.lastGossipDecayTime);
         if (this.getOwnerId() != null) {
@@ -327,6 +308,28 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         } else if (i >= this.lastGossipDecayTime + 24000L) {
             this.gossips.decay();
             this.lastGossipDecayTime = i;
+        }
+    }
+
+    @Override
+    protected void completeUsingItem() {
+        if (this.isUsingItem()) {
+            InteractionHand interactionhand = this.getUsedItemHand();
+            if (!this.useItem.equals(this.getItemInHand(interactionhand))) {
+                this.releaseUsingItem();
+            } else {
+                if (!this.useItem.isEmpty() && this.isUsingItem()) {
+                    this.triggerItemUseEffects(this.useItem, 16);
+                    ItemStack copy = this.useItem.copy();
+                    ItemStack itemstack = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level, this));
+                    if (itemstack != this.useItem) {
+                        this.setItemInHand(interactionhand, itemstack);
+                    }
+                    if (!this.useItem.isEdible()) this.useItem.shrink(1);
+                    this.stopUsingItem();
+                }
+
+            }
         }
     }
 
@@ -448,6 +451,15 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             this.heal(GuardConfig.amountOfHealthRegenerated);
         }
         if (!this.level.isClientSide) this.updatePersistentAnger((ServerLevel) this.level, true);
+        if (spawnWithArmor) {
+            for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
+                for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype, (ServerLevel) this.level)) {
+                    this.setItemSlot(equipmentslottype, stack);
+                }
+            }
+            this.spawnWithArmor = false;
+        }
+        if (!level.isClientSide) this.updatePersistentAnger((ServerLevel) level, true);
         this.updateSwingTime();
         super.aiStep();
     }
@@ -556,19 +568,16 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected void populateDefaultEquipmentSlots(RandomSource source, DifficultyInstance instance) {
-        for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
-            for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype)) {
-                this.setItemSlot(equipmentslottype, stack);
-            }
-        }
         this.handDropChances[EquipmentSlot.MAINHAND.getIndex()] = 100.0F;
         this.handDropChances[EquipmentSlot.OFFHAND.getIndex()] = 100.0F;
+        this.spawnWithArmor = true;
     }
 
-    public List<ItemStack> getItemsFromLootTable(EquipmentSlot slot) {
+    public List<ItemStack> getItemsFromLootTable(EquipmentSlot slot, ServerLevel level) {
         if (EQUIPMENT_SLOT_ITEMS.containsKey(slot)) {
+            ServerLevel serverlevel = (ServerLevel) this.level;
             LootTable loot = this.level.getServer().getLootTables().get(EQUIPMENT_SLOT_ITEMS.get(slot));
-            LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerLevel) this.level)).withParameter(LootContextParams.THIS_ENTITY, this).withRandom(this.getRandom());
+            LootContext.Builder lootcontext$builder = (new LootContext.Builder(level)).withParameter(LootContextParams.THIS_ENTITY, this);
             return loot.getRandomItems(lootcontext$builder.create(GuardLootTables.SLOT));
         }
         return null;
@@ -582,11 +591,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.entityData.set(GUARD_VARIANT, typeId);
     }
 
-    // Credit : the abnormals people for discovering this
-    public ItemStack getPickedResult(HitResult target) {
-        return new ItemStack(GuardItems.GUARD_SPAWN_EGG.get());
-    }
-
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
@@ -594,8 +598,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(0, new GuardEatFoodGoal(this));
         this.goalSelector.addGoal(0, new RaiseShieldGoal(this));
         this.goalSelector.addGoal(1, new GuardRunToEatGoal(this));
-        this.goalSelector.addGoal(2, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, 8.0F));
-        this.goalSelector.addGoal(2, new RangedBowAttackGoal(this, 0.5D, 20, 15.0F) {
+        this.goalSelector.addGoal(3, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, 8.0F));
+        this.goalSelector.addGoal(3, new RangedBowAttackGoal(this, 0.5D, 20, 15.0F) {
             @Override
             public boolean canUse() {
                 return Guard.this.getTarget() != null && this.isBowInMainhand() && !Guard.this.isEating() && !Guard.this.isBlocking();
@@ -606,35 +610,45 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             }
 
             @Override
+            public void tick() {
+                super.tick();
+                if (Guard.this.isPatrolling()) {
+                    Guard.this.getNavigation().stop();
+                    Guard.this.getMoveControl().strafe(0.0F, 0.0F);
+                }
+            }
+
+            @Override
             public boolean canContinueToUse() {
                 return (this.canUse() || !Guard.this.getNavigation().isDone()) && this.isBowInMainhand();
             }
         });
-        this.goalSelector.addGoal(2, new GuardMeleeGoal(this, 0.8D, true));
-        this.goalSelector.addGoal(3, new Guard.FollowHeroGoal(this));
+        this.goalSelector.addGoal(3, new GuardMeleeGoal(this, 0.8D, true));
+        this.goalSelector.addGoal(4, new Guard.FollowHeroGoal(this));
         if (GuardConfig.GuardsRunFromPolarBears)
-            this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, PolarBear.class, 12.0F, 1.0D, 1.2D));
-        this.goalSelector.addGoal(3, new MoveBackToVillageGoal(this, 0.5D, false));
-        this.goalSelector.addGoal(3, new GolemRandomStrollInVillageGoal(this, 0.5D));
-        this.goalSelector.addGoal(3, new MoveThroughVillageGoal(this, 0.5D, false, 4, () -> false));
-        if (GuardConfig.GuardsOpenDoors) this.goalSelector.addGoal(3, new GuardInteractDoorGoal(this, true));
-        if (GuardConfig.GuardFormation) this.goalSelector.addGoal(5, new FollowShieldGuards(this)); // phalanx
+            this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, PolarBear.class, 12.0F, 1.0D, 1.2D));
+        this.goalSelector.addGoal(4, new MoveBackToVillageGoal(this, 0.5D, false));
+        if (GuardConfig.GuardsOpenDoors) this.goalSelector.addGoal(4, new GuardInteractDoorGoal(this, true));
+        if (GuardConfig.GuardFormation) this.goalSelector.addGoal(6, new FollowShieldGuards(this)); // phalanx
         if (GuardConfig.ClericHealing) this.goalSelector.addGoal(6, new RunToClericGoal(this));
         if (GuardConfig.armorerRepairGuardArmor) this.goalSelector.addGoal(6, new ArmorerRepairGuardArmorGoal(this));
         this.goalSelector.addGoal(4, new WalkBackToCheckPointGoal(this, 0.5D));
-        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.5D));
+        this.goalSelector.addGoal(5, new GolemRandomStrollInVillageGoal(this, 0.5D));
+        this.goalSelector.addGoal(5, new MoveThroughVillageGoal(this, 0.5D, false, 4, () -> false));
+        this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 0.5D));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, AbstractVillager.class, 8.0F));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new GuardLookAtAndStopMovingWhenBeingTheInteractionTarget(this));
-        this.targetSelector.addGoal(5, new Guard.DefendVillageGuardGoal(this));
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Ravager.class, true)); // To make witches and ravagers have a priority than other mobs this has to be done
         this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, Guard.class, IronGolem.class)).setAlertOthers());
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Witch.class, true));
         this.targetSelector.addGoal(3, new HeroHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
+        this.targetSelector.addGoal(5, new Guard.DefendVillageGuardGoal(this));
         if (GuardConfig.AttackAllMobs)
             this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId())));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> GuardConfig.COMMON.MobWhiteList.get().contains(mob.getEncodeId())));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new ResetUniversalAngerTargetGoal<>(this, false));
@@ -726,7 +740,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public boolean canAttack(LivingEntity target) {
-        return !GuardConfig.MobBlackList.contains(target.getEncodeId()) && !target.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !this.isOwner(target) && !(target instanceof Villager) && !(target instanceof IronGolem) && !(target instanceof Guard) && super.canAttack(target);
+        return (GuardConfig.MobBlackList.contains(target.getEncodeId()) || target.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(target) || (target instanceof Villager) || (target instanceof IronGolem) || (target instanceof Guard)) ? false : super.canAttack(target);
     }
 
     @Override
@@ -736,6 +750,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             PathfinderMob creatureentity = (PathfinderMob) this.getVehicle();
             this.yBodyRot = creatureentity.yBodyRot;
         }
+    }
+
+    @Override
+    public double getMyRidingOffset() {
+        return -0.35D;
     }
 
     @Override
@@ -749,7 +768,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         super.setTarget(entity);
     }
 
-    public void gossip(ServerLevel level, Villager villager, long gameTime) {
+    public void gossip(Villager villager, long gameTime) {
         if ((gameTime < this.lastGossipTime || gameTime >= this.lastGossipTime + 1200L) && (gameTime < villager.lastGossipTime || gameTime >= villager.lastGossipTime + 1200L)) {
             this.gossips.transferFrom(villager.getGossips(), this.random, 10);
             this.lastGossipTime = gameTime;
@@ -870,8 +889,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    public <
-            T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
+    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
         if (this.isAlive() && capability == ForgeCapabilities.ITEM_HANDLER && itemHandler != null)
             return itemHandler.cast();
         return super.getCapability(capability, facing);
