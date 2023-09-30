@@ -1,9 +1,10 @@
 package tallestegg.guardvillagers.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -23,10 +24,10 @@ import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
 
 public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer> {
     private static final ResourceLocation GUARD_GUI_TEXTURES = new ResourceLocation(GuardVillagers.MODID, "textures/container/inventory.png");
-    private static final ResourceLocation GUARD_FOLLOWING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/following_icons.png");
-    private static final ResourceLocation GUARD_NOT_FOLLOWING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/not_following_icons.png");
-    private static final ResourceLocation PATROL_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/patrollingui.png");
-    private static final ResourceLocation NOT_PATROLLING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/notpatrollingui.png");
+    private static final WidgetSprites GUARD_FOLLOWING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "following/following.png"), new ResourceLocation(GuardVillagers.MODID, "textures/gui/sprites/following/following_highlighted"));
+    private static final WidgetSprites GUARD_NOT_FOLLOWING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "textures/gui/sprites/following/not_following_highlighted"), new ResourceLocation(GuardVillagers.MODID, "textures/gui/sprites/following/not_following_highlighted"));
+    private static final WidgetSprites GUARD_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "textures/gui/sprites/patrolling1"), new ResourceLocation("textures/gui/sprites/patrolling2"));
+    private static final WidgetSprites GUARD_NOT_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "textures/gui/sprites/notpatrolling1"), new ResourceLocation("textures/gui/sprites/notpatrolling2"));
     private final Guard guard;
     private Player player;
     private float mousePosX;
@@ -45,14 +46,14 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     public void init() {
         super.init();
         if (GuardConfig.followHero && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.followHero) {
-            this.addRenderableWidget(new GuardGuiButton(this.leftPos + 100, this.height / 2 - 40, 20, 18, 0, 0, 19, GUARD_FOLLOWING_ICON, GUARD_NOT_FOLLOWING_ICON, true, (p_214086_1_) -> {
-                GuardPacketHandler.INSTANCE.sendToServer(new GuardFollowPacket(guard.getId()));
+            this.addRenderableWidget(new GuardGuiButton(this.leftPos + 100, this.height / 2 - 40, 20, 18,  GUARD_FOLLOWING_ICONS, GUARD_NOT_FOLLOWING_ICONS, true, (p_214086_1_) -> {
+                GuardPacketHandler.INSTANCE.send(new GuardFollowPacket(guard.getId()), Minecraft.getInstance().getConnection().getConnection());
             }));
         }
         if (GuardConfig.setGuardPatrolHotv && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.setGuardPatrolHotv) {
-            this.addRenderableWidget(new GuardGuiButton(this.leftPos + 120, this.height / 2 - 40, 20, 18, 0, 0, 19, PATROL_ICON, NOT_PATROLLING_ICON, false, (p_214086_1_) -> {
+            this.addRenderableWidget(new GuardGuiButton(this.leftPos + 120, this.height / 2 - 40, 20, 18, GUARD_PATROLLING_ICONS, GUARD_NOT_PATROLLING_ICONS, false, (p_214086_1_) -> {
                 buttonPressed = !buttonPressed;
-                GuardPacketHandler.INSTANCE.sendToServer(new GuardSetPatrolPosPacket(guard.getId(), buttonPressed));
+                GuardPacketHandler.INSTANCE.send(new GuardSetPatrolPosPacket(guard.getId(), buttonPressed), Minecraft.getInstance().getConnection().getConnection());
             }));
         }
     }
@@ -65,7 +66,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(GUARD_GUI_TEXTURES, i, j, 0, 0, this.imageWidth, this.imageHeight);
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics,i + 51, j + 75, 30, (float) (i + 51) - this.mousePosX, (float) (j + 75 - 50) - this.mousePosY, this.guard);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, i + 26, j + 18, i + 78, j + 70, 17, 0.25F, this.mousePosX, this.mousePosY, this.guard);
     }
 
     @Override
@@ -81,7 +82,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseX, partialTicks);
         this.mousePosX = (float) mouseX;
         this.mousePosY = (float) mouseY;
         super.render(graphics, mouseX, mouseY, partialTicks);
@@ -89,12 +90,12 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     }
 
     class GuardGuiButton extends ImageButton {
-        private ResourceLocation texture;
-        private ResourceLocation newTexture;
+        private WidgetSprites texture;
+        private WidgetSprites newTexture;
         private boolean isFollowButton;
 
-        public GuardGuiButton(int xIn, int yIn, int widthIn, int heightIn, int xTexStartIn, int yTexStartIn, int yDiffTextIn, ResourceLocation resourceLocationIn, ResourceLocation newTexture, boolean isFollowButton, OnPress onPressIn) {
-            super(xIn, yIn, widthIn, heightIn, xTexStartIn, yTexStartIn, yDiffTextIn, resourceLocationIn, onPressIn);
+        public GuardGuiButton(int xIn, int yIn, int widthIn, int heightIn, WidgetSprites resourceLocationIn, WidgetSprites newTexture, boolean isFollowButton, OnPress onPressIn) {
+            super(xIn, yIn, widthIn, heightIn, resourceLocationIn, onPressIn);
             this.texture = resourceLocationIn;
             this.newTexture = newTexture;
             this.isFollowButton = isFollowButton;
@@ -108,15 +109,10 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
 
         @Override
         public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            ResourceLocation icon = this.requirementsForTexture() ? texture : newTexture;
-            RenderSystem.setShaderTexture(0, icon);
-            int i = this.yTexStart;
-            if (this.isHoveredOrFocused()) {
-                i += this.yDiffTex;
-            }
-
-            RenderSystem.enableDepthTest();
-            graphics.blit(icon, this.getX(), this.getY(), (float) this.xTexStart, (float) i, this.width, this.height, this.textureWidth, this.textureHeight);
+            WidgetSprites icon = this.requirementsForTexture() ? texture : newTexture;
+            ResourceLocation resourcelocation = icon.get(this.isActive(), this.isHoveredOrFocused());
+            System.out.println(resourcelocation == null);
+            graphics.blitSprite(resourcelocation, this.getX(), this.getY(), this.width, this.height);
         }
     }
 

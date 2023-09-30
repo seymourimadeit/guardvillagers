@@ -1,13 +1,11 @@
 package tallestegg.guardvillagers.networking;
 
-import java.util.function.Supplier;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardSetPatrolPosPacket {
@@ -40,25 +38,21 @@ public class GuardSetPatrolPosPacket {
         this.pressed = pressed;
     }
 
-    public static void handle(GuardSetPatrolPosPacket msg, Supplier<NetworkEvent.Context> context) {
-        context.get().enqueueWork(() -> {
-            if (msg != null) {
-                context.get().enqueueWork(() -> {
-                    ServerPlayer player = ((NetworkEvent.Context) context.get()).getSender();
-                    if (player != null && player.level() instanceof ServerLevel) {
-                        Entity entity = player.level().getEntity(msg.getEntityId());
-                        if (entity instanceof Guard) {
-                            Guard guard = (Guard) entity;
-                            BlockPos pos = msg.isPressed() ? null : guard.blockPosition();
-                            if (guard.blockPosition() != null)
-                                guard.setPatrolPos(pos);
-                            guard.setPatrolling(!msg.isPressed());
-                            msg.setPressed(!msg.isPressed());
-                        }
-                    }
-                });
+    public void handle(CustomPayloadEvent.Context context) {
+        context.enqueueWork(() -> {
+            ServerPlayer player = context.getSender();
+            if (player != null && player.level() instanceof ServerLevel) {
+                Entity entity = player.level().getEntity(this.getEntityId());
+                if (entity instanceof Guard) {
+                    Guard guard = (Guard) entity;
+                    BlockPos pos = this.isPressed() ? null : guard.blockPosition();
+                    if (guard.blockPosition() != null)
+                        guard.setPatrolPos(pos);
+                    guard.setPatrolling(!this.isPressed());
+                    this.setPressed(!this.isPressed());
+                }
             }
         });
-        context.get().setPacketHandled(true);
+        context.setPacketHandled(true);
     }
 }

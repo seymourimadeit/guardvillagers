@@ -1,0 +1,5 @@
+{
+  "sources": [
+    {"type": "single", "resource": "guardvillagers:gui/sprites/following/following" }
+  ]
+}

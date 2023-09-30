@@ -59,6 +59,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
@@ -507,7 +508,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         ItemStack itemstack = this.getItemInHand(hand);
         if (itemstack.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
             AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
-            modifiableattributeinstance.removeModifier(USE_ITEM_SPEED_PENALTY);
+            modifiableattributeinstance.removeModifier(USE_ITEM_SPEED_PENALTY.getId());
             modifiableattributeinstance.addTransientModifier(USE_ITEM_SPEED_PENALTY);
         }
     }
@@ -516,7 +517,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public void stopUsingItem() {
         super.stopUsingItem();
         if (this.getAttribute(Attributes.MOVEMENT_SPEED).hasModifier(USE_ITEM_SPEED_PENALTY))
-            this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(USE_ITEM_SPEED_PENALTY);
+            this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(USE_ITEM_SPEED_PENALTY.getId());
     }
 
     public void disableShield(boolean increase) {
@@ -746,8 +747,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    public double getMyRidingOffset() {
-        return -0.35D;
+    protected float ridingOffset(Entity p_297913_) {
+        return -0.35F;
     }
 
 
@@ -877,7 +878,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         this.interacting = true;
         player.nextContainerCounter();
-        GuardPacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new GuardOpenInventoryPacket(player.containerCounter, this.guardInventory.getContainerSize(), this.getId()));
+        GuardPacketHandler.INSTANCE.send(new GuardOpenInventoryPacket(player.containerCounter, this.guardInventory.getContainerSize(), this.getId()), PacketDistributor.PLAYER.with(player));
         player.containerMenu = new GuardContainer(player.containerCounter, player.getInventory(), this.guardInventory, this);
         player.initMenu(player.containerMenu);
         MinecraftForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, player.containerMenu));
@@ -994,6 +995,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     public static class GuardMeleeGoal extends MeleeAttackGoal {
         public final Guard guard;
+        private static final double DEFAULT_ATTACK_REACH = Math.sqrt((double)2.04F) - (double)0.6F;
 
         public GuardMeleeGoal(Guard guard, double speedIn, boolean useLongMemory) {
             super(guard, speedIn, useLongMemory);
@@ -1024,20 +1026,33 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
 
         @Override
-        protected double getAttackReachSqr(LivingEntity attackTarget) {
-            return super.getAttackReachSqr(attackTarget) * 3.55D;
-        }
-
-        @Override
-        protected void checkAndPerformAttack(LivingEntity enemy, double distToEnemySqr) {
-            double d0 = this.getAttackReachSqr(enemy);
-            if (distToEnemySqr <= d0 && this.ticksUntilNextAttack <= 0) {
+        protected void checkAndPerformAttack(LivingEntity enemy) {
+            if (canPerformAttack(enemy)) {
                 this.resetAttackCooldown();
                 this.guard.stopUsingItem();
                 if (guard.shieldCoolDown == 0) this.guard.shieldCoolDown = 8;
                 this.guard.swing(InteractionHand.MAIN_HAND);
                 this.guard.doHurtTarget(enemy);
             }
+        }
+
+        @Override
+        protected boolean canPerformAttack(LivingEntity mob) {
+            return this.isTimeToAttack() && this.mobHitBox(this.mob).inflate(0.8).intersects(this.mobHitBox(mob)) && this.mob.getSensing().hasLineOfSight(mob);
+        }
+
+        protected AABB mobHitBox(LivingEntity mob) {
+            Entity entity = mob.getVehicle();
+            AABB aabb;
+            if (entity != null) {
+                AABB aabb1 = entity.getBoundingBox();
+                AABB aabb2 = mob.getBoundingBox();
+                aabb = new AABB(Math.min(aabb2.minX, aabb1.minX), aabb2.minY, Math.min(aabb2.minZ, aabb1.minZ), Math.max(aabb2.maxX, aabb1.maxX), aabb2.maxY, Math.max(aabb2.maxZ, aabb1.maxZ));
+            } else {
+                aabb = mob.getBoundingBox();
+            }
+
+            return aabb.inflate(DEFAULT_ATTACK_REACH, 0.0D, DEFAULT_ATTACK_REACH);
         }
     }
 }
