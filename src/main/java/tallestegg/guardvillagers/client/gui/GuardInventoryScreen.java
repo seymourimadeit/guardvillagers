@@ -24,10 +24,10 @@ import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
 
 public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer> {
     private static final ResourceLocation GUARD_GUI_TEXTURES = new ResourceLocation(GuardVillagers.MODID, "textures/container/inventory.png");
-    private static final WidgetSprites GUARD_FOLLOWING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "following/following.png"), new ResourceLocation(GuardVillagers.MODID, "textures/gui/sprites/following/following_highlighted"));
-    private static final WidgetSprites GUARD_NOT_FOLLOWING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "textures/gui/sprites/following/not_following_highlighted"), new ResourceLocation(GuardVillagers.MODID, "textures/gui/sprites/following/not_following_highlighted"));
-    private static final WidgetSprites GUARD_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "textures/gui/sprites/patrolling1"), new ResourceLocation("textures/gui/sprites/patrolling2"));
-    private static final WidgetSprites GUARD_NOT_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "textures/gui/sprites/notpatrolling1"), new ResourceLocation("textures/gui/sprites/notpatrolling2"));
+    private static final WidgetSprites GUARD_FOLLOWING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "following/following"), new ResourceLocation(GuardVillagers.MODID, "following/following_highlighted"));
+    private static final WidgetSprites GUARD_NOT_FOLLOWING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "following/not_following"), new ResourceLocation(GuardVillagers.MODID, "following/not_following_highlighted"));
+    private static final WidgetSprites GUARD_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "patrolling/patrolling1"), new ResourceLocation(GuardVillagers.MODID,"patrolling/patrolling2"));
+    private static final WidgetSprites GUARD_NOT_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "patrolling/notpatrolling1"), new ResourceLocation(GuardVillagers.MODID,"patrolling/notpatrolling2"));
     private final Guard guard;
     private Player player;
     private float mousePosX;
@@ -66,7 +66,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(GUARD_GUI_TEXTURES, i, j, 0, 0, this.imageWidth, this.imageHeight);
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, i + 26, j + 18, i + 78, j + 70, 17, 0.25F, this.mousePosX, this.mousePosY, this.guard);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, i + 26, j + 8, i + 75, j + 78, 30, 0.0625F, this.mousePosX, this.mousePosY, this.guard);
     }
 
     @Override
@@ -109,9 +109,8 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
 
         @Override
         public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            WidgetSprites icon = this.requirementsForTexture() ? texture : newTexture;
+            WidgetSprites icon = this.requirementsForTexture() ? this.texture : this.newTexture;
             ResourceLocation resourcelocation = icon.get(this.isActive(), this.isHoveredOrFocused());
-            System.out.println(resourcelocation == null);
             graphics.blitSprite(resourcelocation, this.getX(), this.getY(), this.width, this.height);
         }
     }
