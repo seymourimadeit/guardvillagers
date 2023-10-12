@@ -14,7 +14,6 @@ import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
 public class RaiseShieldGoal extends Goal {
-
     public final Guard guard;
 
     public RaiseShieldGoal(Guard guard) {
