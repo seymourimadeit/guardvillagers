@@ -36,15 +36,18 @@ import java.util.List;
 public class HandlerEvents {
     @SubscribeEvent
     public static void onEntityTarget(LivingChangeTargetEvent event) {
-        LivingEntity entity = (LivingEntity) event.getEntity();
+        LivingEntity entity = event.getEntity();
         LivingEntity target = event.getNewTarget();
         if (target == null || entity.getType() == GuardEntityType.GUARD.get()) return;
         boolean isVillager = target.getType() == EntityType.VILLAGER || target.getType() == GuardEntityType.GUARD.get();
         if (isVillager) {
             List<Mob> list = entity.level().getEntitiesOfClass(Mob.class, entity.getBoundingBox().inflate(GuardConfig.GuardVillagerHelpRange, 5.0D, GuardConfig.GuardVillagerHelpRange));
             for (Mob mob : list) {
-                if ((mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM) && mob.getTarget() == null) {
-                    mob.setTarget(entity);
+                if ((mob.getTarget() == null) && (mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM)) {
+                    if (mob.getTeam() != null && entity.getTeam() != null && entity.getTeam().isAlliedTo(mob.getTeam()))
+                        return;
+                    else
+                        mob.setTarget(entity);
                 }
             }
         }
@@ -68,8 +71,12 @@ public class HandlerEvents {
             for (Mob mob : list) {
                 boolean type = mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM;
                 boolean trueSourceGolem = trueSource.getType() == GuardEntityType.GUARD.get() || trueSource.getType() == EntityType.IRON_GOLEM;
-                if (!trueSourceGolem && type && mob.getTarget() == null)
-                    mob.setTarget((Mob) event.getSource().getEntity());
+                if (!trueSourceGolem && type && mob.getTarget() == null) {
+                    if (mob.getTeam() != null && entity.getTeam() != null && entity.getTeam().isAlliedTo(mob.getTeam()))
+                        return;
+                    else
+                        mob.setTarget((Mob) event.getSource().getEntity());
+                }
             }
         }
     }
@@ -77,8 +84,8 @@ public class HandlerEvents {
     @SubscribeEvent
     public static void onLivingTick(LivingEvent.LivingTickEvent event) {
         if (event.getEntity() instanceof AbstractHorse horse) {
-            Vec3 vec3 = new Vec3((double) horse.xxa, (double) horse.yya, (double) horse.zza);
-            if (horse.hasControllingPassenger() && horse.getControllingPassenger() instanceof Guard guard) {
+            Vec3 vec3 = new Vec3(horse.xxa, horse.yya, horse.zza);
+            if (horse.hasControllingPassenger() && horse.getControllingPassenger() instanceof Guard) {
                 horse.setSpeed((float) horse.getAttributeValue(Attributes.MOVEMENT_SPEED));
                 horse.travel(vec3);
             }
