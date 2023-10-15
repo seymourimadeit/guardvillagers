@@ -7,7 +7,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '[6.0.14,6.2)', changing: true
         classpath 'org.parchmentmc:librarian:1.+'
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
     }
@@ -24,7 +24,7 @@ mixin {
 }
 
 
-version = '1.20.2-1.6.2'
+version = '1.20.2-1.6.3'
 group = 'tallestegg.guardvillagers' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'guardvillagers'
 
@@ -100,7 +100,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.2-48.0.13'
+    minecraft 'net.minecraftforge:forge:1.20.2-48.0.30'
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }
 
