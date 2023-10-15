@@ -143,7 +143,7 @@ public class GuardConfig {
             builder.pop();
             builder.push("mob ai in general");
             AttackAllMobs = builder.comment("Guards will attack all hostiles with this option, when set to false guards will only attack zombies and illagers.").translation(GuardVillagers.MODID + ".config.AttackAllMobs").define("Guards attack all mobs?", true);
-            MobBlackList = builder.comment("Guards won't attack mobs in this list at all, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").define("Mob Blacklist", Lists.newArrayList("minecraft:creeper"));
+            MobBlackList = builder.comment("Guards won't attack mobs in this list at all, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").define("Mob Blacklist", Lists.newArrayList("minecraft:villager", "minecraft:iron_golem", "minecraft:wandering_trader", "guardvillagers:guard"));
             MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").define("Mob Whitelist", new ArrayList<>());
             builder.pop();
             builder.push("villager stuff");

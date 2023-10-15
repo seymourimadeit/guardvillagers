@@ -632,18 +632,20 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, AbstractVillager.class, 8.0F));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new GuardLookAtAndStopMovingWhenBeingTheInteractionTarget(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Ravager.class, true)); // To make witches and ravagers have a priority than other mobs this has to be done
         this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, Guard.class, IronGolem.class)).setAlertOthers());
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Witch.class, true));
         this.targetSelector.addGoal(3, new HeroHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
         this.targetSelector.addGoal(5, new Guard.DefendVillageGuardGoal(this));
-        if (GuardConfig.AttackAllMobs)
+        if (GuardConfig.AttackAllMobs) {
             this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId())));
+        } else {
+            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Ravager.class, true)); // To make witches and ravagers have a priority than other mobs this has to be done
+            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Witch.class, true));
+            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
+            this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
+        }
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> GuardConfig.COMMON.MobWhiteList.get().contains(mob.getEncodeId())));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true));
         this.targetSelector.addGoal(4, new ResetUniversalAngerTargetGoal<>(this, false));
     }
 
@@ -733,7 +735,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public boolean canAttack(LivingEntity target) {
-        return (GuardConfig.MobBlackList.contains(target.getEncodeId()) || target.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(target) || (target instanceof Villager) || (target instanceof IronGolem) || (target instanceof Guard)) ? false : super.canAttack(target);
+        return (GuardConfig.MobBlackList.contains(target.getEncodeId()) || target.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(target) ? false : super.canAttack(target));
     }
 
     @Override
@@ -758,7 +760,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-        if (entity instanceof Guard || entity instanceof Villager || entity instanceof IronGolem) return;
+        if (entity != null && (GuardConfig.MobBlackList.contains(entity.getEncodeId()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity)))
+            return;
         super.setTarget(entity);
     }
 
