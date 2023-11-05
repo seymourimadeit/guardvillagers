@@ -761,8 +761,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-            if (entity != null && (GuardConfig.MobBlackList.contains(entity.getEncodeId()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity)))
-                return;
+        if (entity != null && (GuardConfig.MobBlackList.contains(entity.getEncodeId()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity)))
+            return;
         super.setTarget(entity);
     }
 
@@ -934,7 +934,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         private LivingEntity villageAggressorTarget;
 
         public DefendVillageGuardGoal(Guard guardIn) {
-            super(guardIn, false, true);
+            super(guardIn, true, true);
             this.guard = guardIn;
             this.setFlags(EnumSet.of(Goal.Flag.TARGET, Goal.Flag.MOVE));
         }
@@ -949,6 +949,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                     int i = villager.getPlayerReputation(player);
                     if (i <= GuardConfig.COMMON.reputationRequirementToBeAttacked.get()) {
                         this.villageAggressorTarget = player;
+                        if (villageAggressorTarget.getTeam() != null && guard.getTeam() != null && guard.getTeam().isAlliedTo(villageAggressorTarget.getTeam()))
+                            return false;
                     }
                 }
             }
