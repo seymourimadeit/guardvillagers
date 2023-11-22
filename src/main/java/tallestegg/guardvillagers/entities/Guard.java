@@ -59,10 +59,12 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.NeoForgeEventHandler;
+import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import tallestegg.guardvillagers.GuardItems;
 import tallestegg.guardvillagers.GuardLootTables;
 import tallestegg.guardvillagers.GuardPacketHandler;
@@ -74,6 +76,7 @@ import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAttackMob, NeutralMob, ContainerListener, ReputationEventHandler {
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.OPTIONAL_UUID);
@@ -107,12 +110,10 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     protected boolean spawnWithArmor;
     private int remainingPersistentAngerTime;
     private UUID persistentAngerTarget;
-    private net.minecraftforge.common.util.LazyOptional<?> itemHandler;
 
     public Guard(EntityType<? extends Guard> type, Level world) {
         super(type, world);
         this.guardInventory.addListener(this);
-        this.itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this.guardInventory));
         this.setPersistenceRequired();
         if (GuardConfig.GuardsOpenDoors) ((GroundPathNavigation) this.getNavigation()).setCanOpenDoors(true);
     }
@@ -186,7 +187,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return GuardSounds.GUARD_AMBIENT.get();
+        return GuardSounds.GUARD_AMBIENT.value();
     }
 
     @Override
@@ -194,13 +195,13 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (this.isBlocking()) {
             return SoundEvents.SHIELD_BLOCK;
         } else {
-            return GuardSounds.GUARD_HURT.get();
+            return GuardSounds.GUARD_HURT.value();
         }
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return GuardSounds.GUARD_DEATH.get();
+        return GuardSounds.GUARD_DEATH.value();
     }
 
     @Override
@@ -321,7 +322,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 if (!this.useItem.isEmpty() && this.isUsingItem()) {
                     this.triggerItemUseEffects(this.useItem, 16);
                     ItemStack copy = this.useItem.copy();
-                    ItemStack itemstack = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(level(), this));
+                    ItemStack itemstack = net.neoforged.neoforge.event.EventHooks.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
                     if (itemstack != this.useItem) {
                         this.setItemInHand(interactionhand, itemstack);
                     }
@@ -413,7 +414,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void die(DamageSource source) {
-        if ((level().getDifficulty() == Difficulty.NORMAL || level().getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie && net.minecraftforge.event.ForgeEventFactory.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {
+        if ((level().getDifficulty() == Difficulty.NORMAL || level().getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie && EventHooks.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {
         })) {
             ZombieVillager zombieguard = this.convertTo(EntityType.ZOMBIE_VILLAGER, true);
             if (level().getDifficulty() != Difficulty.HARD && this.random.nextBoolean() || zombieguard == null) {
@@ -484,7 +485,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected void hurtCurrentlyUsedShield(float damage) {
-        if (this.useItem.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
+        if (this.useItem.canPerformAction(ToolActions.SHIELD_BLOCK)) {
             if (damage >= 3.0F) {
                 int i = 1 + Mth.floor(damage);
                 InteractionHand hand = this.getUsedItemHand();
@@ -506,7 +507,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public void startUsingItem(InteractionHand hand) {
         super.startUsingItem(hand);
         ItemStack itemstack = this.getItemInHand(hand);
-        if (itemstack.canPerformAction(net.minecraftforge.common.ToolActions.SHIELD_BLOCK)) {
+        if (itemstack.canPerformAction(ToolActions.SHIELD_BLOCK)) {
             AttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
             modifiableattributeinstance.removeModifier(USE_ITEM_SPEED_PENALTY.getId());
             modifiableattributeinstance.addTransientModifier(USE_ITEM_SPEED_PENALTY);
@@ -832,7 +833,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void thunderHit(ServerLevel p_241841_1_, LightningBolt p_241841_2_) {
-        if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.WITCH, (timer) -> {
+        if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL && EventHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {
         })) {
             Witch witchentity = EntityType.WITCH.create(p_241841_1_);
             if (witchentity == null) return;
@@ -881,28 +882,12 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         this.interacting = true;
         player.nextContainerCounter();
-        GuardPacketHandler.INSTANCE.send(new GuardOpenInventoryPacket(player.containerCounter, this.guardInventory.getContainerSize(), this.getId()), PacketDistributor.PLAYER.with(player));
+        GuardPacketHandler.INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new GuardOpenInventoryPacket(player.containerCounter, this.guardInventory.getContainerSize(), this.getId()));
         player.containerMenu = new GuardContainer(player.containerCounter, player.getInventory(), this.guardInventory, this);
         player.initMenu(player.containerMenu);
-        MinecraftForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, player.containerMenu));
+        NeoForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, player.containerMenu));
     }
 
-    @Override
-    public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.core.Direction facing) {
-        if (this.isAlive() && capability == ForgeCapabilities.ITEM_HANDLER && itemHandler != null)
-            return itemHandler.cast();
-        return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        if (itemHandler != null) {
-            net.minecraftforge.common.util.LazyOptional<?> oldHandler = itemHandler;
-            itemHandler = null;
-            oldHandler.invalidate();
-        }
-    }
 
     public boolean isEating() {
         return GuardEatFoodGoal.isConsumable(this.getUseItem()) && this.isUsingItem();

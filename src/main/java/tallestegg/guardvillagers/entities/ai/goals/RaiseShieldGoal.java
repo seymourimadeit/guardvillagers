@@ -1,15 +1,16 @@
 package tallestegg.guardvillagers.entities.ai.goals;
 
-import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.ToolActions;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
@@ -22,8 +23,8 @@ public class RaiseShieldGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return !CrossbowItem.isCharged(guard.getMainHandItem()) && (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), net.minecraftforge.common.ToolActions.SHIELD_BLOCK) && raiseShield() && guard.shieldCoolDown == 0
-                && !guard.getOffhandItem().getItem().equals(ForgeRegistries.ITEMS.getValue(new ResourceLocation("bigbrain:buckler"))));
+        return !CrossbowItem.isCharged(guard.getMainHandItem()) && (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ToolActions.SHIELD_BLOCK) && raiseShield() && guard.shieldCoolDown == 0
+                && !guard.getOffhandItem().getItem().equals(Registries.ITEM.registry().equals(new ResourceLocation("bigbrain:buckler"))));
     }
 
     @Override
@@ -33,7 +34,7 @@ public class RaiseShieldGoal extends Goal {
 
     @Override
     public void start() {
-        if (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), net.minecraftforge.common.ToolActions.SHIELD_BLOCK))
+        if (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ToolActions.SHIELD_BLOCK))
             guard.startUsingItem(InteractionHand.OFF_HAND);
     }
 

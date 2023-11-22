@@ -20,12 +20,7 @@ build
 # other
 eclipse
 run
+runs
+run-data
 
-# Files from Forge MDK
-forge*changelog.txt
-runData.launch
-runClient.launch
-runServer.launch
-runClient.launch
-*.launch
-*.launch
+repo

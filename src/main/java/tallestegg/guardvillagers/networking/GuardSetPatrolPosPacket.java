@@ -5,7 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardSetPatrolPosPacket {
@@ -38,7 +38,7 @@ public class GuardSetPatrolPosPacket {
         this.pressed = pressed;
     }
 
-    public void handle(CustomPayloadEvent.Context context) {
+    public void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player != null && player.level() instanceof ServerLevel) {

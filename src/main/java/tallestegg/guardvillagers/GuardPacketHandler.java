@@ -5,12 +5,10 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.Channel;
-import net.minecraftforge.network.ChannelBuilder;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.SimpleChannel;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 import tallestegg.guardvillagers.client.gui.GuardInventoryScreen;
 import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.entities.GuardContainer;
@@ -19,8 +17,8 @@ import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
 
 public class GuardPacketHandler {
-    private static final int PROTOCOL_VERSION = 1;
-    public static final SimpleChannel INSTANCE = ChannelBuilder.named("guardvillagers").networkProtocolVersion(PROTOCOL_VERSION).clientAcceptedVersions(Channel.VersionTest.exact(PROTOCOL_VERSION)).serverAcceptedVersions(Channel.VersionTest.exact(PROTOCOL_VERSION)).simpleChannel();
+    private static final String PROTOCOL_VERSION = "1";
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(GuardVillagers.MODID, "main"), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 
     public static void registerPackets() {
         INSTANCE.messageBuilder(GuardOpenInventoryPacket.class, 0).encoder(GuardOpenInventoryPacket::encode).decoder(GuardOpenInventoryPacket::decode).consumerMainThread(GuardOpenInventoryPacket::handle).add();

@@ -1,7 +1,7 @@
 package tallestegg.guardvillagers.networking;
 
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.event.network.CustomPayloadEvent;
+import net.neoforged.neoforge.network.NetworkEvent;
 import tallestegg.guardvillagers.GuardPacketHandler;
 
 public class GuardOpenInventoryPacket {
@@ -37,7 +37,7 @@ public class GuardOpenInventoryPacket {
         return this.entityId;
     }
 
-    public void handle(CustomPayloadEvent.Context context) {
+    public void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> {
             GuardPacketHandler.openGuardInventory(this);
         });

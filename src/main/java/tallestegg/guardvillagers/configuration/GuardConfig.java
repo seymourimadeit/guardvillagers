@@ -3,10 +3,10 @@ package tallestegg.guardvillagers.configuration;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import com.google.common.collect.Lists;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 import tallestegg.guardvillagers.GuardVillagers;
 
@@ -14,11 +14,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-@EventBusSubscriber(modid = GuardVillagers.MODID, bus = EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = GuardVillagers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class GuardConfig {
-    public static final ForgeConfigSpec COMMON_SPEC;
+    public static final ModConfigSpec COMMON_SPEC;
     public static final CommonConfig COMMON;
-    public static final ForgeConfigSpec CLIENT_SPEC;
+    public static final ModConfigSpec CLIENT_SPEC;
     public static final ClientConfig CLIENT;
     public static boolean RaidAnimals;
     public static boolean WitchesVillager;
@@ -46,10 +46,10 @@ public class GuardConfig {
     public static List<String> MobBlackList;
 
     static {
-        final Pair<CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
+        final Pair<CommonConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(CommonConfig::new);
         COMMON = specPair.getLeft();
         COMMON_SPEC = specPair.getRight();
-        final Pair<ClientConfig, ForgeConfigSpec> specPair1 = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+        final Pair<ClientConfig, ModConfigSpec> specPair1 = new ModConfigSpec.Builder().configure(ClientConfig::new);
         CLIENT = specPair1.getLeft();
         CLIENT_SPEC = specPair1.getRight();
     }
@@ -57,7 +57,7 @@ public class GuardConfig {
     /*
      *Thanks to AzureDoom and Tslat for letting me know that this is possible on the MMD discord
      */
-    public static void loadConfig(ForgeConfigSpec config, String path) {
+    public static void loadConfig(ModConfigSpec config, String path) {
         final CommentedFileConfig file = CommentedFileConfig.builder(new File(path)).sync().autosave()
                 .writingMode(WritingMode.REPLACE).build();
         file.load();
@@ -104,37 +104,37 @@ public class GuardConfig {
     }
 
     public static class CommonConfig {
-        public final ForgeConfigSpec.BooleanValue RaidAnimals;
-        public final ForgeConfigSpec.BooleanValue WitchesVillager;
-        public final ForgeConfigSpec.BooleanValue IllusionerRaids;
-        public final ForgeConfigSpec.BooleanValue AttackAllMobs;
-        public final ForgeConfigSpec.BooleanValue VillagersRunFromPolarBears;
-        public final ForgeConfigSpec.BooleanValue IllagersRunFromPolarBears;
-        public final ForgeConfigSpec.BooleanValue GuardsRunFromPolarBears;
-        public final ForgeConfigSpec.BooleanValue GuardsOpenDoors;
-        public final ForgeConfigSpec.BooleanValue GuardRaiseShield;
-        public final ForgeConfigSpec.BooleanValue GuardFormation;
-        public final ForgeConfigSpec.BooleanValue FriendlyFire;
-        public final ForgeConfigSpec.BooleanValue ConvertVillagerIfHaveHOTV;
-        public final ForgeConfigSpec.BooleanValue BlacksmithHealing;
-        public final ForgeConfigSpec.BooleanValue ClericHealing;
-        public final ForgeConfigSpec.DoubleValue GuardVillagerHelpRange;
-        public final ForgeConfigSpec.DoubleValue amountOfHealthRegenerated;
-        public final ForgeConfigSpec.DoubleValue healthModifier;
-        public final ForgeConfigSpec.DoubleValue speedModifier;
-        public final ForgeConfigSpec.DoubleValue followRangeModifier;
-        public final ForgeConfigSpec.BooleanValue guardArrowsHurtVillagers;
-        public final ForgeConfigSpec.BooleanValue armorersRepairGuardArmor;
-        public final ForgeConfigSpec.ConfigValue<List<String>> MobBlackList;
-        public final ForgeConfigSpec.ConfigValue<List<String>> MobWhiteList;
-        public final ForgeConfigSpec.BooleanValue giveGuardStuffHOTV;
-        public final ForgeConfigSpec.BooleanValue setGuardPatrolHotv;
-        public final ForgeConfigSpec.BooleanValue followHero;
-        public final ForgeConfigSpec.IntValue reputationRequirement;
-        public final ForgeConfigSpec.IntValue reputationRequirementToBeAttacked;
-        public final ForgeConfigSpec.DoubleValue chanceToDropEquipment;
+        public final ModConfigSpec.BooleanValue RaidAnimals;
+        public final ModConfigSpec.BooleanValue WitchesVillager;
+        public final ModConfigSpec.BooleanValue IllusionerRaids;
+        public final ModConfigSpec.BooleanValue AttackAllMobs;
+        public final ModConfigSpec.BooleanValue VillagersRunFromPolarBears;
+        public final ModConfigSpec.BooleanValue IllagersRunFromPolarBears;
+        public final ModConfigSpec.BooleanValue GuardsRunFromPolarBears;
+        public final ModConfigSpec.BooleanValue GuardsOpenDoors;
+        public final ModConfigSpec.BooleanValue GuardRaiseShield;
+        public final ModConfigSpec.BooleanValue GuardFormation;
+        public final ModConfigSpec.BooleanValue FriendlyFire;
+        public final ModConfigSpec.BooleanValue ConvertVillagerIfHaveHOTV;
+        public final ModConfigSpec.BooleanValue BlacksmithHealing;
+        public final ModConfigSpec.BooleanValue ClericHealing;
+        public final ModConfigSpec.DoubleValue GuardVillagerHelpRange;
+        public final ModConfigSpec.DoubleValue amountOfHealthRegenerated;
+        public final ModConfigSpec.DoubleValue healthModifier;
+        public final ModConfigSpec.DoubleValue speedModifier;
+        public final ModConfigSpec.DoubleValue followRangeModifier;
+        public final ModConfigSpec.BooleanValue guardArrowsHurtVillagers;
+        public final ModConfigSpec.BooleanValue armorersRepairGuardArmor;
+        public final ModConfigSpec.ConfigValue<List<String>> MobBlackList;
+        public final ModConfigSpec.ConfigValue<List<String>> MobWhiteList;
+        public final ModConfigSpec.BooleanValue giveGuardStuffHOTV;
+        public final ModConfigSpec.BooleanValue setGuardPatrolHotv;
+        public final ModConfigSpec.BooleanValue followHero;
+        public final ModConfigSpec.IntValue reputationRequirement;
+        public final ModConfigSpec.IntValue reputationRequirementToBeAttacked;
+        public final ModConfigSpec.DoubleValue chanceToDropEquipment;
 
-        public CommonConfig(ForgeConfigSpec.Builder builder) {
+        public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("raids and illagers");
             RaidAnimals = builder.comment("Illagers In Raids Attack Animals?").translation(GuardVillagers.MODID + ".config.RaidAnimals").define("Illagers in raids attack animals?", false);
             WitchesVillager = builder.comment("Witches Attack Villagers?").translation(GuardVillagers.MODID + ".config.WitchesVillager").define("Witches attack villagers?", true);
@@ -179,10 +179,10 @@ public class GuardConfig {
     }
 
     public static class ClientConfig {
-        public final ForgeConfigSpec.BooleanValue GuardSteve;
-        public final ForgeConfigSpec.BooleanValue bigHeadBabyVillager;
+        public final ModConfigSpec.BooleanValue GuardSteve;
+        public final ModConfigSpec.BooleanValue bigHeadBabyVillager;
 
-        public ClientConfig(ForgeConfigSpec.Builder builder) {
+        public ClientConfig(ModConfigSpec.Builder builder) {
             GuardSteve = builder.comment("Textures not included, make your own textures by making a resource pack that adds guard_steve_0 - 6").translation(GuardVillagers.MODID + ".config.steveModel").define("Have guards use the steve model?", false);
             bigHeadBabyVillager = builder.define("Have baby villagers have big heads like in bedrock?", true);
         }
