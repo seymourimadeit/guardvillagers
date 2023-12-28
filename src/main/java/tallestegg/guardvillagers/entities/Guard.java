@@ -664,7 +664,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             ItemStack itemstack = this.getProjectile(this.getItemInHand(GuardItems.getHandWith(this, item -> item instanceof BowItem)));
             ItemStack hand = this.getMainHandItem();
             AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
-            abstractarrowentity = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
+            abstractarrowentity = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
             int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
             if (powerLevel > 0)
                 abstractarrowentity.setBaseDamage(abstractarrowentity.getBaseDamage() + (double) powerLevel * 0.5D + 0.5D);
