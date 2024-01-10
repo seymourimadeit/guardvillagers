@@ -111,7 +111,7 @@ public class HandlerEvents {
         }
 
         if (event.getEntity() instanceof Villager villager) {
-            villager.goalSelector.addGoal(1, new VillagerGossipToGuardGoal(villager));
+           // villager.goalSelector.addGoal(1, new VillagerGossipToGuardGoal(villager));
             if (GuardConfig.BlackSmithHealing)
                 villager.goalSelector.addGoal(1, new HealGolemGoal(villager));
             if (GuardConfig.ClericHealing)
