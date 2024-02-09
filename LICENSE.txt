@@ -4,7 +4,7 @@ The above written directories in this repository, including sub-directories, and
 
 All Rights Reserved
 
-Copyright (c) 2023 seymourimadeit
+Copyright (c) 2024 seymourimadeit
 
 - These assets may be copied over to a seperate repository only in use for a pull request to the mod or for a port
 - These assets may be used in a modpack as long as proper credit is given and said assets stay within the mod itself

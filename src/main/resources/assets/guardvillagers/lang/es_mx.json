@@ -1,0 +1,12 @@
+{
+"entity.guardvillagers.guard": "Guardia",
+"item.guardvillagers.guard_spawn_egg": "Generar guardia",
+"item.guardvillagers.illusioner_spawn_egg": "Generar ilusionista",
+"item.guardvillagers.iron_golem_spawn_egg": "Generar gólem de hierro",
+"item.guardvillagers.snow_golem_spawn_egg": "Generar gólem de nieve",
+"guardinventory.health": "Salud: %s",
+"guardinventory.armor": "Armadura: %s",
+"subtitles.entity.guard.ambient": "Murmuro de guardia",
+"subtitles.entity.guard.hurt": "Guardia herido",
+"subtitles.entity.guard.death": "Guardia muerto"
+}
