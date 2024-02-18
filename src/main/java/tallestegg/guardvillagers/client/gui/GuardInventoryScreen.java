@@ -14,6 +14,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.neoforged.neoforge.network.PacketDistributor;
 import tallestegg.guardvillagers.GuardPacketHandler;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.configuration.GuardConfig;
@@ -47,13 +48,13 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         super.init();
         if (GuardConfig.followHero && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.followHero) {
             this.addRenderableWidget(new GuardGuiButton(this.leftPos + 100, this.height / 2 - 40, 20, 18,  GUARD_FOLLOWING_ICONS, GUARD_NOT_FOLLOWING_ICONS, true, (p_214086_1_) -> {
-                GuardPacketHandler.INSTANCE.sendToServer(new GuardFollowPacket(guard.getId()));
+                PacketDistributor.SERVER.noArg().send(new GuardFollowPacket(guard.getId()));
             }));
         }
         if (GuardConfig.setGuardPatrolHotv && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.setGuardPatrolHotv) {
             this.addRenderableWidget(new GuardGuiButton(this.leftPos + 120, this.height / 2 - 40, 20, 18, GUARD_PATROLLING_ICONS, GUARD_NOT_PATROLLING_ICONS, false, (p_214086_1_) -> {
                 buttonPressed = !buttonPressed;
-                GuardPacketHandler.INSTANCE.sendToServer(new GuardSetPatrolPosPacket(guard.getId(), buttonPressed));
+                PacketDistributor.SERVER.noArg().send(new GuardSetPatrolPosPacket(guard.getId(), buttonPressed));
             }));
         }
     }

@@ -1,6 +1,9 @@
 package tallestegg.guardvillagers;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
@@ -11,16 +14,19 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.networking.GuardFollowPacket;
+import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
+import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
 
 @Mod(GuardVillagers.MODID)
 public class GuardVillagers {
@@ -38,7 +44,16 @@ public class GuardVillagers {
         GuardSounds.SOUNDS.register(modEventBus);
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addCreativeTabs);
-        GuardPacketHandler.registerPackets();
+        modEventBus.addListener(this::register);
+    }
+
+
+    private void register(final RegisterPayloadHandlerEvent event) {
+        final IPayloadRegistrar reg = event.registrar(MODID).versioned("2.0.1");
+        reg.play(GuardSetPatrolPosPacket.ID, GuardSetPatrolPosPacket::new, payload -> payload.server(GuardSetPatrolPosPacket::handle));
+        reg.play(GuardOpenInventoryPacket.ID, GuardOpenInventoryPacket::new, payload -> payload.client(GuardOpenInventoryPacket::handle));
+        reg.play(GuardFollowPacket.ID, GuardFollowPacket::new, payload -> payload.server(GuardFollowPacket::handle));
+
     }
 
     public static boolean hotvChecker(Player player, Guard guard) {
