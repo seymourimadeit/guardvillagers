@@ -23,7 +23,7 @@ public class GuardContainer extends AbstractContainerMenu {
         this.guardInventory = guardInventory;
         this.guard = guard;
         guardInventory.startOpen(playerInventory.player);
-        this.addSlot(new Slot(guardInventory, 0, 8, 9) {
+        this.addSlot(new Slot(guardInventory, 0, 8, 8) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.canEquip(EquipmentSlot.HEAD, guard) && GuardVillagers.hotvChecker(playerInventory.player, guard);

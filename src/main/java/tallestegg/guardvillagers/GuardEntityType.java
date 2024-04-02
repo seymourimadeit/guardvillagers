@@ -11,5 +11,5 @@ import tallestegg.guardvillagers.entities.Guard;
 //@Mod.EventBusSubscriber(modid = GuardVillagers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class GuardEntityType {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, GuardVillagers.MODID);
-    public static final DeferredHolder<EntityType<?>, EntityType<Guard>> GUARD = ENTITIES.register("guard", () -> EntityType.Builder.of(Guard::new, MobCategory.MISC).sized(0.6F, 1.95F).setShouldReceiveVelocityUpdates(true).build(GuardVillagers.MODID + "guard"));
+    public static final DeferredHolder<EntityType<?>, EntityType<Guard>> GUARD = ENTITIES.register("guard", () -> EntityType.Builder.of(Guard::new, MobCategory.MISC).sized(0.6F, 1.90F).setShouldReceiveVelocityUpdates(true).build(GuardVillagers.MODID + "guard"));
 }

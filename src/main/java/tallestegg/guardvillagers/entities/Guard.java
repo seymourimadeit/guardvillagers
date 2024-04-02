@@ -2,15 +2,20 @@ package tallestegg.guardvillagers.entities;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -55,6 +60,9 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.BannerPatterns;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -156,9 +164,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
         this.setPersistenceRequired();
         int type = Guard.getRandomTypeForBiome(level(), this.blockPosition());
-        if (spawnDataIn instanceof Guard.GuardData) {
-            type = ((Guard.GuardData) spawnDataIn).variantData;
-            spawnDataIn = new Guard.GuardData(type);
+        if (spawnDataIn instanceof GuardData) {
+            type = ((GuardData) spawnDataIn).variantData;
+            spawnDataIn = new GuardData(type);
         }
         this.setGuardVariant(type);
         RandomSource randomsource = worldIn.getRandom();
@@ -322,7 +330,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 if (!this.useItem.isEmpty() && this.isUsingItem()) {
                     this.triggerItemUseEffects(this.useItem, 16);
                     ItemStack copy = this.useItem.copy();
-                    ItemStack itemstack = net.neoforged.neoforge.event.EventHooks.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
+                    ItemStack itemstack = EventHooks.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
                     if (itemstack != this.useItem) {
                         this.setItemInHand(interactionhand, itemstack);
                     }
@@ -449,6 +457,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
                 for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype, (ServerLevel) this.level())) {
                     this.setItemSlot(equipmentslottype, stack);
+                    this.setShieldBanners(this.getOffhandItem());
                 }
             }
             this.spawnWithArmor = false;
@@ -619,7 +628,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             }
         });
         this.goalSelector.addGoal(3, new GuardMeleeGoal(this, 0.8D, true));
-        this.goalSelector.addGoal(4, new Guard.FollowHeroGoal(this));
+        this.goalSelector.addGoal(4, new FollowHeroGoal(this));
         if (GuardConfig.GuardsRunFromPolarBears)
             this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, PolarBear.class, 12.0F, 1.0D, 1.2D));
         this.goalSelector.addGoal(4, new MoveBackToVillageGoal(this, 0.5D, false));
@@ -637,7 +646,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, Guard.class, IronGolem.class)).setAlertOthers());
         this.targetSelector.addGoal(3, new HeroHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
-        this.targetSelector.addGoal(5, new Guard.DefendVillageGuardGoal(this));
+        this.targetSelector.addGoal(5, new DefendVillageGuardGoal(this));
         if (GuardConfig.AttackAllMobs) {
             this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId())));
         } else {
@@ -664,7 +673,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             ItemStack itemstack = this.getProjectile(this.getItemInHand(GuardItems.getHandWith(this, item -> item instanceof BowItem)));
             ItemStack hand = this.getMainHandItem();
             AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
-            abstractarrowentity = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
+            abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
             int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
             if (powerLevel > 0)
                 abstractarrowentity.setBaseDamage(abstractarrowentity.getBaseDamage() + (double) powerLevel * 0.5D + 0.5D);
@@ -906,6 +915,23 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         return item instanceof BowItem || item instanceof CrossbowItem || super.canFireProjectileWeapon(item);
     }
 
+    protected void setShieldBanners(ItemStack shieldStack) {
+   /*     ItemStack itemstack = new ItemStack(Items.WHITE_BANNER);
+        CompoundTag compoundtag = new CompoundTag();
+        List<Holder.Reference<BannerPattern>> bannerPatterns = BuiltInRegistries.BANNER_PATTERN.holders().toList();
+        List<DyeColor> dyeList = Arrays.stream(DyeColor.values()).toList();
+        List<Pair<Holder<BannerPattern>, DyeColor>> patterns = new ArrayList<>();
+        for (int bannerPatternsMade = 0; bannerPatternsMade < this.random.nextInt(2); ++bannerPatternsMade) {
+            patterns.add(Pair.of(bannerPatterns.get(this.random.nextInt(bannerPatterns.size())), dyeList.get(this.random.nextInt(dyeList.size()))));
+        }
+        BannerPattern.Builder builder = new BannerPattern.Builder();
+        patterns.forEach(builder::addPattern);
+        compoundtag.put("Patterns", builder.toListTag());
+        CompoundTag compoundtag1 = compoundtag == null ? new CompoundTag() : compoundtag.copy();
+        compoundtag1.putInt("Base", ((BannerItem)itemstack.getItem()).getColor().getId());
+        BlockItem.setBlockEntityData(shieldStack, BlockEntityType.BANNER, compoundtag1); */
+    }
+
     public static class GuardData implements SpawnGroupData {
         public final int variantData;
 
@@ -921,7 +947,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         public DefendVillageGuardGoal(Guard guardIn) {
             super(guardIn, true, true);
             this.guard = guardIn;
-            this.setFlags(EnumSet.of(Goal.Flag.TARGET, Goal.Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.TARGET, Flag.MOVE));
         }
 
         @Override
@@ -954,7 +980,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         public FollowHeroGoal(Guard mob) {
             this.guard = mob;
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
         @Override
@@ -1006,7 +1032,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         public void tick() {
             LivingEntity target = guard.getTarget();
             if (target != null) {
-                if (target.distanceTo(guard) <= 3.0D && !guard.isBlocking()) {
+                if (target.distanceTo(guard) <= 2.5D && !guard.isBlocking()) {
                     guard.getMoveControl().strafe(-2.0F, 0.0F);
                     guard.lookAt(target, 30.0F, 30.0F);
                 }
@@ -1028,7 +1054,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         protected boolean canPerformAttack(LivingEntity mob) {
-            return this.isTimeToAttack() && this.mobHitBox(this.mob).inflate(0.8).intersects(this.mobHitBox(mob)) && this.mob.getSensing().hasLineOfSight(mob);
+            return this.isTimeToAttack() && this.mobHitBox(this.mob).inflate(0.65).intersects(this.mobHitBox(mob)) && this.mob.getSensing().hasLineOfSight(mob);
         }
 
         protected AABB mobHitBox(LivingEntity mob) {
