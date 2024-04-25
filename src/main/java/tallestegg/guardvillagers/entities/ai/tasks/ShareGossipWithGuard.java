@@ -39,20 +39,19 @@ public class ShareGossipWithGuard extends Behavior<Villager> {
     @Override
     protected void start(ServerLevel pLevel, Villager pEntity, long pGameTime) {
         Guard guard = (Guard) pEntity.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET).get();
-        BehaviorUtils.lockGazeAndWalkToEachOther(pEntity, guard, 0.5F);
+        BehaviorUtils.lockGazeAndWalkToEachOther(pEntity, guard, 0.5F, 2);
     }
 
     @Override
     protected void tick(ServerLevel pLevel, Villager pOwner, long pGameTime) {
         Guard guard = (Guard) pOwner.getBrain().getMemory(MemoryModuleType.INTERACTION_TARGET).get();
         if (pOwner.distanceToSqr(guard) < 5.0D) {
-            BehaviorUtils.lockGazeAndWalkToEachOther(pOwner, guard, 0.5F);
+            BehaviorUtils.lockGazeAndWalkToEachOther(pOwner, guard, 0.5F, 2);
             guard.gossip(pOwner, pGameTime);
         }
         if (pOwner.hasExcessFood() && guard.getOffhandItem().isEmpty()) {
             throwHalfStack(pOwner, Villager.FOOD_POINTS.keySet(), guard);
         }
-
     }
 
     @Override

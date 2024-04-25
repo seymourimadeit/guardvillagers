@@ -2,16 +2,17 @@ package tallestegg.guardvillagers;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -19,8 +20,8 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
-import net.neoforged.neoforge.network.registration.IPayloadRegistrar;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
@@ -32,10 +33,10 @@ import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
 public class GuardVillagers {
     public static final String MODID = "guardvillagers";
 
-    public GuardVillagers(IEventBus modEventBus, Dist dist) {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, GuardConfig.COMMON_SPEC);
+    public GuardVillagers(ModContainer container, IEventBus modEventBus) {
+        container.registerConfig(ModConfig.Type.COMMON, GuardConfig.COMMON_SPEC);
         GuardConfig.loadConfig(GuardConfig.COMMON_SPEC, FMLPaths.CONFIGDIR.get().resolve(MODID + "-common.toml").toString());
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, GuardConfig.CLIENT_SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, GuardConfig.CLIENT_SPEC);
         modEventBus.addListener(this::setup);
         NeoForge.EVENT_BUS.register(HandlerEvents.class);
         NeoForge.EVENT_BUS.register(VillagerToGuard.class);
@@ -48,17 +49,16 @@ public class GuardVillagers {
     }
 
 
-    private void register(final RegisterPayloadHandlerEvent event) {
-        final IPayloadRegistrar reg = event.registrar(MODID).versioned("2.0.1");
-        reg.play(GuardSetPatrolPosPacket.ID, GuardSetPatrolPosPacket::new, payload -> payload.server(GuardSetPatrolPosPacket::handle));
-        reg.play(GuardOpenInventoryPacket.ID, GuardOpenInventoryPacket::new, payload -> payload.client(GuardOpenInventoryPacket::handle));
-        reg.play(GuardFollowPacket.ID, GuardFollowPacket::new, payload -> payload.server(GuardFollowPacket::handle));
-
+    private void register(final RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar reg = event.registrar(MODID).versioned("2.0.2");
+        reg.playToServer(GuardSetPatrolPosPacket.TYPE, GuardSetPatrolPosPacket.STREAM_CODEC, GuardSetPatrolPosPacket::setPatrolPosition);
+        reg.playToClient(GuardOpenInventoryPacket.TYPE, GuardOpenInventoryPacket.STREAM_CODEC, GuardOpenInventoryPacket::handle);
+        reg.playToServer(GuardFollowPacket.TYPE, GuardFollowPacket.STREAM_CODEC, GuardFollowPacket::handle);
     }
 
     public static boolean hotvChecker(Player player, Guard guard) {
-        return player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.giveGuardStuffHOTV
-                || !GuardConfig.giveGuardStuffHOTV || guard.getPlayerReputation(player) > GuardConfig.reputationRequirement && !player.level().isClientSide();
+        return player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.COMMON.giveGuardStuffHOTV.get()
+                || !GuardConfig.COMMON.giveGuardStuffHOTV.get() || guard.getPlayerReputation(player) > GuardConfig.COMMON.reputationRequirement.get() && !player.level().isClientSide();
     }
 
     @SubscribeEvent
@@ -71,7 +71,7 @@ public class GuardVillagers {
 
     @SubscribeEvent
     private void setup(final FMLCommonSetupEvent event) {
-        if (GuardConfig.IllusionerRaids)
+        if (GuardConfig.COMMON.IllusionerRaids.get())
             Raid.RaiderType.create("thebluemengroup", EntityType.ILLUSIONER, new int[]{0, 0, 0, 0, 0, 1, 1, 2});
     }
 

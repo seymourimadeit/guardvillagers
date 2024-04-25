@@ -17,10 +17,10 @@ public class GuardPacketHandler {
     public static void openGuardInventory(GuardOpenInventoryPacket packet) {
         Player player = Minecraft.getInstance().player;
         if (player != null) {
-            Entity entity = player.level().getEntity(packet.getEntityId());
+            Entity entity = player.level().getEntity(packet.entityId());
             if (entity instanceof Guard guard) {
                 LocalPlayer clientplayerentity = Minecraft.getInstance().player;
-                GuardContainer container = new GuardContainer(packet.getId(), player.getInventory(), guard.guardInventory, guard);
+                GuardContainer container = new GuardContainer(packet.id(), player.getInventory(), guard.guardInventory, guard);
                 clientplayerentity.containerMenu = container;
                 Minecraft.getInstance().setScreen(new GuardInventoryScreen(container, player.getInventory(), guard));
             }

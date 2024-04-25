@@ -32,12 +32,12 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     public GuardRenderer(EntityRendererProvider.Context context) {
         super(context, new GuardModel(context.bakeLayer(GuardClientEvents.GUARD)), 0.5F);
         this.steve = new GuardSteveModel(context.bakeLayer(GuardClientEvents.GUARD_STEVE));
-        if (GuardConfig.guardSteve)
+        if (GuardConfig.CLIENT.GuardSteve.get())
             this.model = steve;
         else
             this.model = normal;
-        this.addLayer(new HumanoidArmorLayer(this, !GuardConfig.guardSteve ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_INNER)) : new HumanoidArmorModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)),
-                !GuardConfig.guardSteve ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_OUTER)) : new HumanoidArmorModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), context.getModelManager()));
+        this.addLayer(new HumanoidArmorLayer(this, !GuardConfig.CLIENT.GuardSteve.get() ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_INNER)) : new HumanoidArmorModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)),
+                !GuardConfig.CLIENT.GuardSteve.get() ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_OUTER)) : new HumanoidArmorModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), context.getModelManager()));
     }
 
     @Override
@@ -116,7 +116,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     @Nullable
     @Override
     public ResourceLocation getTextureLocation(Guard entity) {
-        return !GuardConfig.guardSteve
+        return !GuardConfig.CLIENT.GuardSteve.get()
                 ? new ResourceLocation(GuardVillagers.MODID,
                         "textures/entity/guard/guard_" + entity.getGuardVariant() + ".png")
                 : new ResourceLocation(GuardVillagers.MODID,

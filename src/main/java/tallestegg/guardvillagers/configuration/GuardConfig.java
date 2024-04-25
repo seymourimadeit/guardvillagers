@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import com.google.common.collect.Lists;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -14,36 +15,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = GuardVillagers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+
 public class GuardConfig {
     public static final ModConfigSpec COMMON_SPEC;
     public static final CommonConfig COMMON;
     public static final ModConfigSpec CLIENT_SPEC;
     public static final ClientConfig CLIENT;
-    public static boolean RaidAnimals;
-    public static boolean WitchesVillager;
-    public static boolean IllusionerRaids;
-    public static boolean AttackAllMobs;
-    public static boolean VillagersRunFromPolarBears;
-    public static boolean IllagersRunFromPolarBears;
-    public static boolean GuardsRunFromPolarBears;
-    public static boolean GuardsOpenDoors;
-    public static boolean GuardAlwaysShield;
-    public static boolean GuardFormation;
-    public static boolean FriendlyFire;
-    public static boolean ConvertVillagerIfHaveHOTV;
-    public static boolean BlackSmithHealing;
-    public static boolean ClericHealing;
-    public static double GuardVillagerHelpRange;
-    public static float amountOfHealthRegenerated;
-    public static boolean guardArrowsHurtVillagers;
-    public static boolean armorerRepairGuardArmor;
-    public static boolean giveGuardStuffHOTV;
-    public static boolean setGuardPatrolHotv;
-    public static boolean followHero;
-    public static boolean guardSteve;
-    public static int reputationRequirement;
-    public static List<String> MobBlackList;
 
     static {
         final Pair<CommonConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(CommonConfig::new);
@@ -63,46 +40,6 @@ public class GuardConfig {
         file.load();
         config.setConfig(file);
     }
-
-    public static void bakeCommonConfig() {
-        RaidAnimals = COMMON.RaidAnimals.get();
-        WitchesVillager = COMMON.WitchesVillager.get();
-        IllusionerRaids = COMMON.IllusionerRaids.get();
-        AttackAllMobs = COMMON.AttackAllMobs.get();
-        VillagersRunFromPolarBears = COMMON.VillagersRunFromPolarBears.get();
-        IllagersRunFromPolarBears = COMMON.IllagersRunFromPolarBears.get();
-        GuardsRunFromPolarBears = COMMON.GuardsRunFromPolarBears.get();
-        GuardsOpenDoors = COMMON.GuardsOpenDoors.get();
-        GuardAlwaysShield = COMMON.GuardRaiseShield.get();
-        GuardFormation = COMMON.GuardFormation.get();
-        FriendlyFire = COMMON.FriendlyFire.get();
-        MobBlackList = COMMON.MobBlackList.get();
-        ConvertVillagerIfHaveHOTV = COMMON.ConvertVillagerIfHaveHOTV.get();
-        BlackSmithHealing = COMMON.BlacksmithHealing.get();
-        ClericHealing = COMMON.ClericHealing.get();
-        GuardVillagerHelpRange = COMMON.GuardVillagerHelpRange.get();
-        amountOfHealthRegenerated = COMMON.amountOfHealthRegenerated.get().floatValue();
-        guardArrowsHurtVillagers = COMMON.guardArrowsHurtVillagers.get();
-        armorerRepairGuardArmor = COMMON.armorersRepairGuardArmor.get();
-        giveGuardStuffHOTV = COMMON.giveGuardStuffHOTV.get();
-        setGuardPatrolHotv = COMMON.setGuardPatrolHotv.get();
-        reputationRequirement = COMMON.reputationRequirement.get();
-        followHero = COMMON.followHero.get();
-    }
-
-    public static void bakeClientConfig() {
-        guardSteve = CLIENT.GuardSteve.get();
-    }
-
-    @SubscribeEvent
-    public static void onModConfigEvent(final ModConfigEvent.Loading configEvent) {
-        if (configEvent.getConfig().getSpec() == GuardConfig.COMMON_SPEC) {
-            bakeCommonConfig();
-        } else if (configEvent.getConfig().getSpec() == GuardConfig.CLIENT_SPEC) {
-            bakeClientConfig();
-        }
-    }
-
     public static class CommonConfig {
         public final ModConfigSpec.BooleanValue RaidAnimals;
         public final ModConfigSpec.BooleanValue WitchesVillager;

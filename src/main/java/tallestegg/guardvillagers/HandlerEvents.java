@@ -19,6 +19,7 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
@@ -26,13 +27,14 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.entities.ai.goals.ArmorerRepairGuardArmorGoal;
 import tallestegg.guardvillagers.entities.ai.goals.AttackEntityDaytimeGoal;
 import tallestegg.guardvillagers.entities.ai.goals.HealGolemGoal;
 import tallestegg.guardvillagers.entities.ai.goals.HealGuardAndPlayerGoal;
 
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = GuardVillagers.MODID)
+@EventBusSubscriber(modid = GuardVillagers.MODID)
 public class HandlerEvents {
     @SubscribeEvent
     public static void onEntityTarget(LivingChangeTargetEvent event) {
@@ -41,7 +43,7 @@ public class HandlerEvents {
         if (target == null || entity.getType() == GuardEntityType.GUARD.get()) return;
         boolean isVillager = target.getType() == EntityType.VILLAGER || target.getType() == GuardEntityType.GUARD.get();
         if (isVillager) {
-            List<Mob> list = entity.level().getEntitiesOfClass(Mob.class, entity.getBoundingBox().inflate(GuardConfig.GuardVillagerHelpRange, 5.0D, GuardConfig.GuardVillagerHelpRange));
+            List<Mob> list = entity.level().getEntitiesOfClass(Mob.class, entity.getBoundingBox().inflate(GuardConfig.COMMON.GuardVillagerHelpRange.get(), 5.0D, GuardConfig.COMMON.GuardVillagerHelpRange.get()));
             for (Mob mob : list) {
                 if ((mob.getTarget() == null) && (mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM)) {
                     if (mob.getTeam() != null && entity.getTeam() != null && entity.getTeam().isAlliedTo(mob.getTeam()))
@@ -62,12 +64,12 @@ public class HandlerEvents {
         if (entity == null || trueSource == null) return;
         boolean isVillager = entity.getType() == EntityType.VILLAGER || entity.getType() == GuardEntityType.GUARD.get();
         boolean isGolem = isVillager || entity.getType() == EntityType.IRON_GOLEM;
-        if (isGolem && trueSource.getType() == GuardEntityType.GUARD.get() && !GuardConfig.guardArrowsHurtVillagers) {
+        if (isGolem && trueSource.getType() == GuardEntityType.GUARD.get() && !GuardConfig.COMMON.guardArrowsHurtVillagers.get()) {
             event.setAmount(0.0F);
             event.setCanceled(true);
         }
         if (isVillager && event.getSource().getEntity() instanceof Mob) {
-            List<Mob> list = trueSource.level().getEntitiesOfClass(Mob.class, trueSource.getBoundingBox().inflate(GuardConfig.GuardVillagerHelpRange, 5.0D, GuardConfig.GuardVillagerHelpRange));
+            List<Mob> list = trueSource.level().getEntitiesOfClass(Mob.class, trueSource.getBoundingBox().inflate(GuardConfig.COMMON.GuardVillagerHelpRange.get(), 5.0D, GuardConfig.COMMON.GuardVillagerHelpRange.get()));
             for (Mob mob : list) {
                 boolean type = mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM;
                 boolean trueSourceGolem = trueSource.getType() == GuardEntityType.GUARD.get() || trueSource.getType() == EntityType.IRON_GOLEM;
@@ -96,34 +98,35 @@ public class HandlerEvents {
     public static void onLivingSpawned(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Mob mob) {
             if (mob instanceof Raider) {
-                if (((Raider) mob).hasActiveRaid() && GuardConfig.RaidAnimals)
+                if (((Raider) mob).hasActiveRaid() && GuardConfig.COMMON.RaidAnimals.get())
                     mob.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(((Raider) mob), Animal.class, false));
             }
-            if (GuardConfig.AttackAllMobs) {
-                if (mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId()) && !(mob instanceof Spider)) {
-                    mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(mob, Guard.class, false));
-                }
-                if (mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId()) && mob instanceof Spider spider) {
-                    spider.targetSelector.addGoal(3, new AttackEntityDaytimeGoal<>(spider, Guard.class));
+            if (GuardConfig.COMMON.AttackAllMobs.get()) {
+                if (mob instanceof Enemy && !GuardConfig.COMMON.MobBlackList.get().contains(mob.getEncodeId())) {
+                    if (!(mob instanceof Spider))
+                        mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(mob, Guard.class, false));
+                    else
+                        mob.targetSelector.addGoal(3, new AttackEntityDaytimeGoal<>((Spider) mob, Guard.class));
                 }
             }
 
             if (mob instanceof AbstractIllager illager) {
-                if (GuardConfig.IllagersRunFromPolarBears)
+                if (GuardConfig.COMMON.IllagersRunFromPolarBears.get())
                     illager.goalSelector.addGoal(2, new AvoidEntityGoal<>(illager, PolarBear.class, 6.0F, 1.0D, 1.2D));
                 illager.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(illager, Guard.class, false));
             }
 
             if (mob instanceof AbstractVillager abstractvillager) {
-                if (GuardConfig.VillagersRunFromPolarBears)
+                if (GuardConfig.COMMON.VillagersRunFromPolarBears.get())
                     abstractvillager.goalSelector.addGoal(2, new AvoidEntityGoal<>(abstractvillager, PolarBear.class, 6.0F, 1.0D, 1.2D));
-                if (GuardConfig.WitchesVillager)
+                if (GuardConfig.COMMON.WitchesVillager.get())
                     abstractvillager.goalSelector.addGoal(2, new AvoidEntityGoal<>(abstractvillager, Witch.class, 6.0F, 1.0D, 1.2D));
             }
 
             if (mob instanceof Villager villager) {
-                if (GuardConfig.BlackSmithHealing) villager.goalSelector.addGoal(1, new HealGolemGoal(villager));
-                if (GuardConfig.ClericHealing)
+                if (GuardConfig.COMMON.BlacksmithHealing.get())
+                    villager.goalSelector.addGoal(1, new HealGolemGoal(villager));
+                if (GuardConfig.COMMON.ClericHealing.get())
                     villager.goalSelector.addGoal(1, new HealGuardAndPlayerGoal(villager, 1.0D, 100, 0, 10.0F));
             }
 
@@ -144,7 +147,7 @@ public class HandlerEvents {
             }
 
             if (mob instanceof Witch witch) {
-                if (GuardConfig.WitchesVillager) {
+                if (GuardConfig.COMMON.WitchesVillager.get()) {
                     witch.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witch, AbstractVillager.class, true));
                     witch.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witch, IronGolem.class, true));
                     witch.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(witch, Guard.class, false));

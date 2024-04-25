@@ -27,8 +27,8 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     private static final ResourceLocation GUARD_GUI_TEXTURES = new ResourceLocation(GuardVillagers.MODID, "textures/container/inventory.png");
     private static final WidgetSprites GUARD_FOLLOWING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "following/following"), new ResourceLocation(GuardVillagers.MODID, "following/following_highlighted"));
     private static final WidgetSprites GUARD_NOT_FOLLOWING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "following/not_following"), new ResourceLocation(GuardVillagers.MODID, "following/not_following_highlighted"));
-    private static final WidgetSprites GUARD_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "patrolling/patrolling1"), new ResourceLocation(GuardVillagers.MODID,"patrolling/patrolling2"));
-    private static final WidgetSprites GUARD_NOT_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "patrolling/notpatrolling1"), new ResourceLocation(GuardVillagers.MODID,"patrolling/notpatrolling2"));
+    private static final WidgetSprites GUARD_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "patrolling/patrolling1"), new ResourceLocation(GuardVillagers.MODID, "patrolling/patrolling2"));
+    private static final WidgetSprites GUARD_NOT_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "patrolling/notpatrolling1"), new ResourceLocation(GuardVillagers.MODID, "patrolling/notpatrolling2"));
     private final Guard guard;
     private Player player;
     private float mousePosX;
@@ -46,15 +46,15 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     @Override
     public void init() {
         super.init();
-        if (GuardConfig.followHero && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.followHero) {
-            this.addRenderableWidget(new GuardGuiButton(this.leftPos + 100, this.height / 2 - 40, 20, 18,  GUARD_FOLLOWING_ICONS, GUARD_NOT_FOLLOWING_ICONS, true, (p_214086_1_) -> {
-                PacketDistributor.SERVER.noArg().send(new GuardFollowPacket(guard.getId()));
+        if (GuardConfig.COMMON.followHero.get() && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.COMMON.followHero.get()) {
+            this.addRenderableWidget(new GuardGuiButton(this.leftPos + 100, this.height / 2 - 40, 20, 18, GUARD_FOLLOWING_ICONS, GUARD_NOT_FOLLOWING_ICONS, true, (p_214086_1_) -> {
+                PacketDistributor.sendToServer(new GuardFollowPacket(guard.getId()));
             }));
         }
-        if (GuardConfig.setGuardPatrolHotv && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.setGuardPatrolHotv) {
+        if (GuardConfig.COMMON.setGuardPatrolHotv.get() && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.COMMON.setGuardPatrolHotv.get()) {
             this.addRenderableWidget(new GuardGuiButton(this.leftPos + 120, this.height / 2 - 40, 20, 18, GUARD_PATROLLING_ICONS, GUARD_NOT_PATROLLING_ICONS, false, (p_214086_1_) -> {
                 buttonPressed = !buttonPressed;
-                PacketDistributor.SERVER.noArg().send(new GuardSetPatrolPosPacket(guard.getId(), buttonPressed));
+                PacketDistributor.sendToServer(new GuardSetPatrolPosPacket(guard.getId(), buttonPressed));
             }));
         }
     }

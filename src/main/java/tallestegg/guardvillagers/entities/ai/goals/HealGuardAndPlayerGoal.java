@@ -1,28 +1,28 @@
 package tallestegg.guardvillagers.entities.ai.goals;
 
-import java.util.EnumSet;
-import java.util.List;
-
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.core.Holder;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
-import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import tallestegg.guardvillagers.GuardEntityType;
+
+import java.util.EnumSet;
+import java.util.List;
 
 public class HealGuardAndPlayerGoal extends Goal {
     private final Mob healer;
@@ -55,7 +55,7 @@ public class HealGuardAndPlayerGoal extends Goal {
         if (!list.isEmpty()) {
             for (LivingEntity mob : list) {
                 if (mob != null) {
-                    if (mob instanceof Villager && mob.isAlive() && mob.getHealth() < mob.getMaxHealth() && mob != healer|| mob.getType() == GuardEntityType.GUARD.get() && mob != null && mob.isAlive() && mob.getHealth() < mob.getMaxHealth()
+                    if (mob instanceof Villager && mob.isAlive() && mob.getHealth() < mob.getMaxHealth() && mob != healer || mob.getType() == GuardEntityType.GUARD.get() && mob != null && mob.isAlive() && mob.getHealth() < mob.getMaxHealth()
                             || mob instanceof Player && mob.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && !((Player) mob).getAbilities().instabuild && mob.getHealth() < mob.getMaxHealth()) {
                         this.mob = mob;
                         return true;
@@ -108,7 +108,7 @@ public class HealGuardAndPlayerGoal extends Goal {
             this.throwPotion(mob, distanceFactor);
             this.rangedAttackTime = Mth.floor(f * (float) (this.maxRangedAttackTime - this.attackIntervalMin) + (float) this.attackIntervalMin);
         } else if (this.rangedAttackTime < 0) {
-            this.rangedAttackTime = Mth.floor(Mth.lerp(Math.sqrt(d0) / (double)this.attackRadius, (double)this.attackIntervalMin, (double)this.maxAttackDistance));
+            this.rangedAttackTime = Mth.floor(Mth.lerp(Math.sqrt(d0) / (double) this.attackRadius, (double) this.attackIntervalMin, (double) this.maxAttackDistance));
         }
     }
 
@@ -118,14 +118,9 @@ public class HealGuardAndPlayerGoal extends Goal {
         double d1 = target.getEyeY() - (double) 1.1F - healer.getY();
         double d2 = target.getZ() + vec3d.z - healer.getZ();
         float f = Mth.sqrt((float) (d0 * d0 + d2 * d2));
-        Potion potion = Potions.REGENERATION;
-        if (target.getHealth() <= 4.0F) {
-            potion = Potions.HEALING;
-        } else {
-            potion = Potions.REGENERATION;
-        }
+        Holder<Potion> potion = target.getHealth() > 4.0F ? Potions.REGENERATION : Potions.HEALING;
         ThrownPotion potionentity = new ThrownPotion(healer.level(), healer);
-        potionentity.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+        potionentity.setItem(PotionContents.createItemStack(Items.SPLASH_POTION, potion));
         potionentity.setXRot(-20.0F);
         potionentity.shoot(d0, d1 + (double) (f * 0.2F), d2, 0.75F, 8.0F);
         healer.level().playSound((Player) null, healer.getX(), healer.getY(), healer.getZ(), SoundEvents.SPLASH_POTION_THROW, healer.getSoundSource(), 1.0F, 0.8F + healer.getRandom().nextFloat() * 0.4F);

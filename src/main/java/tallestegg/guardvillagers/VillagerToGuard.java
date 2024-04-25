@@ -17,12 +17,13 @@ import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
-@Mod.EventBusSubscriber(modid = GuardVillagers.MODID)
+@EventBusSubscriber(modid = GuardVillagers.MODID)
 public class VillagerToGuard {
     @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
@@ -33,7 +34,7 @@ public class VillagerToGuard {
             if (target instanceof Villager villager) {
                 if (!villager.isBaby()) {
                     if (villager.getVillagerData().getProfession() == VillagerProfession.NONE || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
-                        if (!GuardConfig.ConvertVillagerIfHaveHOTV || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.ConvertVillagerIfHaveHOTV) {
+                        if (!GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get() || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get()) {
                             VillagerToGuard.convertVillager(villager, player);
                             if (!player.getAbilities().instabuild)
                                 itemstack.shrink(1);
@@ -44,7 +45,7 @@ public class VillagerToGuard {
         }
     }
 
-     private static void convertVillager(LivingEntity entity, Player player) {
+    private static void convertVillager(LivingEntity entity, Player player) {
         player.swing(InteractionHand.MAIN_HAND);
         ItemStack itemstack = player.getItemBySlot(EquipmentSlot.MAINHAND);
         Guard guard = GuardEntityType.GUARD.get().create(entity.level());
@@ -75,7 +76,7 @@ public class VillagerToGuard {
         guard.setDropChance(EquipmentSlot.LEGS, 100.0F);
         guard.setDropChance(EquipmentSlot.MAINHAND, 100.0F);
         guard.setDropChance(EquipmentSlot.OFFHAND, 100.0F);
-        guard.getGossips().add(player.getUUID(), GossipType.MINOR_POSITIVE, GuardConfig.reputationRequirement);
+        guard.getGossips().add(player.getUUID(), GossipType.MINOR_POSITIVE, GuardConfig.COMMON.reputationRequirement.get());
         villager.level().addFreshEntity(guard);
         villager.releasePoi(MemoryModuleType.HOME);
         villager.releasePoi(MemoryModuleType.JOB_SITE);
