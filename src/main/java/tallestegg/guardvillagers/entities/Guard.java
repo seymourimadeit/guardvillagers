@@ -252,23 +252,35 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         for (int i = 0; i < listnbt.size(); ++i) {
             CompoundTag compoundnbt = listnbt.getCompound(i);
             int j = compoundnbt.getByte("Slot") & 255;
-            this.guardInventory.setItem(j, ItemStack.parse(this.registryAccess(), compoundnbt).orElse(ItemStack.EMPTY));
+            ItemStack stack = ItemStack.parseOptional(this.registryAccess(), compoundnbt);
+            if (!stack.isEmpty())
+                this.guardInventory.setItem(j, stack);
+            else
+                listtag.add(new CompoundTag());
         }
         if (compound.contains("ArmorItems", 9)) {
             ListTag armorItems = compound.getList("ArmorItems", 10);
             for (int i = 0; i < this.armorItems.size(); ++i) {
-                int index = Guard.slotToInventoryIndex(Mob.getEquipmentSlotForItem(ItemStack.parse(this.registryAccess(), armorItems.getCompound(i)).orElse(ItemStack.EMPTY)));
-                this.guardInventory.setItem(index, ItemStack.parse(this.registryAccess(), armorItems.getCompound(i)).orElse(ItemStack.EMPTY));
+                ItemStack stack = ItemStack.parseOptional(this.registryAccess(), armorItems.getCompound(i));
+                if (!stack.isEmpty()) {
+                    int index = Guard.slotToInventoryIndex(Mob.getEquipmentSlotForItem(ItemStack.parse(this.registryAccess(), armorItems.getCompound(i)).orElse(ItemStack.EMPTY)));
+                    this.guardInventory.setItem(index, stack);
+                } else {
+                    listtag.add(new CompoundTag());
+                }
+            }
+            if (compound.contains("HandItems", 9)) {
+                ListTag handItems = compound.getList("HandItems", 10);
+                for (int i = 0; i < this.handItems.size(); ++i) {
+                    int handSlot = i == 0 ? 5 : 4;
+                    if (!ItemStack.parseOptional(this.registryAccess(), handItems.getCompound(i)).isEmpty())
+                        this.guardInventory.setItem(handSlot, ItemStack.parseOptional(this.registryAccess(), handItems.getCompound(i)));
+                    else
+                        listtag.add(new CompoundTag());
+                }
+                if (!level().isClientSide) this.readPersistentAngerSaveData(level(), compound);
             }
         }
-        if (compound.contains("HandItems", 9)) {
-            ListTag handItems = compound.getList("HandItems", 10);
-            for (int i = 0; i < this.handItems.size(); ++i) {
-                int handSlot = i == 0 ? 5 : 4;
-                this.guardInventory.setItem(handSlot, ItemStack.parse(this.registryAccess(), handItems.getCompound(i)).orElse(ItemStack.EMPTY));
-            }
-        }
-        if (!level().isClientSide) this.readPersistentAngerSaveData(level(), compound);
     }
 
     @Override
@@ -293,8 +305,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             if (!itemstack.isEmpty()) {
                 CompoundTag compoundnbt = new CompoundTag();
                 compoundnbt.putByte("Slot", (byte) i);
-                itemstack.save(this.registryAccess(), compoundnbt);
-                listnbt.add(compoundnbt);
+                listnbt.add(itemstack.save(this.registryAccess(), compoundnbt));
+            } else {
+                listnbt.add(new CompoundTag());
             }
         }
         compound.put("Inventory", listnbt);
@@ -566,7 +579,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             LootParams lootcontext$builder = (new LootParams.Builder(level).withParameter(LootContextParams.THIS_ENTITY, this).create(GuardLootTables.SLOT));
             return loot.getRandomItems(lootcontext$builder);
         }
-        return null;
+        return Collections.singletonList(ItemStack.EMPTY);
     }
 
 
