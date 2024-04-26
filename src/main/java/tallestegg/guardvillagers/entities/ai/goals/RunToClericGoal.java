@@ -23,7 +23,7 @@ public class RunToClericGoal extends Goal {
         if (!list.isEmpty()) {
             for (Villager mob : list) {
                 if (mob != null) {
-                    if (mob.getVillagerData().getProfession() == VillagerProfession.CLERIC && guard.getHealth() < guard.getMaxHealth() && guard.getTarget() == null && !guard.hasEffect(MobEffects.REGENERATION)) {
+                    if (mob.getVillagerData().getProfession() == VillagerProfession.CLERIC && guard.getHealth() < guard.getMaxHealth() && guard.getTarget() == null && !guard.hasEffect(MobEffects.REGENERATION) && !mob.isSleeping()) {
                         this.cleric = mob;
                         return GuardConfig.COMMON.ClericHealing.get();
                     }

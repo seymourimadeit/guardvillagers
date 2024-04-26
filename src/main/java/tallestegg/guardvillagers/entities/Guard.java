@@ -529,7 +529,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (this.random.nextFloat() < chance) {
             this.shieldCoolDown = 100;
             this.stopUsingItem();
-            level().broadcastEntityEvent(this, (byte) 30);
+            this.level().broadcastEntityEvent(this, (byte) 30);
         }
     }
 
@@ -689,6 +689,19 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
+    public void performCrossbowAttack(LivingEntity p_32337_, float p_32338_) {
+        InteractionHand interactionhand = ProjectileUtil.getWeaponHoldingHand(p_32337_, item -> item instanceof CrossbowItem);
+        ItemStack itemstack = p_32337_.getItemInHand(interactionhand);
+        if (itemstack.getItem() instanceof CrossbowItem crossbowitem) {
+            crossbowitem.performShooting(
+                    p_32337_.level(), p_32337_, interactionhand, itemstack, p_32338_, 1.0F, null
+            );
+        }
+
+        this.onCrossbowAttackPerformed();
+    }
+
+    @Override
     public void setItemSlot(EquipmentSlot slotIn, ItemStack stack) {
         super.setItemSlot(slotIn, stack);
         switch (slotIn) {
@@ -774,11 +787,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
     }
 
-
-    @Override
-    public void performCrossbowAttack(LivingEntity p_32337_, float p_32338_) {
-        CrossbowAttackMob.super.performCrossbowAttack(p_32337_, p_32338_);
-    }
 
     @Override
     protected void blockedByShield(LivingEntity entityIn) {

@@ -6,6 +6,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
@@ -27,10 +29,7 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
-import tallestegg.guardvillagers.entities.ai.goals.ArmorerRepairGuardArmorGoal;
-import tallestegg.guardvillagers.entities.ai.goals.AttackEntityDaytimeGoal;
-import tallestegg.guardvillagers.entities.ai.goals.HealGolemGoal;
-import tallestegg.guardvillagers.entities.ai.goals.HealGuardAndPlayerGoal;
+import tallestegg.guardvillagers.entities.ai.goals.*;
 
 import java.util.List;
 
@@ -101,7 +100,7 @@ public class HandlerEvents {
                 if (((Raider) mob).hasActiveRaid() && GuardConfig.COMMON.RaidAnimals.get())
                     mob.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(((Raider) mob), Animal.class, false));
             }
-            if (GuardConfig.COMMON.AttackAllMobs.get()) {
+            if (GuardConfig.COMMON.MobsAttackGuards.get()) {
                 if (mob instanceof Enemy && !GuardConfig.COMMON.MobBlackList.get().contains(mob.getEncodeId())) {
                     if (!(mob instanceof Spider))
                         mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(mob, Guard.class, false));
@@ -136,6 +135,8 @@ public class HandlerEvents {
                     golem.targetSelector.removeGoal(angerGoal);
                     golem.targetSelector.addGoal(2, tolerateFriendlyFire);
                 });
+                golem.goalSelector.addGoal(1, new FloatGoal(golem));
+                golem.goalSelector.addGoal(0, new GetOutOfWaterGoal(golem, 1.0D));
             }
 
             if (mob instanceof Zombie zombie) {
