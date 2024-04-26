@@ -197,11 +197,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        if (this.isBlocking()) {
-            return SoundEvents.SHIELD_BLOCK;
-        } else {
-            return GuardSounds.GUARD_HURT.value();
-        }
+        return GuardSounds.GUARD_HURT.value();
     }
 
     @Override
@@ -485,6 +481,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     protected void blockUsingShield(LivingEntity entityIn) {
         super.blockUsingShield(entityIn);
+        this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 1.0F);
         if (entityIn.getMainHandItem().canDisableShield(this.useItem, this, entityIn)) this.disableShield(true);
     }
 
