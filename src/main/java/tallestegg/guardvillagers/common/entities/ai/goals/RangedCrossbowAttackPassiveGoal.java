@@ -1,4 +1,4 @@
-package tallestegg.guardvillagers.entities.ai.goals;
+package tallestegg.guardvillagers.common.entities.ai.goals;
 
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -11,11 +11,10 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import tallestegg.guardvillagers.GuardEntityType;
+import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
-import tallestegg.guardvillagers.entities.Guard;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -161,7 +160,9 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
     }
 
     private boolean friendlyInLineOfSight() {
-        List<Entity> list = this.mob.level().getEntities(this.mob, this.mob.getBoundingBox().inflate(5.0D));
+        Vec3 lookAngle = this.mob.getViewVector(1.0F);
+        AABB aabb = this.mob.getBoundingBox().expandTowards(lookAngle.scale(6.0D)).inflate(1.0, 1.0, 1.0);
+        List<Entity> list = this.mob.level().getEntities(this.mob, aabb);
         for (Entity guard : list) {
             if (guard != this.mob.getTarget()) {
                 boolean isVillager = ((Guard) this.mob).getOwner() == guard || guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
@@ -169,7 +170,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                     Vec3 vector3d = this.mob.getLookAngle();
                     Vec3 vector3d1 = guard.position().vectorTo(this.mob.position()).normalize();
                     vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
-                    if (vector3d1.dot(vector3d) < 1.0D && this.mob.hasLineOfSight(guard) && guard.distanceTo(this.mob) <= 4.0D)
+                    if (vector3d1.dot(vector3d) < 1.0D && this.mob.hasLineOfSight(guard))
                         return true;
                 }
             }

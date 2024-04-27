@@ -1,4 +1,4 @@
-package tallestegg.guardvillagers.entities.ai.goals;
+package tallestegg.guardvillagers.common.entities.ai.goals;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -10,7 +10,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.phys.Vec3;
-import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.common.entities.Guard;
 
 public class GuardRunToEatGoal extends RandomStrollGoal {
     private final Guard guard;

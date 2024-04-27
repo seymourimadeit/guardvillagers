@@ -1,15 +1,20 @@
 package tallestegg.guardvillagers;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.gossip.GossipType;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.IronGolem;
@@ -18,18 +23,26 @@ import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raider;
+import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import tallestegg.guardvillagers.common.entities.Guard;
+import tallestegg.guardvillagers.common.entities.ai.goals.AttackEntityDaytimeGoal;
+import tallestegg.guardvillagers.common.entities.ai.goals.GetOutOfWaterGoal;
+import tallestegg.guardvillagers.common.entities.ai.goals.HealGolemGoal;
+import tallestegg.guardvillagers.common.entities.ai.goals.HealGuardAndPlayerGoal;
 import tallestegg.guardvillagers.configuration.GuardConfig;
-import tallestegg.guardvillagers.entities.Guard;
-import tallestegg.guardvillagers.entities.ai.goals.*;
 
 import java.util.List;
 
@@ -159,5 +172,66 @@ public class HandlerEvents {
                 cat.goalSelector.addGoal(1, new AvoidEntityGoal<>(cat, AbstractIllager.class, 12.0F, 1.0D, 1.2D));
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+        Player player = event.getEntity();
+        ItemStack itemstack = event.getEntity().getMainHandItem();
+        Entity target = event.getTarget();
+        if ((itemstack.getItem() instanceof SwordItem || itemstack.getItem() instanceof CrossbowItem) && player.isCrouching()) {
+            if (target instanceof Villager villager) {
+                if (!villager.isBaby()) {
+                    if (villager.getVillagerData().getProfession() == VillagerProfession.NONE || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
+                        if (!GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get() || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get()) {
+                            convertVillager(villager, player);
+                            if (!player.getAbilities().instabuild)
+                                itemstack.shrink(1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void convertVillager(LivingEntity entity, Player player) {
+        player.swing(InteractionHand.MAIN_HAND);
+        ItemStack itemstack = player.getItemBySlot(EquipmentSlot.MAINHAND);
+        Guard guard = GuardEntityType.GUARD.get().create(entity.level());
+        Villager villager = (Villager) entity;
+        if (guard == null)
+            return;
+        if (entity.level().isClientSide) {
+            ParticleOptions iparticledata = ParticleTypes.HAPPY_VILLAGER;
+            for (int i = 0; i < 10; ++i) {
+                double d0 = villager.getRandom().nextGaussian() * 0.02D;
+                double d1 = villager.getRandom().nextGaussian() * 0.02D;
+                double d2 = villager.getRandom().nextGaussian() * 0.02D;
+                villager.level().addParticle(iparticledata, villager.getX() + (double) (villager.getRandom().nextFloat() * villager.getBbWidth() * 2.0F) - (double) villager.getBbWidth(), villager.getY() + 0.5D + (double) (villager.getRandom().nextFloat() * villager.getBbHeight()),
+                        villager.getZ() + (double) (villager.getRandom().nextFloat() * villager.getBbWidth() * 2.0F) - (double) villager.getBbWidth(), d0, d1, d2);
+            }
+        }
+        guard.copyPosition(villager);
+        guard.playSound(SoundEvents.VILLAGER_YES, 1.0F, 1.0F);
+        guard.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copy());
+        int i = Guard.getRandomTypeForBiome(guard.level(), guard.blockPosition());
+        guard.setGuardVariant(i);
+        guard.setPersistenceRequired();
+        guard.setCustomName(villager.getCustomName());
+        guard.setCustomNameVisible(villager.isCustomNameVisible());
+        guard.setDropChance(EquipmentSlot.HEAD, 100.0F);
+        guard.setDropChance(EquipmentSlot.CHEST, 100.0F);
+        guard.setDropChance(EquipmentSlot.FEET, 100.0F);
+        guard.setDropChance(EquipmentSlot.LEGS, 100.0F);
+        guard.setDropChance(EquipmentSlot.MAINHAND, 100.0F);
+        guard.setDropChance(EquipmentSlot.OFFHAND, 100.0F);
+        guard.getGossips().add(player.getUUID(), GossipType.MINOR_POSITIVE, GuardConfig.COMMON.reputationRequirement.get());
+        villager.level().addFreshEntity(guard);
+        villager.releasePoi(MemoryModuleType.HOME);
+        villager.releasePoi(MemoryModuleType.JOB_SITE);
+        villager.releasePoi(MemoryModuleType.MEETING_POINT);
+        villager.discard();
+        if (player instanceof ServerPlayer)
+            CriteriaTriggers.SUMMONED_ENTITY.trigger((ServerPlayer) player, guard);
     }
 }

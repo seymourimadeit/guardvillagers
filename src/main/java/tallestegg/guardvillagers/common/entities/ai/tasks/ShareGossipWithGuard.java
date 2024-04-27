@@ -1,10 +1,8 @@
-package tallestegg.guardvillagers.entities.ai.tasks;
+package tallestegg.guardvillagers.common.entities.ai.tasks;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.Behavior;
@@ -12,12 +10,10 @@ import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import tallestegg.guardvillagers.GuardEntityType;
-import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.common.entities.Guard;
 
 import java.util.Set;
 

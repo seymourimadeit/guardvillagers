@@ -1,4 +1,4 @@
-package tallestegg.guardvillagers.entities.ai.goals;
+package tallestegg.guardvillagers.common.entities.ai.goals;
 
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;

@@ -1,4 +1,4 @@
-package tallestegg.guardvillagers.entities;
+package tallestegg.guardvillagers.common.entities;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -64,13 +64,12 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import tallestegg.guardvillagers.GuardItems;
 import tallestegg.guardvillagers.GuardLootTables;
 import tallestegg.guardvillagers.client.GuardSounds;
+import tallestegg.guardvillagers.common.entities.ai.goals.*;
 import tallestegg.guardvillagers.configuration.GuardConfig;
-import tallestegg.guardvillagers.entities.ai.goals.*;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 
 import javax.annotation.Nullable;
@@ -428,7 +427,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             if (level().getDifficulty() != Difficulty.HARD && this.random.nextBoolean() || zombieguard == null) {
                 return;
             }
-            zombieguard.finalizeSpawn((ServerLevelAccessor) level(), level().getCurrentDifficultyAt(zombieguard.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true));
             if (!this.isSilent()) level().levelEvent(null, 1026, this.blockPosition(), 0);
             this.discard();
         }
@@ -632,7 +630,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (GuardConfig.COMMON.ClericHealing.get()) this.goalSelector.addGoal(6, new RunToClericGoal(this));
         if (GuardConfig.COMMON.armorersRepairGuardArmor.get())
             this.goalSelector.addGoal(6, new ArmorerRepairGuardArmorGoal(this));
-        this.goalSelector.addGoal(4, new WalkBackToCheckPointGoal(this, 0.5D));
+        this.goalSelector.addGoal(5, new WalkBackToCheckPointGoal(this, 0.5D));
         this.goalSelector.addGoal(5, new GolemRandomStrollInVillageGoal(this, 0.5D));
         this.goalSelector.addGoal(5, new MoveThroughVillageGoal(this, 0.5D, false, 4, () -> false));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 0.5D));
@@ -664,7 +662,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
         this.shieldCoolDown = 8;
-        if (this.getMainHandItem().getItem() instanceof CrossbowItem) this.performCrossbowAttack(this, 6.0F);
+        if (this.getMainHandItem().getItem() instanceof CrossbowItem) this.performCrossbowAttack(this, 1.6F);
         if (this.getMainHandItem().getItem() instanceof BowItem) {
             ItemStack itemstack = this.getProjectile(this.getItemInHand(GuardItems.getHandWith(this, item -> item instanceof BowItem)));
             ItemStack hand = this.getMainHandItem();

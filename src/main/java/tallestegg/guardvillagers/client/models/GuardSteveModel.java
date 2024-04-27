@@ -12,7 +12,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.UseAnim;
-import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.common.entities.Guard;
 
 public class GuardSteveModel extends PlayerModel<Guard> {
     public GuardSteveModel(ModelPart part) {

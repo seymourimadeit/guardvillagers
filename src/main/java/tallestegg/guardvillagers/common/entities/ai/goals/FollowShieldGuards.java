@@ -1,4 +1,4 @@
-package tallestegg.guardvillagers.entities.ai.goals;
+package tallestegg.guardvillagers.common.entities.ai.goals;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.ToolActions;
-import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.common.entities.Guard;
 
 public class FollowShieldGuards extends Goal {
     private static final TargetingConditions NEARBY_GUARDS = TargetingConditions.forNonCombat().range(8.0D)

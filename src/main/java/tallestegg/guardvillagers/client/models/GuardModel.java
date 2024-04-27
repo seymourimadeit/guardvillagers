@@ -13,13 +13,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.monster.piglin.Piglin;
-import net.minecraft.world.entity.monster.piglin.PiglinArmPose;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.UseAnim;
-import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.common.entities.Guard;
 
 public class GuardModel extends HumanoidModel<Guard> {
     public ModelPart Nose = this.head.getChild("nose");

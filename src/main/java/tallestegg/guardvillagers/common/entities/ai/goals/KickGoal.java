@@ -1,7 +1,7 @@
-package tallestegg.guardvillagers.entities.ai.goals;
+package tallestegg.guardvillagers.common.entities.ai.goals;
 
 import net.minecraft.world.entity.ai.goal.Goal;
-import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.common.entities.Guard;
 
 public class KickGoal extends Goal {
 

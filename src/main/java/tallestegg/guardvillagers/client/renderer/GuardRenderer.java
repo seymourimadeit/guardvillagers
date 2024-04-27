@@ -23,7 +23,7 @@ import tallestegg.guardvillagers.client.models.GuardArmorModel;
 import tallestegg.guardvillagers.client.models.GuardModel;
 import tallestegg.guardvillagers.client.models.GuardSteveModel;
 import tallestegg.guardvillagers.configuration.GuardConfig;
-import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.common.entities.Guard;
 
 public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guard>> {
     private final HumanoidModel<Guard> steve;

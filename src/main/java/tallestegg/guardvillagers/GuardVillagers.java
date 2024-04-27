@@ -1,11 +1,6 @@
 package tallestegg.guardvillagers;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
@@ -23,8 +18,8 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import tallestegg.guardvillagers.client.GuardSounds;
+import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
-import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.networking.GuardFollowPacket;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
@@ -39,7 +34,6 @@ public class GuardVillagers {
         container.registerConfig(ModConfig.Type.CLIENT, GuardConfig.CLIENT_SPEC);
         modEventBus.addListener(this::setup);
         NeoForge.EVENT_BUS.register(HandlerEvents.class);
-        NeoForge.EVENT_BUS.register(VillagerToGuard.class);
         GuardEntityType.ENTITIES.register(modEventBus);
         GuardItems.ITEMS.register(modEventBus);
         GuardSounds.SOUNDS.register(modEventBus);

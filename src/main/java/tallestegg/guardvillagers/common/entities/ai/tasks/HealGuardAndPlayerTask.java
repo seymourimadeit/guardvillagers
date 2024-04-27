@@ -1,4 +1,4 @@
-package tallestegg.guardvillagers.entities.ai.tasks;
+package tallestegg.guardvillagers.common.entities.ai.tasks;
 
 /*public class HealGuardAndPlayerTask extends WorkAtPoi {
     private LivingEntity entityToHeal;

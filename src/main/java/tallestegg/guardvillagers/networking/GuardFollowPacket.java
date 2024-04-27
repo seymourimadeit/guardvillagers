@@ -11,7 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tallestegg.guardvillagers.GuardVillagers;
-import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.common.entities.Guard;
 
 public record GuardFollowPacket(int entityId) implements CustomPacketPayload {
     public static final Type<GuardFollowPacket> TYPE = new Type<>(new ResourceLocation(GuardVillagers.MODID, "following"));

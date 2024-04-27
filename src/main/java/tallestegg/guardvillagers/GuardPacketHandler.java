@@ -7,8 +7,8 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import tallestegg.guardvillagers.client.gui.GuardInventoryScreen;
-import tallestegg.guardvillagers.entities.Guard;
-import tallestegg.guardvillagers.entities.GuardContainer;
+import tallestegg.guardvillagers.common.entities.Guard;
+import tallestegg.guardvillagers.common.entities.GuardContainer;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 
 public class GuardPacketHandler {

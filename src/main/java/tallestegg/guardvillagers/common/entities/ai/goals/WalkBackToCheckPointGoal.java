@@ -1,11 +1,9 @@
-package tallestegg.guardvillagers.entities.ai.goals;
+package tallestegg.guardvillagers.common.entities.ai.goals;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.phys.Vec3;
-import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.common.entities.Guard;
 
 import java.util.EnumSet;
 
@@ -21,20 +19,25 @@ public class WalkBackToCheckPointGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return guard.getPatrolPos() != null && !this.guard.getPatrolPos().closerThan(this.guard.blockPosition(), 1.0D) && !guard.isFollowing() && guard.isPatrolling();
+        return guard.getPatrolPos() != null && this.guard.blockPosition() != this.guard.getPatrolPos() && !guard.isFollowing() && guard.isPatrolling();
     }
 
     @Override
     public boolean canContinueToUse() {
-        return this.canUse();
+        return this.canUse() && this.guard.getNavigation().isInProgress();
     }
 
     @Override
     public void start() {
         BlockPos blockpos = this.guard.getPatrolPos();
         if (blockpos != null) {
-            Vec3 vector3d = Vec3.atBottomCenterOf(blockpos);
+            Vec3 vector3d = Vec3.atCenterOf(blockpos);
             this.guard.getNavigation().moveTo(vector3d.x, vector3d.y, vector3d.z, this.speed);
         }
+    }
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
     }
 }

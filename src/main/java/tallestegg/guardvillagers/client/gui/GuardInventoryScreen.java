@@ -1,7 +1,6 @@
 package tallestegg.guardvillagers.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -15,11 +14,10 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
-import tallestegg.guardvillagers.GuardPacketHandler;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.configuration.GuardConfig;
-import tallestegg.guardvillagers.entities.Guard;
-import tallestegg.guardvillagers.entities.GuardContainer;
+import tallestegg.guardvillagers.common.entities.Guard;
+import tallestegg.guardvillagers.common.entities.GuardContainer;
 import tallestegg.guardvillagers.networking.GuardFollowPacket;
 import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
 
