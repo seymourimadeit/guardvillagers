@@ -1,0 +1,36 @@
+{
+  "parent": "minecraft:adventure/trade",
+  "criteria": {
+    "recruit_guard": {
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "guardvillagers:guard"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:summoned_entity"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "guardvillagers.advancements.adventure.recruit_guard.description"
+    },
+    "icon": {
+      "item": "minecraft:iron_sword"
+    },
+    "title": {
+      "translate": "guardvillagers.advancements.adventure.recruit_guard.title"
+    }
+  },
+  "requirements": [
+    [
+      "recruit_guard"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

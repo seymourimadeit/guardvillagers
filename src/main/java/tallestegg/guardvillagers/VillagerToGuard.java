@@ -1,5 +1,7 @@
 package tallestegg.guardvillagers;
 
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.gossip.GossipType;
@@ -82,5 +84,7 @@ public class VillagerToGuard {
         villager.releasePoi(MemoryModuleType.JOB_SITE);
         villager.releasePoi(MemoryModuleType.MEETING_POINT);
         villager.discard();
+         if (player instanceof ServerPlayer)
+             CriteriaTriggers.SUMMONED_ENTITY.trigger((ServerPlayer) player, guard);
     }
 }

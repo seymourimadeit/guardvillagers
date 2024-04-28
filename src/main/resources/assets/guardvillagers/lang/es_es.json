@@ -1,9 +1,14 @@
 {
-"entity.guardvillagers.guard": "Guardia",
-"item.guardvillagers.guard_spawn_egg": "Huevo generador de Guardia",
-"item.guardvillagers.illusioner_spawn_egg": "Huevo generador de Ilusionista",
-"item.guardvillagers.iron_golem_spawn_egg": "Huevo generador de Golem de Hierro",
-"item.guardvillagers.snow_golem_spawn_egg": "Huevo generador de Golem de las Nieves",
-"guardinventory.health": "Salud: %s",
-"guardinventory.armor": "Armadura: %s"
+  "entity.guardvillagers.guard": "Guardia",
+  "item.guardvillagers.guard_spawn_egg": "Huevo generador de Guardia",
+  "item.guardvillagers.illusioner_spawn_egg": "Huevo generador de Ilusionista",
+  "item.guardvillagers.iron_golem_spawn_egg": "Huevo generador de Golem de Hierro",
+  "item.guardvillagers.snow_golem_spawn_egg": "Huevo generador de Golem de las Nieves",
+  "guardinventory.health": "Salud: %s",
+  "guardinventory.armor": "Armadura: %s",
+  "guardvillagers.advancements.adventure.recruit_guard.description": "Da una espada a una aldeano desempleado para que ayude a defender una aldea.",
+  "guardvillagers.advancements.adventure.recruit_guard.title": "Te Quieren como Nuevo Recluta",
+  "subtitles.entity.guard.ambient": "Murmuro de guardia",
+  "subtitles.entity.guard.hurt": "Guardia herido",
+  "subtitles.entity.guard.death": "Guardia muerto"
 }

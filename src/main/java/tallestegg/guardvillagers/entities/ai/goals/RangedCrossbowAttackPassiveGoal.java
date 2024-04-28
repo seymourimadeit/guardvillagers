@@ -33,7 +33,6 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
     private int seeTime;
     private int attackDelay;
     private int updatePathDelay;
-    private int runTime;
 
     public RangedCrossbowAttackPassiveGoal(T pMob, double pSpeedModifier, float pAttackRadius) {
         this.mob = pMob;
@@ -112,7 +111,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
             boolean canSee2 = (d0 > (double) this.attackRadiusSqr || this.seeTime < 5) && this.attackDelay == 0;
             if (canSee2) {
                 --this.updatePathDelay;
-                if (this.updatePathDelay <= 0 && !((Guard)this.mob).isPatrolling()) {
+                if (this.updatePathDelay <= 0 && !((Guard) this.mob).isPatrolling()) {
                     this.mob.getNavigation().moveTo(livingentity, this.canRun() ? this.speedModifier : this.speedModifier * 0.5D);
                     this.updatePathDelay = PATHFINDING_DELAY_RANGE.sample(this.mob.getRandom());
                 }
@@ -131,7 +130,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                     this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, this.mob.isCrouching() ? 0.5F : 1.2D);
                 this.crossbowState = CrossbowState.UNCHARGED;
             } else if (this.crossbowState == CrossbowState.UNCHARGED) {
-                if (hasSeenEntityRecently) {
+                if (!canSee2) {
                     this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
                     this.crossbowState = CrossbowState.CHARGING;
                     this.mob.setChargingCrossbow(true);
@@ -166,17 +165,17 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
     private boolean friendlyInLineOfSight() {
         List<Entity> list = this.mob.level().getEntities(this.mob, this.mob.getBoundingBox().inflate(5.0D));
         for (Entity guard : list) {
-                if (guard != this.mob.getTarget()) {
-                    boolean isVillager = ((Guard)this.mob).getOwner() == guard || guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
-                    if (isVillager) {
-                        Vec3 vector3d = this.mob.getLookAngle();
-                        Vec3 vector3d1 = guard.position().vectorTo(this.mob.position()).normalize();
-                        vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
-                        if (vector3d1.dot(vector3d) < 1.0D && this.mob.hasLineOfSight(guard) && guard.distanceTo(this.mob) <= 4.0D)
-                            return true;
-                    }
+            if (guard != this.mob.getTarget()) {
+                boolean isVillager = ((Guard) this.mob).getOwner() == guard || guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
+                if (isVillager) {
+                    Vec3 vector3d = this.mob.getLookAngle();
+                    Vec3 vector3d1 = guard.position().vectorTo(this.mob.position()).normalize();
+                    vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
+                    if (vector3d1.dot(vector3d) < 1.0D && this.mob.hasLineOfSight(guard) && guard.distanceTo(this.mob) <= 4.0D)
+                        return true;
                 }
             }
+        }
         return false;
     }
 

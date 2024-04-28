@@ -6,6 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
@@ -27,6 +28,7 @@ import net.minecraftforge.fml.common.Mod;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.entities.ai.goals.AttackEntityDaytimeGoal;
+import tallestegg.guardvillagers.entities.ai.goals.GetOutOfWaterGoal;
 import tallestegg.guardvillagers.entities.ai.goals.HealGolemGoal;
 import tallestegg.guardvillagers.entities.ai.goals.HealGuardAndPlayerGoal;
 
@@ -97,14 +99,14 @@ public class HandlerEvents {
         if (event.getEntity() instanceof Mob mob) {
             if (mob instanceof Raider) {
                 if (((Raider) mob).hasActiveRaid() && GuardConfig.RaidAnimals)
-                    mob.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(((Raider) mob), Animal.class, false));
+                    mob.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(mob, Animal.class, false));
             }
-            if (GuardConfig.AttackAllMobs) {
+            if (GuardConfig.COMMON.MobsAttackGuards.get()) {
                 if (mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId()) && !(mob instanceof Spider)) {
-                    mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(mob, Guard.class, false));
-                }
-                if (mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId()) && mob instanceof Spider spider) {
-                    spider.targetSelector.addGoal(3, new AttackEntityDaytimeGoal<>(spider, Guard.class));
+                    if (!(mob instanceof Spider))
+                        mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(mob, Guard.class, false));
+                    else
+                        mob.targetSelector.addGoal(3, new AttackEntityDaytimeGoal<>((Spider) mob, Guard.class));
                 }
             }
 
@@ -133,9 +135,11 @@ public class HandlerEvents {
                     golem.targetSelector.removeGoal(angerGoal);
                     golem.targetSelector.addGoal(2, tolerateFriendlyFire);
                 });
+                golem.goalSelector.addGoal(1, new FloatGoal(golem));
+                golem.goalSelector.addGoal(0, new GetOutOfWaterGoal(golem, 1.0D));
             }
 
-            if (mob instanceof Zombie zombie) {
+            if (mob instanceof Zombie zombie && !(zombie instanceof ZombifiedPiglin)) {
                 zombie.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(zombie, Guard.class, false));
             }
 

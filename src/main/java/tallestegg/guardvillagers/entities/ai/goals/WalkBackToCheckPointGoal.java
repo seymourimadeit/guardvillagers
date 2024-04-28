@@ -23,17 +23,21 @@ public class WalkBackToCheckPointGoal extends Goal {
         return guard.getPatrolPos() != null && !this.guard.getPatrolPos().closerThan(this.guard.blockPosition(), 1.0D) && !guard.isFollowing() && guard.isPatrolling();
     }
 
-    @Override
     public boolean canContinueToUse() {
-        return this.canUse();
+        return this.canUse() && this.guard.getNavigation().isInProgress();
     }
 
     @Override
     public void start() {
         BlockPos blockpos = this.guard.getPatrolPos();
         if (blockpos != null) {
-            Vec3 vector3d = Vec3.atBottomCenterOf(blockpos);
+            Vec3 vector3d = Vec3.atCenterOf(blockpos);
             this.guard.getNavigation().moveTo(vector3d.x, vector3d.y, vector3d.z, this.speed);
         }
+    }
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
     }
 }
