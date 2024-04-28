@@ -152,7 +152,7 @@ public class HandlerEvents {
                 golem.goalSelector.addGoal(0, new GetOutOfWaterGoal(golem, 1.0D));
             }
 
-            if (mob instanceof Zombie zombie) {
+            if (mob instanceof Zombie zombie && !(zombie instanceof ZombifiedPiglin)) {
                 zombie.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(zombie, Guard.class, false));
             }
 
