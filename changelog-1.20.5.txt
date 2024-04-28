@@ -1,0 +1,9 @@
+- Added Komodo Dragon (Alexs Mobs) to mob blacklist
+- Added separate config option for mobs attacking guards
+- Update to 1.20.5
+- Adjusted range of Crossbow guards firing arrows
+- Made iron golems float and walk back to nearest land when in water
+- Fixed guards not returning back to checkpoint
+- Added advancement to recruiting a guard
+- Made guards not attack zombified piglins
+- Enabled illagers attacking animals during raids by default
