@@ -1,9 +1,6 @@
 package tallestegg.guardvillagers;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
@@ -102,7 +99,7 @@ public class HandlerEvents {
                     mob.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(mob, Animal.class, false));
             }
             if (GuardConfig.COMMON.MobsAttackGuards.get()) {
-                if (mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId()) && !(mob instanceof Spider)) {
+                if (mob instanceof Enemy && !GuardConfig.MobBlackList.contains(mob.getEncodeId())) {
                     if (!(mob instanceof Spider))
                         mob.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(mob, Guard.class, false));
                     else
@@ -139,7 +136,7 @@ public class HandlerEvents {
                 golem.goalSelector.addGoal(0, new GetOutOfWaterGoal(golem, 1.0D));
             }
 
-            if (mob instanceof Zombie zombie && !(zombie instanceof ZombifiedPiglin)) {
+            if (mob instanceof Zombie zombie && !(zombie instanceof NeutralMob)) {
                 zombie.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(zombie, Guard.class, false));
             }
 

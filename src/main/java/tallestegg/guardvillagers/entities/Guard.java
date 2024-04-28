@@ -640,7 +640,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Ravager.class, true)); // To make witches and ravagers have a priority than other mobs this has to be done
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Witch.class, true));
             this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
-            this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true, (mob) -> !(mob instanceof ZombifiedPiglin)));
+            this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true, (mob) -> !(mob instanceof NeutralMob)));
         }
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> GuardConfig.COMMON.MobWhiteList.get().contains(mob.getEncodeId())));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
@@ -655,7 +655,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void performRangedAttack(LivingEntity target, float distanceFactor) {
         this.shieldCoolDown = 8;
-        if (this.getMainHandItem().getItem() instanceof CrossbowItem) this.performCrossbowAttack(this, 6.0F);
+        if (this.getMainHandItem().getItem() instanceof CrossbowItem) this.performCrossbowAttack(this, 1.6F);
         if (this.getMainHandItem().getItem() instanceof BowItem) {
             ItemStack itemstack = this.getProjectile(this.getItemInHand(GuardItems.getHandWith(this, item -> item instanceof BowItem)));
             ItemStack hand = this.getMainHandItem();
@@ -677,6 +677,17 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             level().addFreshEntity(abstractarrowentity);
             hand.hurtAndBreak(1, this, (entity) -> entity.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         }
+    }
+
+    @Override
+    public void performCrossbowAttack(LivingEntity pUser, float pVelocity) {
+        InteractionHand interactionhand = ProjectileUtil.getWeaponHoldingHand(pUser, item -> item instanceof CrossbowItem);
+        ItemStack itemstack = pUser.getItemInHand(interactionhand);
+        if (pUser.isHolding(is -> is.getItem() instanceof CrossbowItem)) {
+            CrossbowItem.performShooting(pUser.level(), pUser, interactionhand, itemstack, pVelocity, 1.0F);
+        }
+
+        this.onCrossbowAttackPerformed();
     }
 
     @Override
