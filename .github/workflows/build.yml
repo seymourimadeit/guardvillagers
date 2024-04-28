@@ -1,6 +1,6 @@
 name: Build
 
-on: [workflow_dispatch]
+on: [ workflow_dispatch ]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,7 +21,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           arguments: build
-          gradle-version: current
+          gradle-version: 7.4.2
 
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3.0
