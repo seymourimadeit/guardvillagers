@@ -159,7 +159,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
         this.setPersistenceRequired();
-        int type = Guard.getRandomTypeForBiome(level(), this.blockPosition());
+        int type = !GuardConfig.COMMON.guardVariantRandomSpawning.get() ?
+        getRandomTypeForBiome(level(), this.blockPosition()) : this.random.nextInt(6);
         if (spawnDataIn instanceof GuardData) {
             type = ((GuardData) spawnDataIn).variantData;
             spawnDataIn = new GuardData(type);

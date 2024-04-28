@@ -67,6 +67,7 @@ public class GuardConfig {
         public final ModConfigSpec.ConfigValue<List<String>> MobWhiteList;
         public final ModConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ModConfigSpec.BooleanValue setGuardPatrolHotv;
+        public final ModConfigSpec.BooleanValue guardVariantRandomSpawning;
         public final ModConfigSpec.BooleanValue followHero;
         public final ModConfigSpec.IntValue reputationRequirement;
         public final ModConfigSpec.IntValue reputationRequirementToBeAttacked;
@@ -94,6 +95,7 @@ public class GuardConfig {
             VillagersRunFromPolarBears = builder.comment("This makes villagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.VillagersRunFromPolarBears").define("Have Villagers have some common sense?", true);
             builder.pop();
             builder.push("guard stuff");
+            guardVariantRandomSpawning = builder.define("Have guards randomly spawn with biome variants?", false);
             chanceToDropEquipment = builder.defineInRange("Chance to drop equipment", 100.0F, -999.9F, 999.0F);
             GuardsRunFromPolarBears = builder.comment("This makes Guards run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.IllagersRunFromPolarBears").define("Have Guards have some common sense?", false);
             GuardsOpenDoors = builder.comment("This lets Guards open doors.").translation(GuardVillagers.MODID + ".config.GuardsOpenDoors").define("Have Guards open doors?", true);
