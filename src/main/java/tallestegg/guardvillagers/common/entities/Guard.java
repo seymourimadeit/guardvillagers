@@ -643,7 +643,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
         this.targetSelector.addGoal(5, new DefendVillageGuardGoal(this));
         if (GuardConfig.COMMON.AttackAllMobs.get()) {
-            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> mob instanceof Enemy && !GuardConfig.COMMON.MobBlackList.get().contains(mob.getEncodeId())));
+            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, this::canAttack));
         } else {
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Ravager.class, true)); // To make witches and ravagers have a priority than other mobs this has to be done
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Witch.class, true));
@@ -754,7 +754,15 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public boolean canAttack(LivingEntity target) {
-        return (GuardConfig.COMMON.MobBlackList.get().contains(target.getEncodeId()) || target.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(target) ? false : super.canAttack(target));
+        return target instanceof Enemy
+                && !GuardConfig.COMMON.MobBlackList.get().contains(target.getEncodeId())
+                && !target.hasEffect(MobEffects.HERO_OF_THE_VILLAGE)
+                && !this.isOwner(target)
+                && !(target instanceof TamableAnimal tameable
+                        && tameable.isTame()
+                        && !(tameable.getTarget() instanceof Villager)
+                        && !(tameable.getTarget() instanceof Guard))
+                && super.canAttack(target);
     }
 
     @Override
