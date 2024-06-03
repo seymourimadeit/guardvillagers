@@ -1,12 +1,14 @@
 {
-"entity.guardvillagers.guard": "Сторожовий",
-"item.guardvillagers.guard_spawn_egg": "Яйце виклику сторожового",
-"item.guardvillagers.illusioner_spawn_egg": "Яйце виклику ілюзіонина",
-"item.guardvillagers.iron_golem_spawn_egg": "Яйце виклику залізного ґолема",
-"item.guardvillagers.snow_golem_spawn_egg": "Яйце виклики снігового ґолема",
-"guardinventory.health": "Здоров'я: %s",
-"guardinventory.armor": "Броня: %s",
-"subtitles.entity.guard.ambient": "Сторожовий бурмоче",
-"subtitles.entity.guard.hurt": "Сторожового поранено",
-"subtitles.entity.guard.death": "Сторожовий гине"
+  "entity.guardvillagers.guard": "Вартовий",
+  "item.guardvillagers.guard_spawn_egg": "Яйце виклику вартового",
+  "item.guardvillagers.illusioner_spawn_egg": "Яйце виклику ілюзіоніста",
+  "item.guardvillagers.iron_golem_spawn_egg": "Яйце виклику залізного ґолема",
+  "item.guardvillagers.snow_golem_spawn_egg": "Яйце виклику снігового ґолема",
+  "guardinventory.health": "Здоров’я: %s",
+  "guardinventory.armor": "Броня: %s",
+  "subtitles.entity.guard.ambient": "Вартовий бурмоче",
+  "subtitles.entity.guard.hurt": "Вартового поранено",
+  "subtitles.entity.guard.death": "Вартовий гине",
+  "guardvillagers.advancements.adventure.recruit_guard.description": "Дайте меч безробітному селянину, щоб він допоміг захистити село",
+  "guardvillagers.advancements.adventure.recruit_guard.title": "Ти нам потрібен, як новобранець!"
 }
