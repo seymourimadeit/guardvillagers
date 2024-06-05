@@ -1,5 +1,6 @@
 package tallestegg.guardvillagers;
 
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
@@ -24,10 +25,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
-import tallestegg.guardvillagers.entities.ai.goals.AttackEntityDaytimeGoal;
-import tallestegg.guardvillagers.entities.ai.goals.GetOutOfWaterGoal;
-import tallestegg.guardvillagers.entities.ai.goals.HealGolemGoal;
-import tallestegg.guardvillagers.entities.ai.goals.HealGuardAndPlayerGoal;
+import tallestegg.guardvillagers.entities.ai.goals.*;
 
 import java.util.List;
 
@@ -132,10 +130,12 @@ public class HandlerEvents {
                     golem.targetSelector.removeGoal(angerGoal);
                     golem.targetSelector.addGoal(2, tolerateFriendlyFire);
                 });
-                golem.goalSelector.addGoal(1, new FloatGoal(golem));
-                golem.goalSelector.addGoal(0, new GetOutOfWaterGoal(golem, 1.0D));
-            }
+                if (GuardConfig.COMMON.ironGolemFloat.get()) {
+                    golem.goalSelector.addGoal(1, new GolemFloatWaterGoal(golem));
+                    golem.goalSelector.addGoal(0, new GetOutOfWaterGoal(golem, 1.0D));
 
+                }
+            }
             if (mob instanceof Zombie zombie && !(zombie instanceof NeutralMob)) {
                 zombie.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(zombie, Guard.class, false));
             }

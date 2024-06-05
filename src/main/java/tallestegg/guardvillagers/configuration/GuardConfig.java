@@ -123,6 +123,8 @@ public class GuardConfig {
         public final ForgeConfigSpec.DoubleValue healthModifier;
         public final ForgeConfigSpec.DoubleValue speedModifier;
         public final ForgeConfigSpec.DoubleValue followRangeModifier;
+
+        public final ForgeConfigSpec.BooleanValue ironGolemFloat;
         public final ForgeConfigSpec.BooleanValue guardArrowsHurtVillagers;
         public final ForgeConfigSpec.BooleanValue armorersRepairGuardArmor;
         public final ForgeConfigSpec.ConfigValue<List<String>> MobBlackList;
@@ -155,6 +157,9 @@ public class GuardConfig {
             BlacksmithHealing = builder.translation(GuardVillagers.MODID + ".config.blacksmith").define("Have it so blacksmiths heal golems under 60 health?", true);
             ClericHealing = builder.translation(GuardVillagers.MODID + ".config.cleric").define("Have it so clerics heal guards and players with hero of the village?", true);
             VillagersRunFromPolarBears = builder.comment("This makes villagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.VillagersRunFromPolarBears").define("Have Villagers have some common sense?", true);
+            builder.pop();
+            builder.push("golem stuff");
+            ironGolemFloat = builder.define("Allow Iron Golems to float on water?", true);
             builder.pop();
             builder.push("guard stuff");
             chanceToDropEquipment = builder.defineInRange("Chance to drop equipment", 100.0F, -999.9F, 999.0F);

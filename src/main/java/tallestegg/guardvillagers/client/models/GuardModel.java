@@ -42,7 +42,7 @@ public class GuardModel extends HumanoidModel<Guard> {
         PartDefinition head = partdefinition.addOrReplaceChild("head", CubeListBuilder.create().texOffs(49, 99)
                 .addBox(-4.0F, -10.0F, -4.0F, 8, 10, 8, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 1.0F, 0.0F));
         PartDefinition rightArm = partdefinition.addOrReplaceChild("right_arm", CubeListBuilder.create().texOffs(32, 75)
-                .mirror().addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, new CubeDeformation(0.0F)),
+                        .mirror().addBox(-3.0F, -2.0F, -2.0F, 4, 12, 4, new CubeDeformation(0.0F)),
                 PartPose.offset(-5.0F, 2.0F, 0.0F));
         PartDefinition leftArm = partdefinition.addOrReplaceChild("left_arm", CubeListBuilder.create().texOffs(33, 48)
                 .addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, new CubeDeformation(0.0F)), PartPose.offset(5.0F, 2.0F, 0.0F));
@@ -74,7 +74,7 @@ public class GuardModel extends HumanoidModel<Guard> {
 
     @Override
     public void setupAnim(Guard entityIn, float limbSwing, float limbSwingAmount, float ageInTicks,
-            float netbipedHeadYaw, float bipedHeadPitch) {
+                          float netbipedHeadYaw, float bipedHeadPitch) {
         super.setupAnim(entityIn, limbSwing, limbSwingAmount, ageInTicks, netbipedHeadYaw, bipedHeadPitch);
         ItemStack itemstack = entityIn.getItemInHand(InteractionHand.MAIN_HAND);
         boolean isHoldingShootable = itemstack.getItem() instanceof ProjectileWeaponItem;
@@ -88,7 +88,7 @@ public class GuardModel extends HumanoidModel<Guard> {
         }
         double speed = 0.005D;
         if (this.attackTime == 0.0F && entityIn.isAggressive() && !isHoldingShootable && entityIn.getDeltaMovement().horizontalDistanceSqr() > speed && !entityIn.getMainHandItem().isEmpty() && !entityIn.isBlocking()) {
-            AnimationUtils.swingWeaponDown(this.rightArm, this.leftArm, entityIn, this.attackTime, ageInTicks);
+           this.holdWeaponHigh(entityIn);
         }
         if (entityIn.getMainArm() == HumanoidArm.RIGHT) {
             this.eatingAnimationRightHand(InteractionHand.MAIN_HAND, entityIn, ageInTicks);
@@ -125,5 +125,14 @@ public class GuardModel extends HumanoidModel<Guard> {
             this.head.yRot = 0.0F;
             this.hat.copyFrom(head);
         }
+    }
+
+    private void holdWeaponHigh(Guard pMob) {
+        if (pMob.isLeftHanded()) {
+            this.leftArm.xRot = -1.8F;
+        } else {
+            this.rightArm.xRot = -1.8F;
+        }
+
     }
 }
