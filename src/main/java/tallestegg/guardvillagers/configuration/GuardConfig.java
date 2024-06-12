@@ -136,6 +136,7 @@ public class GuardConfig {
         public final ForgeConfigSpec.IntValue reputationRequirementToBeAttacked;
         public final ForgeConfigSpec.DoubleValue chanceToDropEquipment;
         public final ForgeConfigSpec.BooleanValue MobsAttackGuards;
+        public final ForgeConfigSpec.BooleanValue guardPatrol;
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
             builder.push("raids and illagers");
@@ -162,6 +163,7 @@ public class GuardConfig {
             ironGolemFloat = builder.define("Allow Iron Golems to float on water?", true);
             builder.pop();
             builder.push("guard stuff");
+            guardPatrol = builder.define("Have guards patrol the village regularly?", true);
             chanceToDropEquipment = builder.defineInRange("Chance to drop equipment", 100.0F, -999.9F, 999.0F);
             GuardsRunFromPolarBears = builder.comment("This makes Guards run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.IllagersRunFromPolarBears").define("Have Guards have some common sense?", false);
             GuardsOpenDoors = builder.comment("This lets Guards open doors.").translation(GuardVillagers.MODID + ".config.GuardsOpenDoors").define("Have Guards open doors?", true);
