@@ -37,6 +37,3 @@ jobs:
           java: 21
           name: ""
           changelog-file: changelog-1.21.*
-        retry-attempts: 2
-        retry-delay: 10000
-        fail-mode: fail
