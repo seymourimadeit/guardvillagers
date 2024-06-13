@@ -33,7 +33,10 @@ jobs:
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
           version-type: release
           loaders: neoforge
-          game-versions: 1.20.6
+          game-versions: 1.21
           java: 21
           name: ""
           changelog-file: changelog-1.21.*
+        retry-attempts: 2
+        retry-delay: 10000
+        fail-mode: fail
