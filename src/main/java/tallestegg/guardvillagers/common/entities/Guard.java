@@ -13,6 +13,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -49,7 +50,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.raid.Raider;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -67,6 +70,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import org.jetbrains.annotations.NotNull;
 import tallestegg.guardvillagers.GuardItems;
 import tallestegg.guardvillagers.GuardLootTables;
+import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.ai.goals.*;
 import tallestegg.guardvillagers.configuration.GuardConfig;
@@ -79,7 +83,7 @@ import java.util.function.Predicate;
 public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAttackMob, NeutralMob, ContainerListener, ReputationEventHandler {
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final UUID MODIFIER_UUID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
-    private static final AttributeModifier USE_ITEM_SPEED_PENALTY = new AttributeModifier(MODIFIER_UUID, "Use item speed penalty", -0.25D, AttributeModifier.Operation.ADD_VALUE);
+    private static final AttributeModifier USE_ITEM_SPEED_PENALTY = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "item_slow_down"), -0.25D, AttributeModifier.Operation.ADD_VALUE);
     private static final EntityDataAccessor<Optional<BlockPos>> GUARD_POS = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
     private static final EntityDataAccessor<Boolean> PATROLLING = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> GUARD_VARIANT = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.INT);
@@ -160,7 +164,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
         this.setPersistenceRequired();
         int type = !GuardConfig.COMMON.guardVariantRandomSpawning.get() ?
-        getRandomTypeForBiome(level(), this.blockPosition()) : this.random.nextInt(6);
+                getRandomTypeForBiome(level(), this.blockPosition()) : this.random.nextInt(6);
         if (spawnDataIn instanceof GuardData) {
             type = ((GuardData) spawnDataIn).variantData;
             spawnDataIn = new GuardData(type);
@@ -206,11 +210,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHitIn) {
         for (int i = 0; i < this.guardInventory.getContainerSize(); ++i) {
             ItemStack itemstack = this.guardInventory.getItem(i);
             RandomSource randomsource = level().getRandom();
-            if (!itemstack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemstack) && randomsource.nextFloat() < GuardConfig.COMMON.chanceToDropEquipment.get().floatValue())
+            if (!itemstack.isEmpty() && EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP) && randomsource.nextFloat() < GuardConfig.COMMON.chanceToDropEquipment.get().floatValue())
                 this.spawnAtLocation(itemstack);
         }
     }
@@ -259,7 +263,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             for (int i = 0; i < this.armorItems.size(); ++i) {
                 ItemStack stack = ItemStack.parseOptional(this.registryAccess(), armorItems.getCompound(i));
                 if (!stack.isEmpty()) {
-                    int index = Guard.slotToInventoryIndex(Mob.getEquipmentSlotForItem(ItemStack.parse(this.registryAccess(), armorItems.getCompound(i)).orElse(ItemStack.EMPTY)));
+                    int index = Guard.slotToInventoryIndex(this.getEquipmentSlotForItem(ItemStack.parse(this.registryAccess(), armorItems.getCompound(i)).orElse(ItemStack.EMPTY)));
                     this.guardInventory.setItem(index, stack);
                 } else {
                     listtag.add(new CompoundTag());
@@ -435,7 +439,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    public ItemStack eat(Level world, ItemStack stack) {
+    public final ItemStack eat(Level world, ItemStack stack, FoodProperties foodProperties) {
         if (stack.getUseAnimation() == UseAnim.EAT) {
             this.heal((float) stack.getItem().getFoodProperties(stack, this).nutrition());
         }
@@ -456,7 +460,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
                 for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype, (ServerLevel) this.level())) {
                     this.setItemSlot(equipmentslottype, stack);
-                    this.setShieldBanners(this.getOffhandItem());
                 }
             }
             this.spawnWithArmor = false;
@@ -481,7 +484,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     protected void blockUsingShield(LivingEntity entityIn) {
         super.blockUsingShield(entityIn);
         this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 1.0F);
-        if (entityIn.getMainHandItem().canDisableShield(this.useItem, this, entityIn)) this.disableShield(true);
+        if (entityIn.getMainHandItem().canDisableShield(this.useItem, this, entityIn)) this.disableShield();
     }
 
     @Override
@@ -518,18 +521,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void stopUsingItem() {
         super.stopUsingItem();
-        if (this.getAttribute(Attributes.MOVEMENT_SPEED).hasModifier(USE_ITEM_SPEED_PENALTY))
+        if (this.getAttribute(Attributes.MOVEMENT_SPEED).hasModifier(USE_ITEM_SPEED_PENALTY.id()))
             this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(USE_ITEM_SPEED_PENALTY);
     }
 
-    public void disableShield(boolean increase) {
-        float chance = 0.25F + (float) EnchantmentHelper.getBlockEfficiency(this) * 0.05F;
-        if (increase) chance += 0.75;
-        if (this.random.nextFloat() < chance) {
-            this.shieldCoolDown = 100;
-            this.stopUsingItem();
-            this.level().broadcastEntityEvent(this, (byte) 30);
-        }
+    public void disableShield() {
+        this.shieldCoolDown = 100;
+        this.stopUsingItem();
+        this.level().broadcastEntityEvent(this, (byte) 30);
     }
 
     @Override
@@ -574,8 +573,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             LootTable loot = serverlevel.getServer().reloadableRegistries().getLootTable(EQUIPMENT_SLOT_ITEMS.get(slot));
             LootParams lootcontext$builder = (new LootParams.Builder(level).withParameter(LootContextParams.THIS_ENTITY, this).create(GuardLootTables.SLOT));
             return loot.getRandomItems(lootcontext$builder);
+        } else {
+            return Collections.singletonList(ItemStack.EMPTY);
         }
-        return Collections.singletonList(ItemStack.EMPTY);
     }
 
 
@@ -656,7 +656,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    public boolean canBeLeashed(Player player) {
+    public boolean mayBeLeashed() {
         return false;
     }
 
@@ -667,15 +667,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (this.getMainHandItem().getItem() instanceof BowItem) {
             ItemStack itemstack = this.getProjectile(this.getItemInHand(GuardItems.getHandWith(this, item -> item instanceof BowItem)));
             ItemStack hand = this.getMainHandItem();
-            AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
+            AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor, itemstack);
             abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
-            int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER);
-            if (powerLevel > 0)
-                abstractarrowentity.setBaseDamage(abstractarrowentity.getBaseDamage() + (double) powerLevel * 0.5D + 0.5D);
-            int punchLevel = itemstack.getEnchantmentLevel(Enchantments.PUNCH);
-            if (punchLevel > 0) abstractarrowentity.setKnockback(punchLevel);
-            if (itemstack.getEnchantmentLevel(Enchantments.FLAME) > 0)
-                abstractarrowentity.setRemainingFireTicks(100);
             double d0 = target.getX() - this.getX();
             double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
             double d2 = target.getZ() - this.getZ();
@@ -821,19 +814,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected void hurtArmor(DamageSource damageSource, float damage) {
-        if (damage >= 0.0F) {
-            damage = damage / 4.0F;
-            if (damage < 1.0F) {
-                damage = 1.0F;
-            }
-            for (int i = 0; i < this.guardInventory.getContainerSize(); ++i) {
-                ItemStack itemstack = this.guardInventory.getItem(i);
-                if ((!damageSource.is(DamageTypes.ON_FIRE) || !itemstack.getItem().components().has(DataComponents.FIRE_RESISTANT)) && itemstack.getItem() instanceof ArmorItem) {
-                    int j = i;
-                    itemstack.hurtAndBreak((int) damage, this, EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, j));
-                }
-            }
-        }
+        this.doHurtEquipment(damageSource, damage, EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD);
     }
 
     @Override

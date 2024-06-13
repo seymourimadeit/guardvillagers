@@ -22,11 +22,11 @@ import tallestegg.guardvillagers.networking.GuardFollowPacket;
 import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
 
 public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer> {
-    private static final ResourceLocation GUARD_GUI_TEXTURES = new ResourceLocation(GuardVillagers.MODID, "textures/container/inventory.png");
-    private static final WidgetSprites GUARD_FOLLOWING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "following/following"), new ResourceLocation(GuardVillagers.MODID, "following/following_highlighted"));
-    private static final WidgetSprites GUARD_NOT_FOLLOWING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "following/not_following"), new ResourceLocation(GuardVillagers.MODID, "following/not_following_highlighted"));
-    private static final WidgetSprites GUARD_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "patrolling/patrolling1"), new ResourceLocation(GuardVillagers.MODID, "patrolling/patrolling2"));
-    private static final WidgetSprites GUARD_NOT_PATROLLING_ICONS = new WidgetSprites(new ResourceLocation(GuardVillagers.MODID, "patrolling/notpatrolling1"), new ResourceLocation(GuardVillagers.MODID, "patrolling/notpatrolling2"));
+    private static final ResourceLocation GUARD_GUI_TEXTURES = ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "textures/container/inventory.png");
+    private static final WidgetSprites GUARD_FOLLOWING_ICONS = new WidgetSprites(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "following/following"), ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "following/following_highlighted"));
+    private static final WidgetSprites GUARD_NOT_FOLLOWING_ICONS = new WidgetSprites(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "following/not_following"), ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "following/not_following_highlighted"));
+    private static final WidgetSprites GUARD_PATROLLING_ICONS = new WidgetSprites(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "patrolling/patrolling1"), ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "patrolling/patrolling2"));
+    private static final WidgetSprites GUARD_NOT_PATROLLING_ICONS = new WidgetSprites(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "patrolling/notpatrolling1"), ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "patrolling/notpatrolling2"));
     private final Guard guard;
     private Player player;
     private float mousePosX;

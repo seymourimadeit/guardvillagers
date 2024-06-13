@@ -37,6 +37,7 @@ import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.common.entities.ai.goals.AttackEntityDaytimeGoal;
 import tallestegg.guardvillagers.common.entities.ai.goals.GetOutOfWaterGoal;
@@ -96,7 +97,7 @@ public class HandlerEvents {
     }
 
     @SubscribeEvent
-    public static void onLivingTick(LivingEvent.LivingTickEvent event) {
+    public static void onLivingTick(EntityTickEvent.Pre event) {
         if (event.getEntity() instanceof AbstractHorse horse) {
             Vec3 vec3 = new Vec3(horse.xxa, horse.yya, horse.zza);
             if (horse.hasControllingPassenger() && horse.getControllingPassenger() instanceof Guard) {

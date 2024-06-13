@@ -17,13 +17,13 @@ import tallestegg.guardvillagers.client.renderer.GuardRenderer;
 @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public class GuardClientEvents {
     public static ModelLayerLocation GUARD = new ModelLayerLocation(
-            new ResourceLocation(GuardVillagers.MODID + "guard"), "guard");
+            ResourceLocation.parse(GuardVillagers.MODID + "guard"), "guard");
     public static ModelLayerLocation GUARD_STEVE = new ModelLayerLocation(
-            new ResourceLocation(GuardVillagers.MODID + "guard_steve"), "guard_steve");
+            ResourceLocation.parse(GuardVillagers.MODID + "guard_steve"), "guard_steve");
     public static ModelLayerLocation GUARD_ARMOR_OUTER = new ModelLayerLocation(
-            new ResourceLocation(GuardVillagers.MODID + "guard_armor_outer"), "guard_armor_outer");
+            ResourceLocation.parse(GuardVillagers.MODID + "guard_armor_outer"), "guard_armor_outer");
     public static ModelLayerLocation GUARD_ARMOR_INNER = new ModelLayerLocation(
-            new ResourceLocation(GuardVillagers.MODID + "guard_armor_inner"), "guard_armor_inner");
+            ResourceLocation.parse(GuardVillagers.MODID + "guard_armor_inner"), "guard_armor_inner");
 
     @SubscribeEvent
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {

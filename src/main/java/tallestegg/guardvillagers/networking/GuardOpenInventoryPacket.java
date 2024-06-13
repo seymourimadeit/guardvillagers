@@ -10,7 +10,7 @@ import tallestegg.guardvillagers.GuardPacketHandler;
 import tallestegg.guardvillagers.GuardVillagers;
 
 public record GuardOpenInventoryPacket(int id, int size, int entityId) implements CustomPacketPayload {
-    public static final Type<GuardOpenInventoryPacket> TYPE = new Type<>(new ResourceLocation(GuardVillagers.MODID, "open_inventory"));
+    public static final Type<GuardOpenInventoryPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "open_inventory"));
 
     public static final StreamCodec<FriendlyByteBuf, GuardOpenInventoryPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, GuardOpenInventoryPacket::id,

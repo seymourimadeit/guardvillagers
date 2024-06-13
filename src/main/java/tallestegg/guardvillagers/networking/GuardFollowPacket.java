@@ -14,7 +14,7 @@ import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.common.entities.Guard;
 
 public record GuardFollowPacket(int entityId) implements CustomPacketPayload {
-    public static final Type<GuardFollowPacket> TYPE = new Type<>(new ResourceLocation(GuardVillagers.MODID, "following"));
+    public static final Type<GuardFollowPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "following"));
     public static final StreamCodec<FriendlyByteBuf, GuardFollowPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, GuardFollowPacket::entityId,
             GuardFollowPacket::new

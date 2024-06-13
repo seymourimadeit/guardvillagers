@@ -27,14 +27,14 @@ public class GuardLootTables {
     public static final ResourceKey<LootTable> GUARD_FEET = registerLootTable("entities/guard_feet");
 
     public static ResourceKey<LootTable> registerLootTable(String id) {
-        return ResourceKey.create(Registries.LOOT_TABLE, new ResourceLocation(GuardVillagers.MODID, id));
+        return ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, id));
     }
 
     public static LootContextParamSet register(String p_81429_, Consumer<LootContextParamSet.Builder> p_81430_) {
         LootContextParamSet.Builder lootcontextparamset$builder = new LootContextParamSet.Builder();
         p_81430_.accept(lootcontextparamset$builder);
         LootContextParamSet lootcontextparamset = lootcontextparamset$builder.build();
-        ResourceLocation resourcelocation = new ResourceLocation(GuardVillagers.MODID + p_81429_);
+        ResourceLocation resourcelocation = ResourceLocation.parse(GuardVillagers.MODID + p_81429_);
         LootContextParamSet lootcontextparamset1 = REGISTRY.put(resourcelocation, lootcontextparamset);
         if (lootcontextparamset1 != null) {
             throw new IllegalStateException("Loot table parameter set " + resourcelocation + " is already registered");

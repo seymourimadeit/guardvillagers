@@ -24,7 +24,7 @@ public class RaiseShieldGoal extends Goal {
     @Override
     public boolean canUse() {
         return !CrossbowItem.isCharged(guard.getMainHandItem()) && (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ToolActions.SHIELD_BLOCK) && raiseShield() && guard.shieldCoolDown == 0
-                && !guard.getOffhandItem().getItem().equals(Registries.ITEM.registry().equals(new ResourceLocation("bigbrain:buckler"))));
+                && !guard.getOffhandItem().getItem().equals(Registries.ITEM.registry().equals(ResourceLocation.fromNamespaceAndPath("piglinproliferation", "buckler"))));
     }
 
     @Override

@@ -117,9 +117,9 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     @Override
     public ResourceLocation getTextureLocation(Guard entity) {
         return !GuardConfig.CLIENT.GuardSteve.get()
-                ? new ResourceLocation(GuardVillagers.MODID,
+                ? ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID,
                         "textures/entity/guard/guard_" + entity.getGuardVariant() + ".png")
-                : new ResourceLocation(GuardVillagers.MODID,
+                : ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID,
                         "textures/entity/guard/guard_steve_" + entity.getGuardVariant() + ".png");
     }
 }

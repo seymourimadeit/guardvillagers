@@ -14,7 +14,7 @@ import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.common.entities.Guard;
 
 public record GuardSetPatrolPosPacket(int entityId, boolean pressed) implements CustomPacketPayload {
-    public static final Type<GuardSetPatrolPosPacket> TYPE = new Type<>(new ResourceLocation(GuardVillagers.MODID, "set_patrol"));
+    public static final Type<GuardSetPatrolPosPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "set_patrol"));
     public static final StreamCodec<FriendlyByteBuf, GuardSetPatrolPosPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, GuardSetPatrolPosPacket::entityId,
             ByteBufCodecs.BOOL, GuardSetPatrolPosPacket::pressed,
