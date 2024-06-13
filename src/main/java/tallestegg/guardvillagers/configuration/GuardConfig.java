@@ -69,6 +69,8 @@ public class GuardConfig {
         public final ModConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ModConfigSpec.BooleanValue guardVariantRandomSpawning;
         public final ModConfigSpec.BooleanValue followHero;
+
+        public final ModConfigSpec.BooleanValue golemFloat;
         public final ModConfigSpec.IntValue reputationRequirement;
         public final ModConfigSpec.IntValue reputationRequirementToBeAttacked;
         public final ModConfigSpec.DoubleValue chanceToDropEquipment;
@@ -93,6 +95,9 @@ public class GuardConfig {
             BlacksmithHealing = builder.translation(GuardVillagers.MODID + ".config.blacksmith").define("Have it so blacksmiths heal golems under 60 health?", true);
             ClericHealing = builder.translation(GuardVillagers.MODID + ".config.cleric").define("Have it so clerics heal guards and players with hero of the village?", true);
             VillagersRunFromPolarBears = builder.comment("This makes villagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.VillagersRunFromPolarBears").define("Have Villagers have some common sense?", true);
+            builder.pop();
+            builder.push("golem stuff");
+            golemFloat = builder.define("Allow Iron Golems to float on water?", true);
             builder.pop();
             builder.push("guard stuff");
             guardVariantRandomSpawning = builder.define("Have guards randomly spawn with biome variants?", false);

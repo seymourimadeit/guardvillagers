@@ -149,8 +149,11 @@ public class HandlerEvents {
                     golem.targetSelector.removeGoal(angerGoal);
                     golem.targetSelector.addGoal(2, tolerateFriendlyFire);
                 });
-                golem.goalSelector.addGoal(1, new FloatGoal(golem));
-                golem.goalSelector.addGoal(0, new GetOutOfWaterGoal(golem, 1.0D));
+                if (GuardConfig.COMMON.golemFloat.get()) {
+                    golem.goalSelector.addGoal(1, new tallestegg.guardvillagers.entities.ai.goals.GolemFloatWaterGoal(golem));
+                    golem.goalSelector.addGoal(0, new GetOutOfWaterGoal(golem, 1.0D));
+
+                }
             }
 
             if (mob instanceof Zombie zombie && !(zombie instanceof ZombifiedPiglin)) {
