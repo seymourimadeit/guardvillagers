@@ -5,7 +5,9 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -52,6 +54,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -665,17 +668,17 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.shieldCoolDown = 8;
         if (this.getMainHandItem().getItem() instanceof CrossbowItem) this.performCrossbowAttack(this, 1.6F);
         if (this.getMainHandItem().getItem() instanceof BowItem) {
-            ItemStack itemstack = this.getProjectile(this.getItemInHand(GuardItems.getHandWith(this, item -> item instanceof BowItem)));
             ItemStack hand = this.getMainHandItem();
-            AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor, itemstack);
+            ItemStack itemstack = this.getProjectile(hand);
+            AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor, hand);
             abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
             double d0 = target.getX() - this.getX();
             double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
             double d2 = target.getZ() - this.getZ();
             double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
-            abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - level().getDifficulty().getId() * 4));
+            abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, 1.0F);
             this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            level().addFreshEntity(abstractarrowentity);
+            this.level().addFreshEntity(abstractarrowentity);
             hand.hurtAndBreak(1, this, EquipmentSlot.MAINHAND);
         }
     }
