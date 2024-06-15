@@ -442,12 +442,12 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    public final ItemStack eat(Level world, ItemStack stack, FoodProperties foodProperties) {
+    public ItemStack eat(Level world, ItemStack stack, FoodProperties foodProperties) {
         if (stack.getUseAnimation() == UseAnim.EAT) {
-            this.heal((float) stack.getItem().getFoodProperties(stack, this).nutrition());
+            this.heal((foodProperties.nutrition()));
         }
         world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
-        super.eat(world, stack);
+        super.eat(world, stack, foodProperties);
         return stack;
     }
 
