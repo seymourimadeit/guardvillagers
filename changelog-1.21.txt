@@ -3,3 +3,5 @@
 - Removed Illusioners spawning in raids
     This would be better in a separate mod + changes in Neoforge make it completely unconfigurable
 - Fixed guards not spawning in villages
+- Added config for modpack makers to prevent guards from patrolling villages naturally
+    - With a large amount of guards this could've caused lots of lag
