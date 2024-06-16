@@ -1,5 +1,5 @@
 - Fix bug with guards eating food
 - Fix stray white pixels in guard menu
 - Removed Illusioners spawning in raids
-    This would be better in a seperate mod + changes in Neoforge make it completely unconfigurable
+    This would be better in a separate mod + changes in Neoforge make it completely unconfigurable
 - Fixed guards not spawning in villages
