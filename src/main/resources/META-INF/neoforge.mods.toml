@@ -9,7 +9,7 @@ version="${mod_version}" #mandatory
 displayName="${mod_name}" #mandatory
 authors="${mod_authors}" #optional
 displayURL="https://www.curseforge.com/minecraft/mc-mods/guard-villagers" #optional
-updateJSONURL="https://raw.githubusercontent.com/seymourimadeit/guardvillagers/master/update.json" #optional
+updateJSONURL = "https://api.modrinth.com/updates/guardvillagers|H1sntfo8}/forge_updates.json"
 logoFile="guard_villagers.png" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''${mod_description}'''
