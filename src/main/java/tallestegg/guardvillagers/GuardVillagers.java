@@ -1,7 +1,6 @@
 package tallestegg.guardvillagers;
 
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -65,8 +64,6 @@ public class GuardVillagers {
 
     @SubscribeEvent
     private void setup(final FMLCommonSetupEvent event) {
-        if (GuardConfig.COMMON.IllusionerRaids.get())
-            Raid.RaiderType.create("thebluemengroup", EntityType.ILLUSIONER, new int[]{0, 0, 0, 0, 0, 1, 1, 2});
     }
 
     @SubscribeEvent

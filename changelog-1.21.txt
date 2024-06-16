@@ -1,2 +1,5 @@
-- Update to 1.21
-- Added config for
+- Fix bug with guards eating food
+- Fix stray white pixels in guard menu
+- Removed Illusioners spawning in raids
+    This would be better in a seperate mod + changes in Neoforge make it completely unconfigurable
+- Fixed guards not spawning in villages

@@ -40,10 +40,10 @@ public class GuardConfig {
         file.load();
         config.setConfig(file);
     }
+
     public static class CommonConfig {
         public final ModConfigSpec.BooleanValue RaidAnimals;
         public final ModConfigSpec.BooleanValue WitchesVillager;
-        public final ModConfigSpec.BooleanValue IllusionerRaids;
         public final ModConfigSpec.BooleanValue AttackAllMobs;
         public final ModConfigSpec.BooleanValue MobsAttackGuards;
         public final ModConfigSpec.BooleanValue VillagersRunFromPolarBears;
@@ -69,7 +69,6 @@ public class GuardConfig {
         public final ModConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ModConfigSpec.BooleanValue guardVariantRandomSpawning;
         public final ModConfigSpec.BooleanValue followHero;
-
         public final ModConfigSpec.BooleanValue golemFloat;
         public final ModConfigSpec.IntValue reputationRequirement;
         public final ModConfigSpec.IntValue reputationRequirementToBeAttacked;
@@ -79,7 +78,6 @@ public class GuardConfig {
             builder.push("raids and illagers");
             RaidAnimals = builder.comment("Illagers In Raids Attack Animals?").translation(GuardVillagers.MODID + ".config.RaidAnimals").define("Illagers in raids attack animals?", true);
             WitchesVillager = builder.comment("Witches Attack Villagers?").translation(GuardVillagers.MODID + ".config.WitchesVillager").define("Witches attack villagers?", true);
-            IllusionerRaids = builder.comment("This will make Illusioners get involved in raids").translation(GuardVillagers.MODID + ".config.IllusionerRaids").define("Have Illusioners in raids?", false);
             IllagersRunFromPolarBears = builder.comment("This makes Illagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.IllagersRunFromPolarBears").define("Have Illagers have some common sense?", true);
             builder.pop();
             builder.push("mob ai in general");
