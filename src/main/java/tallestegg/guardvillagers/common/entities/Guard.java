@@ -672,7 +672,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             ItemStack hand = this.getMainHandItem();
             ItemStack itemstack = this.getProjectile(hand);
             AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor, hand);
-            abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack);
+            abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity, itemstack, hand);
             double d0 = target.getX() - this.getX();
             double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
             double d2 = target.getZ() - this.getZ();
