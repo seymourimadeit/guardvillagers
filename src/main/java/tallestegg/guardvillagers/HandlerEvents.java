@@ -10,7 +10,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.gossip.GossipType;
@@ -34,8 +33,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import tallestegg.guardvillagers.common.entities.Guard;
@@ -71,17 +69,16 @@ public class HandlerEvents {
     }
 
     @SubscribeEvent
-    public static void onEntityHurt(LivingHurtEvent event) {
+    public static void onEntityHurt(LivingDamageEvent.Pre event) {
         LivingEntity entity = event.getEntity();
-        Entity trueSource = event.getSource().getEntity();
+        Entity trueSource = event.getContainer().getSource().getEntity();
         if (entity == null || trueSource == null) return;
         boolean isVillager = entity.getType() == EntityType.VILLAGER || entity.getType() == GuardEntityType.GUARD.get();
         boolean isGolem = isVillager || entity.getType() == EntityType.IRON_GOLEM;
         if (isGolem && trueSource.getType() == GuardEntityType.GUARD.get() && !GuardConfig.COMMON.guardArrowsHurtVillagers.get()) {
-            event.setAmount(0.0F);
-            event.setCanceled(true);
+            event.getContainer().setNewDamage(0.0F);
         }
-        if (isVillager && event.getSource().getEntity() instanceof Mob) {
+        if (isVillager && event.getContainer().getSource().getEntity() instanceof Mob) {
             List<Mob> list = trueSource.level().getEntitiesOfClass(Mob.class, trueSource.getBoundingBox().inflate(GuardConfig.COMMON.GuardVillagerHelpRange.get(), 5.0D, GuardConfig.COMMON.GuardVillagerHelpRange.get()));
             for (Mob mob : list) {
                 boolean type = mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM;
@@ -90,7 +87,7 @@ public class HandlerEvents {
                     if (mob.getTeam() != null && entity.getTeam() != null && entity.getTeam().isAlliedTo(mob.getTeam()))
                         return;
                     else
-                        mob.setTarget((Mob) event.getSource().getEntity());
+                        mob.setTarget((Mob) event.getContainer().getSource().getEntity());
                 }
             }
         }
