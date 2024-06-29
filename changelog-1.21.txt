@@ -1,2 +1,2 @@
-- Fix bug with recent Neoforge update
-    - For the next few breaking changes I will probably wait until all of them are in due to personal life stuff
+- Fix crash with latest neoforge update
+- Allowed guards to teleport to the player they're following (configurable, true on default)
