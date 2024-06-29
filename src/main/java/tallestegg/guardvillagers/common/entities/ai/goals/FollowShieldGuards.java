@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities ;
 import tallestegg.guardvillagers.common.entities.Guard;
 
 public class FollowShieldGuards extends Goal {
@@ -30,7 +30,7 @@ public class FollowShieldGuards extends Goal {
                 this.taskOwner.getBoundingBox().inflate(8.0D, 8.0D, 8.0D));
         if (!list.isEmpty()) {
             for (Guard guard : list) {
-                if (!guard.isInvisible() && guard.getOffhandItem().canPerformAction(ToolActions.SHIELD_BLOCK) && guard.isBlocking()
+                if (!guard.isInvisible() && guard.getOffhandItem().canPerformAction(ItemAbilities .SHIELD_BLOCK) && guard.isBlocking()
                         && this.taskOwner.level()
                                 .getNearbyEntities(Guard.class, NEARBY_GUARDS.range(3.0D), guard,
                                         this.taskOwner.getBoundingBox().inflate(5.0D))

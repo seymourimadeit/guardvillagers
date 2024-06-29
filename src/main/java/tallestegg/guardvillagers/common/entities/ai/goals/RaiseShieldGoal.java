@@ -10,7 +10,7 @@ import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.monster.Ravager;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities ;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.common.entities.Guard;
 
@@ -23,7 +23,7 @@ public class RaiseShieldGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return !CrossbowItem.isCharged(guard.getMainHandItem()) && (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ToolActions.SHIELD_BLOCK) && raiseShield() && guard.shieldCoolDown == 0
+        return !CrossbowItem.isCharged(guard.getMainHandItem()) && (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ItemAbilities .SHIELD_BLOCK) && raiseShield() && guard.shieldCoolDown == 0
                 && !guard.getOffhandItem().getItem().equals(Registries.ITEM.registry().equals(ResourceLocation.fromNamespaceAndPath("piglinproliferation", "buckler"))));
     }
 
@@ -34,7 +34,7 @@ public class RaiseShieldGoal extends Goal {
 
     @Override
     public void start() {
-        if (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ToolActions.SHIELD_BLOCK))
+        if (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ItemAbilities .SHIELD_BLOCK))
             guard.startUsingItem(InteractionHand.OFF_HAND);
     }
 
