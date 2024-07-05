@@ -998,14 +998,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 return false;
             } else {
                 this.owner = livingentity;
-                return true;
+                return this.guard.isFollowing();
             }
         }
 
         @Override
         public boolean canContinueToUse() {
             if (!this.navigation.isDone()) {
-                return this.guard.distanceToSqr(this.owner) >= (double) (this.stopDistance * this.stopDistance);
+                return this.guard.distanceToSqr(this.owner) >= (double) (this.stopDistance * this.stopDistance) && this.guard.isFollowing();
             } else {
                 return false;
             }
