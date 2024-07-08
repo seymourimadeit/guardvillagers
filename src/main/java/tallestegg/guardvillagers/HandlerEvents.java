@@ -50,7 +50,7 @@ public class HandlerEvents {
     @SubscribeEvent
     public static void onEntityTarget(LivingChangeTargetEvent event) {
         LivingEntity entity = event.getEntity();
-        LivingEntity target = event.getNewTarget();
+        LivingEntity target = event.getNewAboutToBeSetTarget();
         if (target == null || entity.getType() == GuardEntityType.GUARD.get()) return;
         boolean isVillager = target.getType() == EntityType.VILLAGER || target.getType() == GuardEntityType.GUARD.get();
         if (isVillager) {
