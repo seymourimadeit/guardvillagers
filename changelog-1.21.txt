@@ -1,4 +1,4 @@
 - Added proper separate startup configs
     - Fixed crashes on newer neoforge versions
 - Fixed guards attacking team members completely
-- Fixed bug with guards not doing anything if they had a bow or crossbow in their offhand 
+- Fixed bug with guards not doing anything if they had a bow or crossbow in their offhand
