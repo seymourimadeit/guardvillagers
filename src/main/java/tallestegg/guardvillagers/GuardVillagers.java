@@ -29,8 +29,8 @@ public class GuardVillagers {
 
     public GuardVillagers(ModContainer container, IEventBus modEventBus) {
         container.registerConfig(ModConfig.Type.COMMON, GuardConfig.COMMON_SPEC);
-        GuardConfig.loadConfig(GuardConfig.COMMON_SPEC, FMLPaths.CONFIGDIR.get().resolve(MODID + "-common.toml").toString());
         container.registerConfig(ModConfig.Type.CLIENT, GuardConfig.CLIENT_SPEC);
+        container.registerConfig(ModConfig.Type.STARTUP, GuardConfig.STARTUP_SPEC);
         modEventBus.addListener(this::setup);
         NeoForge.EVENT_BUS.register(HandlerEvents.class);
         GuardEntityType.ENTITIES.register(modEventBus);

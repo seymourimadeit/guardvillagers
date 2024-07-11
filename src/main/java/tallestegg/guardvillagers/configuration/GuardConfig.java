@@ -1,18 +1,14 @@
 package tallestegg.guardvillagers.configuration;
 
-import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.electronwill.nightconfig.core.io.WritingMode;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 import tallestegg.guardvillagers.GuardVillagers;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -22,6 +18,9 @@ public class GuardConfig {
     public static final ModConfigSpec CLIENT_SPEC;
     public static final ClientConfig CLIENT;
 
+    public static final ModConfigSpec STARTUP_SPEC;
+    public static final StartUpConfig STARTUP;
+
     static {
         final Pair<CommonConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(CommonConfig::new);
         COMMON = specPair.getLeft();
@@ -29,17 +28,11 @@ public class GuardConfig {
         final Pair<ClientConfig, ModConfigSpec> specPair1 = new ModConfigSpec.Builder().configure(ClientConfig::new);
         CLIENT = specPair1.getLeft();
         CLIENT_SPEC = specPair1.getRight();
+        final Pair<StartUpConfig, ModConfigSpec> specPair2 = new ModConfigSpec.Builder().configure(StartUpConfig::new);
+        STARTUP = specPair2.getLeft();
+        STARTUP_SPEC = specPair2.getRight();
     }
 
-    /*
-     *Thanks to AzureDoom and Tslat for letting me know that this is possible on the MMD discord
-     */
-    public static void loadConfig(ModConfigSpec config, String path) {
-        final CommentedFileConfig file = CommentedFileConfig.builder(new File(path)).sync().autosave()
-                .writingMode(WritingMode.REPLACE).build();
-        file.load();
-        config.setConfig(file);
-    }
 
     public static class CommonConfig {
         public final ModConfigSpec.BooleanValue RaidAnimals;
@@ -59,13 +52,10 @@ public class GuardConfig {
         public final ModConfigSpec.BooleanValue ClericHealing;
         public final ModConfigSpec.DoubleValue GuardVillagerHelpRange;
         public final ModConfigSpec.DoubleValue amountOfHealthRegenerated;
-        public final ModConfigSpec.DoubleValue healthModifier;
-        public final ModConfigSpec.DoubleValue speedModifier;
-        public final ModConfigSpec.DoubleValue followRangeModifier;
         public final ModConfigSpec.BooleanValue guardArrowsHurtVillagers;
         public final ModConfigSpec.BooleanValue armorersRepairGuardArmor;
-        public final ModConfigSpec.ConfigValue<List<String>> MobBlackList;
-        public final ModConfigSpec.ConfigValue<List<String>> MobWhiteList;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> MobBlackList;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> MobWhiteList;
         public final ModConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ModConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ModConfigSpec.BooleanValue guardVariantRandomSpawning;
@@ -85,8 +75,8 @@ public class GuardConfig {
             builder.push("mob ai in general");
             AttackAllMobs = builder.comment("Guards will attack all hostiles with this option, when set to false guards will only attack zombies and illagers.").translation(GuardVillagers.MODID + ".config.AttackAllMobs").define("Guards attack all mobs?", true);
             MobsAttackGuards = builder.comment("Hostiles attack guards, by default only illagers and zombies will attack guards, the mob blacklist below will effect this option").define("All mobs attack guards", false);
-            MobBlackList = builder.comment("Guards won't attack mobs in this list at all, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").define("Mob Blacklist", Lists.newArrayList("minecraft:villager", "minecraft:iron_golem", "minecraft:wandering_trader", "guardvillagers:guard", "minecraft:creeper", "alexsmobs:komodo_dragon", "minecraft:enderman"));
-            MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").define("Mob Whitelist", new ArrayList<>());
+            MobBlackList = builder.comment("Guards won't attack mobs in this list at all, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").defineList("Mob Blacklist", ImmutableList.of("minecraft:villager", "minecraft:iron_golem", "minecraft:wandering_trader", "guardvillagers:guard", "minecraft:creeper", "minecraft:enderman"), obj -> true);
+            MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").defineList("Mob Whitelist", new ArrayList<>(), obj -> true);
             builder.pop();
             builder.push("villager stuff");
             armorersRepairGuardArmor = builder.translation(GuardVillagers.MODID + ".config.armorvillager").define("Allow armorers and weaponsmiths repair guard items when down below half durability?", true);
@@ -116,13 +106,22 @@ public class GuardConfig {
             giveGuardStuffHOTV = builder.translation(GuardVillagers.MODID + ".config.hotvArmor").define("Allow players to give guards stuff only if they have the hero of the village effect?", false);
             setGuardPatrolHotv = builder.translation(GuardVillagers.MODID + ".config.hotvPatrolPoint").define("Allow players to set guard patrol points only if they have hero of the village", false);
             reputationRequirement = builder.defineInRange("Minimum reputation requirement for guards to give you access to their inventories", 15, Integer.MIN_VALUE, Integer.MAX_VALUE);
-            healthModifier = builder.defineInRange("Guard health", 20.0D, -500.0D, 900.0D);
-            speedModifier = builder.defineInRange("Guard speed", 0.5D, -500.0D, 900.0D);
-            followRangeModifier = builder.defineInRange("Guard follow range", 20.0D, 0.0D, 900.0D);
             followHero = builder.define("Have guards only follow the player if they have hero of the village?", true);
             reputationRequirementToBeAttacked = builder.defineInRange("How low of a reputation of a player should have to be instantly aggroed upon by guards and golems?", -100, -9999, 9999);
             guardPatrolVillageAi = builder.define("Allow guards to naturally patrol villages? This feature can cause lag if a lot of guards are spawned", true);
             builder.pop();
+        }
+    }
+
+    public static class StartUpConfig {
+        public final ModConfigSpec.DoubleValue healthModifier;
+        public final ModConfigSpec.DoubleValue speedModifier;
+        public final ModConfigSpec.DoubleValue followRangeModifier;
+
+        public StartUpConfig(ModConfigSpec.Builder builder) {
+            healthModifier = builder.defineInRange("Guard health", 20.0D, -500.0D, 900.0D);
+            speedModifier = builder.defineInRange("Guard speed", 0.5D, -500.0D, 900.0D);
+            followRangeModifier = builder.defineInRange("Guard follow range", 20.0D, 0.0D, 900.0D);
         }
     }
 

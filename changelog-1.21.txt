@@ -1,1 +1,3 @@
-- Neoforge changes
+- Added proper separate startup configs
+    - Fixed crashes on newer neoforge versions
+- Fixed guards attacking team members completely

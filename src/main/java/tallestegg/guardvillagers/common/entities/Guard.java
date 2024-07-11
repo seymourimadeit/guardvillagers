@@ -166,7 +166,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, GuardConfig.COMMON.healthModifier.get()).add(Attributes.MOVEMENT_SPEED, GuardConfig.COMMON.speedModifier.get()).add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, GuardConfig.COMMON.followRangeModifier.get());
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, GuardConfig.STARTUP.healthModifier.get()).add(Attributes.MOVEMENT_SPEED, GuardConfig.STARTUP.speedModifier.get()).add(Attributes.ATTACK_DAMAGE, 1.0D).add(Attributes.FOLLOW_RANGE, GuardConfig.STARTUP.followRangeModifier.get());
     }
 
     @Override
@@ -747,7 +747,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-        if (entity != null && (GuardConfig.COMMON.MobBlackList.get().contains(entity.getEncodeId()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || entity instanceof TamableAnimal tamed && tamed.getOwnerUUID() == this.getOwnerId()))
+        if (entity != null && (entity.getTeam().isAlliedTo(this.getTeam()) || GuardConfig.COMMON.MobBlackList.get().contains(entity.getEncodeId()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || entity instanceof TamableAnimal tamed && tamed.getOwnerUUID() == this.getOwnerId()))
             return;
         super.setTarget(entity);
     }
