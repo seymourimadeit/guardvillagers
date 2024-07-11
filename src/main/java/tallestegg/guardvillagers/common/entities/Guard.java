@@ -38,7 +38,6 @@ import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.gossip.GossipContainer;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -82,7 +81,7 @@ import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.GuardLootTables;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.GuardSounds;
-import tallestegg.guardvillagers.common.entities.ai.goals.*;
+import tallestegg.guardvillagers.common.entities.ai.goals.ArmorerRepairGuardArmorGoal;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 
@@ -172,6 +171,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
         this.setPersistenceRequired();
+        // Soon this will be data-driven
         int type = !GuardConfig.COMMON.guardVariantRandomSpawning.get() ?
                 getRandomTypeForBiome(level(), this.blockPosition()) : this.random.nextInt(6);
         if (spawnDataIn instanceof GuardData) {
@@ -747,7 +747,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-        if (entity != null && (entity.getTeam().isAlliedTo(this.getTeam()) || GuardConfig.COMMON.MobBlackList.get().contains(entity.getEncodeId()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || entity instanceof TamableAnimal tamed && tamed.getOwnerUUID() == this.getOwnerId()))
+        if (entity != null && (this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(this.getTeam()) || GuardConfig.COMMON.MobBlackList.get().contains(entity.getEncodeId()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || entity instanceof TamableAnimal tamed && tamed.getOwnerUUID() == this.getOwnerId()))
             return;
         super.setTarget(entity);
     }
@@ -1054,7 +1054,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canUse() {
-            return !(mob.isHolding(is -> is.getItem() instanceof CrossbowItem) || mob.isHolding(is -> is.getItem() instanceof BowItem)) && this.guard.getTarget() != null && !this.guard.isEating() && super.canUse();
+            return (!(mob.getMainHandItem().getItem() instanceof CrossbowItem) || !(mob.getMainHandItem().getItem() instanceof BowItem)) && this.guard.getTarget() != null && !this.guard.isEating() && super.canUse();
         }
 
         @Override
