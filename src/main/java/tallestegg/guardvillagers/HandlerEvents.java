@@ -1,6 +1,7 @@
 package tallestegg.guardvillagers;
 
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,6 +29,9 @@ import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BellBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -190,6 +194,23 @@ public class HandlerEvents {
                                 itemstack.shrink(1);
                         }
                     }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityInteract(PlayerInteractEvent.RightClickBlock event) {
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        BlockPos pos = event.getHitVec().getBlockPos();
+        BlockState originalBlock = player.level().getBlockState(pos);
+        if (originalBlock.getBlock() instanceof BellBlock) {
+            List<Guard> list = player.level().getEntitiesOfClass(Guard.class, player.getBoundingBox().inflate(32.0D, 32.0D, 32.0D));
+            for (Guard guard : list) {
+                if (GuardVillagers.canFollow(player)) {
+                    guard.setOwnerId(player.getUUID());
+                    guard.setFollowing(!guard.isFollowing());
                 }
             }
         }

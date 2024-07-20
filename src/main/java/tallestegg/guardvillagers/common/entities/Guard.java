@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -1630,7 +1631,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         @Override
         public boolean canUse() {
             return !CrossbowItem.isCharged(guard.getMainHandItem()) && (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ItemAbilities.SHIELD_BLOCK) && raiseShield() && guard.shieldCoolDown == 0
-                    && !guard.getOffhandItem().getItem().equals(Registries.ITEM.registry().equals(ResourceLocation.fromNamespaceAndPath("piglinproliferation", "buckler"))));
+                    && !guard.getOffhandItem().getItem().equals(BuiltInRegistries.ITEM.equals(ResourceLocation.fromNamespaceAndPath("piglinproliferation", "buckler"))));
         }
 
         @Override

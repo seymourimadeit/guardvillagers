@@ -4,6 +4,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -11,6 +12,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -54,6 +57,10 @@ public class GuardVillagers {
                 || !GuardConfig.COMMON.giveGuardStuffHOTV.get() || guard.getPlayerReputation(player) > GuardConfig.COMMON.reputationRequirement.get() && !player.level().isClientSide();
     }
 
+    public static boolean canFollow(Player player) {
+        return GuardConfig.COMMON.followHero.get() && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.COMMON.followHero.get();
+    }
+
     @SubscribeEvent
     private void addCreativeTabs(final BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
@@ -69,5 +76,12 @@ public class GuardVillagers {
     @SubscribeEvent
     private void addAttributes(final EntityAttributeCreationEvent event) {
         event.put(GuardEntityType.GUARD.get(), Guard.createAttributes().build());
+    }
+
+    @Mod(value = GuardVillagers.MODID, dist = Dist.CLIENT)
+    public static class GuardVillagersClient {
+        public GuardVillagersClient(ModContainer container, IEventBus modEventBus) {
+            container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        }
     }
 }
