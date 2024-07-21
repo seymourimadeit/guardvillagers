@@ -49,5 +49,6 @@
   "guardvillagers.config.GuardRaiseShield": "Allow guards to permanently raise their shields?",
   "guardvillagers.configuration.Allow Iron Golems to float on water?": "Allow Iron Golems to float on water?",
   "guardvillagers.configuration.golem stuff": "golem stuff",
-  "guardvillagers.config.hotvArmor": "Allow players to give guards stuff only if they have the hero of the village effect?"
+  "guardvillagers.config.hotvArmor": "Allow players to give guards stuff only if they have the hero of the village effect?",
+  "guardvillagers.config.multifollow": "Allow the player to right click on bells to mass order guards to follow them?"
 }

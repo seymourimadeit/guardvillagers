@@ -1,14 +1,11 @@
 package tallestegg.guardvillagers.configuration;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 import tallestegg.guardvillagers.GuardVillagers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -61,6 +58,7 @@ public class GuardConfig {
         public final ModConfigSpec.BooleanValue guardVariantRandomSpawning;
         public final ModConfigSpec.BooleanValue followHero;
         public final ModConfigSpec.BooleanValue golemFloat;
+        public final ModConfigSpec.BooleanValue multiFollow;
         public final ModConfigSpec.BooleanValue guardPatrolVillageAi;
         public final ModConfigSpec.IntValue reputationRequirement;
         public final ModConfigSpec.IntValue reputationRequirementToBeAttacked;
@@ -75,8 +73,8 @@ public class GuardConfig {
             builder.push("mob ai in general");
             AttackAllMobs = builder.comment("Guards will attack all hostiles with this option, when set to false guards will only attack zombies and illagers.").translation(GuardVillagers.MODID + ".config.AttackAllMobs").define("Guards attack all mobs?", true);
             MobsAttackGuards = builder.comment("Hostiles attack guards, by default only illagers and zombies will attack guards, the mob blacklist below will effect this option").define("All mobs attack guards", false);
-            MobBlackList = builder.comment("Guards won't attack mobs in this list at all, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").defineList("Mob Blacklist", ImmutableList.of("minecraft:villager", "minecraft:iron_golem", "minecraft:wandering_trader", "guardvillagers:guard", "minecraft:creeper", "minecraft:enderman"), obj -> true);
-            MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").defineList("Mob Whitelist", new ArrayList<>(), obj -> true);
+            MobBlackList = builder.comment("Guards won't attack mobs in this list at all, for example, putting \"minecraft:creeper\" in this list will make guards ignore creepers.").defineListAllowEmpty("Mob Blacklist", ImmutableList.of("minecraft:villager", "minecraft:iron_golem", "minecraft:wandering_trader", "guardvillagers:guard", "minecraft:creeper", "minecraft:enderman"), () -> "", obj -> true);
+            MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").defineListAllowEmpty("Mob Whitelist", new ArrayList<>(), () -> "", obj -> true);
             builder.pop();
             builder.push("villager stuff");
             armorersRepairGuardArmor = builder.translation(GuardVillagers.MODID + ".config.armorvillager").define("Allow armorers and weaponsmiths repair guard items when down below half durability?", true);
@@ -90,6 +88,7 @@ public class GuardConfig {
             golemFloat = builder.define("Allow Iron Golems to float on water?", true);
             builder.pop();
             builder.push("guard stuff");
+            multiFollow = builder.translation(GuardVillagers.MODID + ".config.multifollow").define("Allow the player to right click on bells to mass order guards to follow them?", true);
             guardVariantRandomSpawning = builder.define("Have guards randomly spawn with biome variants?", false);
             chanceToDropEquipment = builder.defineInRange("Chance to drop equipment", 100.0F, -999.9F, 999.0F);
             GuardsRunFromPolarBears = builder.comment("This makes Guards run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.IllagersRunFromPolarBears").define("Have Guards have some common sense?", false);
