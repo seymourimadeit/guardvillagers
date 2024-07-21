@@ -2,11 +2,15 @@ package tallestegg.guardvillagers;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -31,6 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
+import net.minecraft.world.level.block.entity.BellBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -205,12 +210,22 @@ public class HandlerEvents {
         Level level = event.getLevel();
         BlockPos pos = event.getHitVec().getBlockPos();
         BlockState originalBlock = player.level().getBlockState(pos);
-        if (originalBlock.getBlock() instanceof BellBlock) {
-            List<Guard> list = player.level().getEntitiesOfClass(Guard.class, player.getBoundingBox().inflate(32.0D, 32.0D, 32.0D));
-            for (Guard guard : list) {
-                if (GuardVillagers.canFollow(player)) {
-                    guard.setOwnerId(player.getUUID());
-                    guard.setFollowing(!guard.isFollowing());
+        if (originalBlock.getBlock() instanceof BellBlock && level.getBlockEntity(pos) instanceof BellBlockEntity bellBlockEntity) {
+            if (!bellBlockEntity.shaking) {
+                List<Guard> list = player.level().getEntitiesOfClass(Guard.class, player.getBoundingBox().inflate(32.0D, 32.0D, 32.0D));
+                for (Guard guard : list) {
+                    if (GuardVillagers.canFollow(player)) {
+                        event.setCancellationResult(InteractionResult.SUCCESS);
+                        guard.setFollowing(!guard.isFollowing());
+                        guard.playSound(SoundEvents.VILLAGER_YES);
+                        if (guard.isFollowing()) {
+                            guard.setOwnerId(player.getUUID());
+                            guard.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 1));
+                            level.playSound(null, pos, SoundEvents.BELL_RESONATE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                        } else {
+                            guard.removeEffect(MobEffects.GLOWING);
+                        }
+                    }
                 }
             }
         }
