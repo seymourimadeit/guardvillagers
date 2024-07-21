@@ -22,6 +22,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
+import tallestegg.guardvillagers.loot_tables.GuardLootTables;
 import tallestegg.guardvillagers.networking.GuardFollowPacket;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
@@ -39,6 +40,8 @@ public class GuardVillagers {
         GuardEntityType.ENTITIES.register(modEventBus);
         GuardItems.ITEMS.register(modEventBus);
         GuardSounds.SOUNDS.register(modEventBus);
+        GuardLootTables.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
+        GuardLootTables.LOOT_ITEM_FUNCTION_TYPES.register(modEventBus);
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addCreativeTabs);
         modEventBus.addListener(this::register);

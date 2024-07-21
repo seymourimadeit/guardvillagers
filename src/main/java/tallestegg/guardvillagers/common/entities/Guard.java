@@ -1,9 +1,7 @@
 package tallestegg.guardvillagers.common.entities;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -79,7 +77,7 @@ import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import org.jetbrains.annotations.NotNull;
 import tallestegg.guardvillagers.GuardEntityType;
-import tallestegg.guardvillagers.GuardLootTables;
+import tallestegg.guardvillagers.loot_tables.GuardLootTables;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.ai.goals.ArmorerRepairGuardArmorGoal;
@@ -113,14 +111,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                             ))).put(Pose.DYING, EntityDimensions.fixed(0.2F, 0.2F).withEyeHeight(1.62F))
             .build();
     private static final UniformInt angerTime = TimeUtil.rangeOfSeconds(20, 39);
-    private static final Map<EquipmentSlot, ResourceKey<LootTable>> EQUIPMENT_SLOT_ITEMS = Util.make(Maps.newHashMap(), (slotItems) -> {
-        slotItems.put(EquipmentSlot.MAINHAND, GuardLootTables.GUARD_MAIN_HAND);
-        slotItems.put(EquipmentSlot.OFFHAND, GuardLootTables.GUARD_OFF_HAND);
-        slotItems.put(EquipmentSlot.HEAD, GuardLootTables.GUARD_HELMET);
-        slotItems.put(EquipmentSlot.CHEST, GuardLootTables.GUARD_CHEST);
-        slotItems.put(EquipmentSlot.LEGS, GuardLootTables.GUARD_LEGGINGS);
-        slotItems.put(EquipmentSlot.FEET, GuardLootTables.GUARD_FEET);
-    });
     private final GossipContainer gossips = new GossipContainer();
     public long lastGossipTime;
     public long lastGossipDecayTime;
@@ -223,7 +213,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         for (int i = 0; i < this.guardInventory.getContainerSize(); ++i) {
             ItemStack itemstack = this.guardInventory.getItem(i);
             RandomSource randomsource = level().getRandom();
-            if (!itemstack.isEmpty() && EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP) && randomsource.nextFloat() < GuardConfig.COMMON.chanceToDropEquipment.get().floatValue())
+            if (!itemstack.isEmpty() && !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP) && randomsource.nextFloat() < GuardConfig.COMMON.chanceToDropEquipment.get().floatValue())
                 this.spawnAtLocation(itemstack);
         }
     }
@@ -466,11 +456,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             this.heal(GuardConfig.COMMON.amountOfHealthRegenerated.get().floatValue());
         }
         if (spawnWithArmor) {
-            for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
-                for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype, (ServerLevel) this.level())) {
-                    this.setItemSlot(equipmentslottype, stack);
-                }
-            }
+            getItemsFromLootTable(this);
             this.spawnWithArmor = false;
         }
         if (!level().isClientSide) this.updatePersistentAnger((ServerLevel) level(), true);
@@ -572,16 +558,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.spawnWithArmor = true;
     }
 
-    public List<ItemStack> getItemsFromLootTable(EquipmentSlot slot, ServerLevel level) {
-        if (EQUIPMENT_SLOT_ITEMS.containsKey(slot)) {
-            ServerLevel serverlevel = (ServerLevel) this.level();
-            LootTable loot = serverlevel.getServer().reloadableRegistries().getLootTable(EQUIPMENT_SLOT_ITEMS.get(slot));
-            LootParams lootcontext$builder = (new LootParams.Builder(level).withParameter(LootContextParams.THIS_ENTITY, this).create(GuardLootTables.SLOT));
-            return loot.getRandomItems(lootcontext$builder);
-        } else {
-            return Collections.singletonList(ItemStack.EMPTY);
-        }
-    }
 
 
     public int getGuardVariant() {
@@ -926,6 +902,18 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 return this.level().noCollision(this, this.getBoundingBox().move(blockpos));
             }
         }
+    }
+
+    public static List<ItemStack> getItemsFromLootTable(LivingEntity entity) {
+        LootTable loot = entity.level().getServer().reloadableRegistries().getLootTable(getLootTableFromData());
+        LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) entity.level()).withParameter(LootContextParams.THIS_ENTITY, entity));
+        return loot.getRandomItems(lootcontext$builder.create(GuardLootTables.SLOT));
+    }
+
+    public static ResourceKey<LootTable> getLootTableFromData() {
+
+        ResourceLocation lootTable = ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "entities/guard_armor");
+        return ResourceKey.create(Registries.LOOT_TABLE, lootTable);
     }
 
     public static class GuardData implements SpawnGroupData {

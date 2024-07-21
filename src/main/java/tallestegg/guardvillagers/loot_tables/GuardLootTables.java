@@ -1,4 +1,4 @@
-package tallestegg.guardvillagers;
+package tallestegg.guardvillagers.loot_tables;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -7,28 +7,26 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import tallestegg.guardvillagers.GuardVillagers;
+import tallestegg.guardvillagers.loot_tables.functions.ArmorSlotFunction;
 
 import java.util.function.Consumer;
 
 public class GuardLootTables {
-    public static final DeferredRegister<LootTable> LOOT_TABLE = DeferredRegister.create(Registries.LOOT_TABLE, GuardVillagers.MODID);
     public static final BiMap<ResourceLocation, LootContextParamSet> REGISTRY = HashBiMap.create();
-    public static final LootContextParamSet SLOT = register("slot", (p_216252_0_) -> {
-        p_216252_0_.required(LootContextParams.THIS_ENTITY);
+    public static final LootContextParamSet SLOT = register("slot", (table) -> {
+        table.required(LootContextParams.THIS_ENTITY);
     });
-    public static final ResourceKey<LootTable> GUARD_MAIN_HAND = registerLootTable("entities/guard_main_hand");
-    public static final ResourceKey<LootTable> GUARD_OFF_HAND = registerLootTable("entities/guard_off_hand");
-    public static final ResourceKey<LootTable> GUARD_HELMET = registerLootTable("entities/guard_helmet");
-    public static final ResourceKey<LootTable> GUARD_CHEST = registerLootTable("entities/guard_chestplate");
-    public static final ResourceKey<LootTable> GUARD_LEGGINGS = registerLootTable("entities/guard_legs");
-    public static final ResourceKey<LootTable> GUARD_FEET = registerLootTable("entities/guard_feet");
 
-    public static ResourceKey<LootTable> registerLootTable(String id) {
-        return ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, id));
-    }
+    public static final DeferredRegister<LootItemFunctionType<?>> LOOT_ITEM_FUNCTION_TYPES = DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, GuardVillagers.MODID);
+    public static final DeferredRegister<LootItemConditionType> LOOT_ITEM_CONDITION_TYPES = DeferredRegister.create(Registries.LOOT_CONDITION_TYPE, GuardVillagers.MODID);
+    public static final DeferredHolder<LootItemFunctionType<?>, LootItemFunctionType<ArmorSlotFunction>> ARMOR_SLOT = LOOT_ITEM_FUNCTION_TYPES.register("slot", () -> new LootItemFunctionType<>(ArmorSlotFunction.CODEC));
 
     public static LootContextParamSet register(String p_81429_, Consumer<LootContextParamSet.Builder> p_81430_) {
         LootContextParamSet.Builder lootcontextparamset$builder = new LootContextParamSet.Builder();
