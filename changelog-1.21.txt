@@ -1,1 +1,3 @@
 - Config GUI support
+- Added new armor system from Illagers Wear Armor
+    - Existing armor datapacks will have to comply with these changes
