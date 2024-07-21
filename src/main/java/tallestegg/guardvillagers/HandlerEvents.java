@@ -210,6 +210,7 @@ public class HandlerEvents {
         Level level = event.getLevel();
         BlockPos pos = event.getHitVec().getBlockPos();
         BlockState originalBlock = player.level().getBlockState(pos);
+        if (GuardConfig.COMMON.multiFollow.get()) {
         if (originalBlock.getBlock() instanceof BellBlock && level.getBlockEntity(pos) instanceof BellBlockEntity bellBlockEntity) {
             if (!bellBlockEntity.shaking) {
                 List<Guard> list = player.level().getEntitiesOfClass(Guard.class, player.getBoundingBox().inflate(32.0D, 32.0D, 32.0D));
@@ -228,6 +229,7 @@ public class HandlerEvents {
                     }
                 }
             }
+        }
         }
     }
 
