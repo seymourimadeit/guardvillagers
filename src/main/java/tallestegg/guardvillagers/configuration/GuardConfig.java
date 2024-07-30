@@ -14,7 +14,6 @@ public class GuardConfig {
     public static final CommonConfig COMMON;
     public static final ModConfigSpec CLIENT_SPEC;
     public static final ClientConfig CLIENT;
-
     public static final ModConfigSpec STARTUP_SPEC;
     public static final StartUpConfig STARTUP;
 

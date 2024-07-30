@@ -74,8 +74,14 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
+    implementation "curse.maven:ewewukeks-musket-mod-354562:5575694"
 }
 
+repositories {
+    maven {
+        url "https://www.cursemaven.com"
+    }
+}
 // This block of code expands all declared replace properties in the specified resource targets.
 // A missing property will result in an error. Properties are expanded using ${} Groovy notation.
 // When "copyIdeResources" is enabled, this will also run before the game launches in IDE environments.

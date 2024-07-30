@@ -11,7 +11,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.NeoForgeRegistriesSetup;
 import tallestegg.guardvillagers.GuardVillagers;
 
-//@Mod.EventBusSubscriber(modid = GuardVillagers.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class GuardSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, GuardVillagers.MODID);
     public static final Holder<SoundEvent> GUARD_AMBIENT = SOUNDS.register("entity.guard.ambient", () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "entity.guard.ambient")));

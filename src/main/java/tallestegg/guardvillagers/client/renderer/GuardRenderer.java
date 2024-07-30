@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.client.model.HumanoidArmorModel;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
@@ -17,6 +16,8 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import net.neoforged.fml.ModList;
+import tallestegg.guardvillagers.ModCompat;
 import tallestegg.guardvillagers.client.GuardClientEvents;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.models.GuardArmorModel;
@@ -36,8 +37,8 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
             this.model = steve;
         else
             this.model = normal;
-        this.addLayer(new HumanoidArmorLayer(this, !GuardConfig.CLIENT.GuardSteve.get() ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_INNER)) : new HumanoidArmorModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)),
-                !GuardConfig.CLIENT.GuardSteve.get() ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_OUTER)) : new HumanoidArmorModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), context.getModelManager()));
+        this.addLayer(new HumanoidArmorLayer(this, !GuardConfig.CLIENT.GuardSteve.get() ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_INNER)) : new HumanoidArmorModel<>(context.bakeLayer(GuardClientEvents.GUARD_PLAYER_ARMOR_INNER)),
+                !GuardConfig.CLIENT.GuardSteve.get() ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_OUTER)) : new HumanoidArmorModel<>(context.bakeLayer(GuardClientEvents.GUARD_PLAYER_ARMOR_OUTER)), context.getModelManager()));
     }
 
     @Override
@@ -66,7 +67,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     }
 
     private HumanoidModel.ArmPose getArmPose(Guard entityIn, ItemStack itemStackMain, ItemStack itemStackOff,
-            InteractionHand handIn) {
+                                             InteractionHand handIn) {
         HumanoidModel.ArmPose bipedmodel$armpose = HumanoidModel.ArmPose.EMPTY;
         ItemStack itemstack = handIn == InteractionHand.MAIN_HAND ? itemStackMain : itemStackOff;
         if (!itemstack.isEmpty()) {
@@ -74,27 +75,31 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
             if (entityIn.getUseItemRemainingTicks() > 0) {
                 UseAnim useaction = itemstack.getUseAnimation();
                 switch (useaction) {
-                case BLOCK:
-                    bipedmodel$armpose = HumanoidModel.ArmPose.BLOCK;
-                    break;
-                case BOW:
-                    bipedmodel$armpose = HumanoidModel.ArmPose.BOW_AND_ARROW;
-                    break;
-                case SPEAR:
-                    bipedmodel$armpose = HumanoidModel.ArmPose.THROW_SPEAR;
-                    break;
-                case CROSSBOW:
-                    if (handIn == entityIn.getUsedItemHand()) {
-                        bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_CHARGE;
-                    }
-                    break;
-                default:
-                    bipedmodel$armpose = HumanoidModel.ArmPose.EMPTY;
-                    break;
+                    case BLOCK:
+                        bipedmodel$armpose = HumanoidModel.ArmPose.BLOCK;
+                        break;
+                    case BOW:
+                        bipedmodel$armpose = HumanoidModel.ArmPose.BOW_AND_ARROW;
+                        break;
+                    case SPEAR:
+                        bipedmodel$armpose = HumanoidModel.ArmPose.THROW_SPEAR;
+                        break;
+                    case CROSSBOW:
+                        if (handIn == entityIn.getUsedItemHand()) {
+                            bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_CHARGE;
+                        }
+                        break;
+                    default:
+                        bipedmodel$armpose = HumanoidModel.ArmPose.EMPTY;
+                        break;
                 }
+                if (ModList.get().isLoaded("musketmod"))
+                    bipedmodel$armpose = ModCompat.reloadMusketAnim(itemstack, handIn, entityIn);
             } else {
                 boolean flag1 = itemStackMain.getItem() instanceof CrossbowItem;
                 boolean flag2 = itemStackOff.getItem() instanceof CrossbowItem;
+                if (ModList.get().isLoaded("musketmod"))
+                    bipedmodel$armpose = ModCompat.holdMusketAnim(itemstack, entityIn);
                 if (flag1 && entityIn.isAggressive()) {
                     bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
                 }
@@ -118,8 +123,8 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     public ResourceLocation getTextureLocation(Guard entity) {
         return !GuardConfig.CLIENT.GuardSteve.get()
                 ? ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID,
-                        "textures/entity/guard/guard_" + entity.getGuardVariant() + ".png")
+                "textures/entity/guard/guard_" + entity.getGuardVariant() + ".png")
                 : ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID,
-                        "textures/entity/guard/guard_steve_" + entity.getGuardVariant() + ".png");
+                "textures/entity/guard/guard_steve_" + entity.getGuardVariant() + ".png");
     }
 }
