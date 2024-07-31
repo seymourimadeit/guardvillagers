@@ -50,5 +50,6 @@
   "guardvillagers.configuration.Allow Iron Golems to float on water?": "Allow Iron Golems to float on water?",
   "guardvillagers.configuration.golem stuff": "golem stuff",
   "guardvillagers.config.hotvArmor": "Allow players to give guards stuff only if they have the hero of the village effect?",
-  "guardvillagers.config.multifollow": "Allow the player to right click on bells to mass order guards to follow them?"
+  "guardvillagers.config.multifollow": "Allow the player to right click on bells to mass order guards to follow them?",
+  "stat.guardvillagers.guards_made": "Guards created"
 }

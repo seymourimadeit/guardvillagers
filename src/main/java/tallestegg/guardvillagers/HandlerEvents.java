@@ -8,6 +8,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -270,7 +271,9 @@ public class HandlerEvents {
         villager.releasePoi(MemoryModuleType.JOB_SITE);
         villager.releasePoi(MemoryModuleType.MEETING_POINT);
         villager.discard();
-        if (player instanceof ServerPlayer)
-            CriteriaTriggers.SUMMONED_ENTITY.trigger((ServerPlayer) player, guard);
+        if (player instanceof ServerPlayer serverPlayer) {
+            CriteriaTriggers.SUMMONED_ENTITY.trigger(serverPlayer, guard);
+            player.awardStat(GuardStats.GUARDS_MADE.get());
+        }
     }
 }

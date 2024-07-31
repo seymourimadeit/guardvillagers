@@ -42,6 +42,7 @@ public class GuardVillagers {
         GuardSounds.SOUNDS.register(modEventBus);
         GuardLootTables.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
         GuardLootTables.LOOT_ITEM_FUNCTION_TYPES.register(modEventBus);
+        GuardStats.STATS.register(modEventBus);
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addCreativeTabs);
         modEventBus.addListener(this::register);
