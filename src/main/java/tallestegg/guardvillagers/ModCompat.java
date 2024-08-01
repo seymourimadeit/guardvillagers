@@ -24,13 +24,13 @@ public class ModCompat {
                 return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
             }
         }
-        return HumanoidModel.ArmPose.EMPTY;
+        return HumanoidModel.ArmPose.ITEM;
     }
 
     public static HumanoidModel.ArmPose holdMusketAnim(ItemStack stack, Guard guard) {
-        if (stack.getItem() instanceof GunItem gun && GunItem.isLoaded(stack) && guard.isAggressive())
+        if (stack.getItem() instanceof GunItem && GunItem.isLoaded(stack) && guard.isAggressive())
             return HumanoidModel.ArmPose.CROSSBOW_HOLD;
-        return HumanoidModel.ArmPose.EMPTY;
+        return HumanoidModel.ArmPose.ITEM;
     }
 
     public static void shootGun(Guard guard) {
@@ -38,7 +38,7 @@ public class ModCompat {
             Vec3 front = Vec3.directionFromRotation(guard.getXRot(), guard.getYRot());
             musketItem.fire(guard, front);
             GunItem.setLoaded(guard.getMainHandItem(), false);
-            guard.playSound(musketItem.fireSound(), 3.5f, 1);
+            guard.playSound(musketItem.fireSound(), 3.5F, 1);
         }
     }
 
@@ -108,12 +108,6 @@ public class ModCompat {
                     this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(mob, item -> item instanceof GunItem));
                     this.timeUntilShoot = 20;
                 }
-                if ((distanceSquared > (double) this.attackRadiusSqr) || this.seeTime < 5) {
-                    this.path = mob.getNavigation().createPath(target, 1);
-                    this.mob.getNavigation().moveTo(this.path, this.speedModifier);
-                } else if (distanceSquared < (double) this.attackRadiusSqr) {
-                    this.mob.getNavigation().stop();
-                }
                 if (canSee != seeTimeGreaterThanZero)
                     this.seeTime = 0;
                 if (canSee) {
@@ -130,6 +124,11 @@ public class ModCompat {
                 }
                 if (this.avoidTime <= 0)
                     this.mob.getNavigation().stop();
+                if ((distanceSquared > (double) this.attackRadiusSqr) || this.seeTime < 5) {
+                    this.mob.getNavigation().moveTo(target, 1.0D);
+                } else if (distanceSquared < (double) this.attackRadiusSqr) {
+                    this.mob.getNavigation().stop();
+                }
                 if (this.avoidTime > 60)
                     this.avoidTime = 60;
                 if (--this.avoidTime > 0 || Guard.RangedCrossbowAttackPassiveGoal.friendlyInLineOfSight(this.mob)) {

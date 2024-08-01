@@ -27,9 +27,6 @@ public class GuardModel extends HumanoidModel<Guard> {
 
     public GuardModel(ModelPart part) {
         super(part);
-        this.setRotateAngle(quiver, 0.0F, 0.0F, 0.2617993877991494F);
-        this.setRotateAngle(ArmLShoulderPad, 0.0F, 0.0F, -0.3490658503988659F);
-        this.setRotateAngle(ArmRShoulderPad, 0.0F, 0.0F, 0.3490658503988659F);
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -45,7 +42,7 @@ public class GuardModel extends HumanoidModel<Guard> {
         PartDefinition leftArm = partdefinition.addOrReplaceChild("left_arm", CubeListBuilder.create().texOffs(33, 48)
                 .addBox(-1.0F, -2.0F, -2.0F, 4, 12, 4, new CubeDeformation(0.0F)), PartPose.offset(5.0F, 2.0F, 0.0F));
         torso.addOrReplaceChild("quiver", CubeListBuilder.create().texOffs(100, 0).addBox(-2.5F, -2.0F, 0.0F, 5, 10, 5,
-                new CubeDeformation(0.0F)), PartPose.offset(0.5F, 3.0F, 2.3F));
+                new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.5F, 3.0F, 2.3F, 0.0F, 0.0F, 0.2617993877991494F));
         head.addOrReplaceChild("nose",
                 CubeListBuilder.create().texOffs(54, 0).addBox(-1.0F, 0.0F, -2.0F, 2, 4, 2, new CubeDeformation(0.0F)),
                 PartPose.offset(0.0F, -3.0F, -4.0F));
@@ -55,19 +52,13 @@ public class GuardModel extends HumanoidModel<Guard> {
                 4, 12, 4, new CubeDeformation(0.0F)), PartPose.offset(1.9F, 12.0F, 0.0F));
         leftArm.addOrReplaceChild("shoulderPad_right",
                 CubeListBuilder.create().texOffs(72, 33).mirror().addBox(0.0F, 0.0F, -3.0F, 5, 3, 6, new CubeDeformation(0.0F)),
-                PartPose.offset(-0.5F, -3.5F, 0.0F));
+                PartPose.offsetAndRotation(-0.5F, -3.5F, 0.0F, 0.0F, 0.0F, 0.3490658503988659F));
         rightArm.addOrReplaceChild("shoulderPad_left",
                 CubeListBuilder.create().texOffs(72, 33).addBox(-5.0F, 0.0F, -3.0F, 5, 3, 6, new CubeDeformation(0.0F)),
-                PartPose.offset(0.5F, -3.5F, 0.0F));
+                PartPose.offsetAndRotation(0.5F, -3.5F, 0.0F, 0.0F, 0.0F, -0.3490658503988659F));
         partdefinition.addOrReplaceChild("hat", CubeListBuilder.create().texOffs(0, 0).addBox(-4.5F, -11.0F, -4.5F, 9,
                 11, 9, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
         return LayerDefinition.create(meshdefinition, 128, 128);
-    }
-
-    public void setRotateAngle(ModelPart ModelRenderer, float x, float y, float z) {
-        ModelRenderer.xRot = x;
-        ModelRenderer.yRot = y;
-        ModelRenderer.zRot = z;
     }
 
     @Override
@@ -131,6 +122,5 @@ public class GuardModel extends HumanoidModel<Guard> {
         } else {
             this.rightArm.xRot = -1.8F;
         }
-
     }
 }
