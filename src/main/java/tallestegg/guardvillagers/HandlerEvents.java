@@ -212,25 +212,25 @@ public class HandlerEvents {
         BlockPos pos = event.getHitVec().getBlockPos();
         BlockState originalBlock = player.level().getBlockState(pos);
         if (GuardConfig.COMMON.multiFollow.get()) {
-        if (originalBlock.getBlock() instanceof BellBlock && level.getBlockEntity(pos) instanceof BellBlockEntity bellBlockEntity) {
-            if (!bellBlockEntity.shaking) {
-                List<Guard> list = player.level().getEntitiesOfClass(Guard.class, player.getBoundingBox().inflate(32.0D, 32.0D, 32.0D));
-                for (Guard guard : list) {
-                    if (GuardVillagers.canFollow(player)) {
-                        event.setCancellationResult(InteractionResult.SUCCESS);
-                        guard.setFollowing(!guard.isFollowing());
-                        guard.playSound(SoundEvents.VILLAGER_YES);
-                        if (guard.isFollowing()) {
-                            guard.setOwnerId(player.getUUID());
-                            guard.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 1));
-                            level.playSound(null, pos, SoundEvents.BELL_RESONATE, SoundSource.BLOCKS, 1.0F, 1.0F);
-                        } else {
-                            guard.removeEffect(MobEffects.GLOWING);
+            if (originalBlock.getBlock() instanceof BellBlock && level.getBlockEntity(pos) instanceof BellBlockEntity bellBlockEntity) {
+                if (!bellBlockEntity.shaking) {
+                    List<Guard> list = player.level().getEntitiesOfClass(Guard.class, player.getBoundingBox().inflate(32.0D, 32.0D, 32.0D));
+                    for (Guard guard : list) {
+                        if (GuardVillagers.canFollow(player)) {
+                            event.setCancellationResult(InteractionResult.SUCCESS);
+                            guard.setFollowing(!guard.isFollowing());
+                            guard.playSound(SoundEvents.VILLAGER_YES);
+                            if (guard.isFollowing()) {
+                                guard.setOwnerId(player.getUUID());
+                                guard.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 1));
+                                level.playSound(null, pos, SoundEvents.BELL_RESONATE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                            } else {
+                                guard.removeEffect(MobEffects.GLOWING);
+                            }
                         }
                     }
                 }
             }
-        }
         }
     }
 
@@ -254,8 +254,7 @@ public class HandlerEvents {
         guard.copyPosition(villager);
         guard.playSound(SoundEvents.VILLAGER_YES, 1.0F, 1.0F);
         guard.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copy());
-        int i = Guard.getRandomTypeForBiome(guard.level(), guard.blockPosition());
-        guard.setGuardVariant(i);
+        guard.setVariant(villager.getVariant().toString());
         guard.setPersistenceRequired();
         guard.setCustomName(villager.getCustomName());
         guard.setCustomNameVisible(villager.isCustomNameVisible());

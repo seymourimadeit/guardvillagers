@@ -1,15 +1,16 @@
 package tallestegg.guardvillagers.client.renderer;
 
-import javax.annotation.Nullable;
-
 import com.mojang.blaze3d.vertex.PoseStack;
-
+import net.minecraft.ResourceLocationException;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidArmorModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -17,14 +18,16 @@ import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.neoforged.fml.ModList;
+import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.ModCompat;
 import tallestegg.guardvillagers.client.GuardClientEvents;
-import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.models.GuardArmorModel;
 import tallestegg.guardvillagers.client.models.GuardModel;
 import tallestegg.guardvillagers.client.models.GuardSteveModel;
-import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.common.entities.Guard;
+import tallestegg.guardvillagers.configuration.GuardConfig;
+
+import javax.annotation.Nullable;
 
 public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guard>> {
     private final HumanoidModel<Guard> steve;
@@ -37,6 +40,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
             this.model = steve;
         else
             this.model = normal;
+        this.addLayer(new GuardVariantLayer(this));
         this.addLayer(new HumanoidArmorLayer(this, !GuardConfig.CLIENT.GuardSteve.get() ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_INNER)) : new HumanoidArmorModel<>(context.bakeLayer(GuardClientEvents.GUARD_PLAYER_ARMOR_INNER)),
                 !GuardConfig.CLIENT.GuardSteve.get() ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_OUTER)) : new HumanoidArmorModel<>(context.bakeLayer(GuardClientEvents.GUARD_PLAYER_ARMOR_OUTER)), context.getModelManager()));
     }
@@ -94,12 +98,10 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
                         break;
                 }
                 if (ModList.get().isLoaded("musketmod"))
-                    bipedmodel$armpose = ModCompat.reloadMusketAnim(itemstack, handIn, entityIn);
+                    bipedmodel$armpose = ModCompat.reloadMusketAnim(itemstack, handIn, entityIn, bipedmodel$armpose);
             } else {
                 boolean flag1 = itemStackMain.getItem() instanceof CrossbowItem;
                 boolean flag2 = itemStackOff.getItem() instanceof CrossbowItem;
-                if (ModList.get().isLoaded("musketmod"))
-                    bipedmodel$armpose = ModCompat.holdMusketAnim(itemstack, entityIn);
                 if (flag1 && entityIn.isAggressive()) {
                     bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
                 }
@@ -108,6 +110,8 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
                         && entityIn.isAggressive()) {
                     bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
                 }
+                if (ModList.get().isLoaded("musketmod"))
+                    bipedmodel$armpose = ModCompat.holdMusketAnim(itemstack, entityIn, bipedmodel$armpose);
             }
         }
         return bipedmodel$armpose;
@@ -121,10 +125,29 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     @Nullable
     @Override
     public ResourceLocation getTextureLocation(Guard entity) {
-        return !GuardConfig.CLIENT.GuardSteve.get()
-                ? ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID,
-                "textures/entity/guard/guard_" + entity.getGuardVariant() + ".png")
-                : ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID,
-                "textures/entity/guard/guard_steve_" + entity.getGuardVariant() + ".png");
+        String guardSteve = GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "";
+        return ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID,
+                "textures/entity/guard/guard" + guardSteve + ".png");
+    }
+
+    public static class GuardVariantLayer extends RenderLayer<Guard, HumanoidModel<Guard>> {
+        public GuardVariantLayer(RenderLayerParent renderer) {
+            super(renderer);
+        }
+
+        @Override
+        public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, Guard livingEntity, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+            if (!livingEntity.isInvisible()) {
+                EntityModel m = this.getParentModel();
+                String guardSteve = GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "";
+                ResourceLocation resourcelocation;
+                try {
+                    resourcelocation = ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_" + livingEntity.getVariant() + ".png");
+                } catch (ResourceLocationException res) {
+                    resourcelocation = ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_plains.png");
+                }
+                renderColoredCutoutModel(m, resourcelocation, poseStack, bufferSource, packedLight, livingEntity, -1);
+            }
+        }
     }
 }

@@ -18,16 +18,16 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class ModCompat {
-    public static HumanoidModel.ArmPose reloadMusketAnim(ItemStack stack, InteractionHand handIn, Guard guard) {
+    public static HumanoidModel.ArmPose reloadMusketAnim(ItemStack stack, InteractionHand handIn, Guard guard, HumanoidModel.ArmPose bipedmodel$armpose) {
         if (stack.getItem() instanceof GunItem && !GunItem.isLoaded(stack)) {
             if (handIn == guard.getUsedItemHand()) {
                 return HumanoidModel.ArmPose.CROSSBOW_CHARGE;
             }
         }
-        return HumanoidModel.ArmPose.ITEM;
+        return bipedmodel$armpose;
     }
 
-    public static HumanoidModel.ArmPose holdMusketAnim(ItemStack stack, Guard guard) {
+    public static HumanoidModel.ArmPose holdMusketAnim(ItemStack stack, Guard guard, HumanoidModel.ArmPose bipedmodel$armpose) {
         if (stack.getItem() instanceof GunItem && GunItem.isLoaded(stack) && guard.isAggressive())
             return HumanoidModel.ArmPose.CROSSBOW_HOLD;
         return HumanoidModel.ArmPose.ITEM;
