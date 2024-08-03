@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:tools/crossbow",
+      "required": false
+    },
+    "#minecraft:swords"
+  ]
+}

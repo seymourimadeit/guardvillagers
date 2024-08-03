@@ -190,7 +190,7 @@ public class HandlerEvents {
         Player player = event.getEntity();
         ItemStack itemstack = event.getEntity().getMainHandItem();
         Entity target = event.getTarget();
-        if ((itemstack.getItem() instanceof SwordItem || itemstack.getItem() instanceof CrossbowItem) && player.isCrouching()) {
+        if (itemstack.is(GuardVillagerTags.GUARD_CONVERT) && player.isCrouching()) {
             if (target instanceof Villager villager) {
                 if (!villager.isBaby()) {
                     if (villager.getVillagerData().getProfession() == VillagerProfession.NONE || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {

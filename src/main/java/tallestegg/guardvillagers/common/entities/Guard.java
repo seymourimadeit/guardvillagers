@@ -272,10 +272,27 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        if (compound.getString("Type").isBlank())
+        if (compound.contains("Type", 99)) { // To accommodate guard variants in the previous updates
+            switch (compound.getInt("Type")) {
+                default:
+                    compound.putString("Type", "plains");
+                case 1:
+                    compound.putString("Type", "desert");
+                case 2:
+                    compound.putString("Type", "savannah");
+                case 3:
+                    compound.putString("Type", "swamp");
+                case 4:
+                    compound.putString("Type", "jungle");
+                case 5:
+                    compound.putString("Type", "taiga");
+                case 6:
+                    compound.putString("Type", "snow");
+            }
             compound.putString("Type", getVariantFromBiome(level(), blockPosition()));
-        else
+        } else {
             compound.putString("Type", this.getVariant());
+        }
         compound.putInt("KickTicks", this.kickTicks);
         compound.putInt("ShieldCooldown", this.shieldCoolDown);
         compound.putInt("KickCooldown", this.kickCoolDown);
