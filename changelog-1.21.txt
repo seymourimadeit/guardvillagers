@@ -1,4 +1,4 @@
 - Improvements to CTM integration
 - Added compatibility with Musket mod
-- Added data-driven guard variants
+- Added more compatibility with modded types with new guard system
 - Added statistics for guard conversions
