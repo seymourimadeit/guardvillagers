@@ -226,6 +226,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.lastGossipDecayTime = compound.getLong("LastGossipDecay");
         this.lastGossipTime = compound.getLong("LastGossipTime");
         this.spawnWithArmor = compound.getBoolean("SpawnWithArmor");
+        this.setVariant(compound.getString("Type"));
         if (compound.contains("PatrolPosX")) {
             int x = compound.getInt("PatrolPosX");
             int y = compound.getInt("PatrolPosY");
@@ -289,7 +290,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 case 6:
                     compound.putString("Type", "snow");
             }
-            compound.putString("Type", getVariantFromBiome(level(), blockPosition()));
         } else {
             compound.putString("Type", this.getVariant());
         }

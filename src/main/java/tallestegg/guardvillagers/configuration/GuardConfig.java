@@ -104,7 +104,7 @@ public class GuardConfig {
             reputationRequirement = builder.defineInRange("Minimum reputation requirement for guards to give you access to their inventories", 15, Integer.MIN_VALUE, Integer.MAX_VALUE);
             followHero = builder.define("Have guards only follow the player if they have hero of the village?", true);
             reputationRequirementToBeAttacked = builder.defineInRange("How low of a reputation of a player should have to be instantly aggroed upon by guards and golems?", -100, -9999, 9999);
-            guardPatrolVillageAi = builder.define("Allow guards to naturally patrol villages? This feature can cause lag if a lot of guards are spawned", true);
+            guardPatrolVillageAi = builder.define("Allow guards to naturally patrol villages? This feature can cause lag if a lot of guards are spawned", false);
             builder.pop();
         }
     }

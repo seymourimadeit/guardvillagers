@@ -1,4 +1,5 @@
 - Improvements to CTM integration
 - Added compatibility with Musket mod
-- Added more compatibility with modded types with new guard system
+- Added more compatibility with modded villager types with new guard system (now no longer limited to a certain amount)
 - Added statistics for guard conversions
+- Set guard village patrol ai to not operate by default due to lag concerns
