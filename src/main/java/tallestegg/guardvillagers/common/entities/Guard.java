@@ -279,7 +279,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 case 1:
                     compound.putString("Type", "desert");
                 case 2:
-                    compound.putString("Type", "savannah");
+                    compound.putString("Type", "savanna");
                 case 3:
                     compound.putString("Type", "swamp");
                 case 4:
