@@ -3,6 +3,7 @@ package tallestegg.guardvillagers;
 import ewewukek.musketmod.GunItem;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -27,6 +28,10 @@ public class ModCompat {
         return bipedmodel$armpose;
     }
 
+    public static boolean isHoldingMusket(ItemStack stack) {
+        return stack.getItem() instanceof GunItem;
+    }
+
     public static HumanoidModel.ArmPose holdMusketAnim(ItemStack stack, Guard guard, HumanoidModel.ArmPose bipedmodel$armpose) {
         if (stack.getItem() instanceof GunItem && GunItem.isLoaded(stack) && guard.isAggressive())
             return HumanoidModel.ArmPose.CROSSBOW_HOLD;
@@ -39,6 +44,7 @@ public class ModCompat {
             musketItem.fire(guard, front);
             GunItem.setLoaded(guard.getMainHandItem(), false);
             guard.playSound(musketItem.fireSound(), 3.5F, 1);
+            guard.getMainHandItem().hurtAndBreak(1, guard, EquipmentSlot.MAINHAND);
         }
     }
 
@@ -138,7 +144,7 @@ public class ModCompat {
                             this.path = mob.getNavigation().createPath(vec3.x, vec3.y, vec3.z, 0);
                             this.mob.getLookControl().setLookAt(vec3.x, mob.getEyeY(), vec3.z);
                             if (this.path != null && this.path.canReach()) {
-                                this.mob.getNavigation().moveTo(this.path, 1.0D);
+                                this.mob.getNavigation().moveTo(this.path, 0.9D);
                                 this.attackTime = -1;
                                 this.mob.stopUsingItem();
                             }

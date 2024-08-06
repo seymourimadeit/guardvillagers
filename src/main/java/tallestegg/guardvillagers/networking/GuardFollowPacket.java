@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tallestegg.guardvillagers.GuardVillagers;
+import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
 
 public record GuardFollowPacket(int entityId) implements CustomPacketPayload {
@@ -29,7 +30,7 @@ public record GuardFollowPacket(int entityId) implements CustomPacketPayload {
                     Guard guard = (Guard) entity;
                     guard.setFollowing(!guard.isFollowing());
                     guard.setOwnerId(player.getUUID());
-                    guard.playSound(SoundEvents.VILLAGER_YES, 1.0F, 1.0F);
+                    guard.playSound(GuardSounds.GUARD_YES.value(), 1.0F, 1.0F);
                 }
             }
         });

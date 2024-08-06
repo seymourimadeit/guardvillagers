@@ -11,5 +11,7 @@
   "subtitles.entity.guard.death": "Guardia muerto",
   "guardvillagers.advancements.adventure.recruit_guard.description": "Da una espada a una aldeano desempleado para que ayude a defender una aldea.",
   "guardvillagers.advancements.adventure.recruit_guard.title": "Te Quieren como Nuevo Recluta",
-  "stat.guardvillagers.guards_made": "Guardias crearon"
+  "stat.guardvillagers.guards_made": "Guardias crearon",
+  "subtitles.entity.guard.yes": "Guardia acepta",
+  "subtitles.entity.guard.no": "Guardia rechaza"
 }

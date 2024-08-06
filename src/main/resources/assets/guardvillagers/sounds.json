@@ -21,5 +21,21 @@
 			"mob/villager/death"
 		],
 		"subtitle": "subtitles.entity.guard.death"
+	},
+	"entity.guard.yes": {
+		"sounds": [
+          "mob/villager/yes1",
+          "mob/villager/yes2",
+          "mob/villager/yes3"
+		],
+		"subtitle": "subtitles.entity.guard.yes"
+	},
+	"entity.guard.no": {
+		"sounds": [
+          "mob/villager/no1",
+          "mob/villager/no2",
+          "mob/villager/no3"
+		],
+		"subtitle": "subtitles.entity.guard.no"
 	}
 }

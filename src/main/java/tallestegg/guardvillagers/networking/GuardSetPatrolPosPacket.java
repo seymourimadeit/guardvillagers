@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tallestegg.guardvillagers.GuardVillagers;
+import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
 
 public record GuardSetPatrolPosPacket(int entityId, boolean pressed) implements CustomPacketPayload {
@@ -31,6 +32,7 @@ public record GuardSetPatrolPosPacket(int entityId, boolean pressed) implements 
                 if (guard.blockPosition() != null)
                     guard.setPatrolPos(pos);
                 guard.setPatrolling(!packet.pressed());
+                guard.playSound(GuardSounds.GUARD_YES.value());
             }
         }
     }

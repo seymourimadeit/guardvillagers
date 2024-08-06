@@ -3,3 +3,5 @@
 - Added more compatibility with modded villager types with new guard system (now no longer limited to a certain amount)
 - Added statistics for guard conversions
 - Set guard village patrol ai to not operate by default due to lag concerns
+- Added unique guard yes and no sounds ids
+- PLEASE NOTE THAT THIS UPDATE CONTAINS BREAKING CHANGES TO ANY RESOURCE PACKS THAT MODIFY GUARDS

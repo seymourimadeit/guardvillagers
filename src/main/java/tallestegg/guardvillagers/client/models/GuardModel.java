@@ -17,6 +17,8 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.UseAnim;
+import net.neoforged.fml.ModList;
+import tallestegg.guardvillagers.ModCompat;
 import tallestegg.guardvillagers.common.entities.Guard;
 
 public class GuardModel extends HumanoidModel<Guard> {
@@ -66,7 +68,7 @@ public class GuardModel extends HumanoidModel<Guard> {
                           float netbipedHeadYaw, float bipedHeadPitch) {
         super.setupAnim(entityIn, limbSwing, limbSwingAmount, ageInTicks, netbipedHeadYaw, bipedHeadPitch);
         ItemStack itemstack = entityIn.getItemInHand(InteractionHand.MAIN_HAND);
-        boolean isHoldingShootable = itemstack.getItem() instanceof ProjectileWeaponItem;
+        boolean isHoldingShootable = itemstack.getItem() instanceof ProjectileWeaponItem || (ModList.get().isLoaded("musketmod") && ModCompat.isHoldingMusket(itemstack));
         this.quiver.visible = isHoldingShootable;
         boolean hasChestplate = entityIn.getItemBySlot(EquipmentSlot.CHEST).getItem() instanceof ArmorItem;
         this.ArmLShoulderPad.visible = !hasChestplate;

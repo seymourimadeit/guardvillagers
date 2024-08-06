@@ -46,6 +46,7 @@ import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.common.entities.ai.goals.AttackEntityDaytimeGoal;
 import tallestegg.guardvillagers.common.entities.ai.goals.GetOutOfWaterGoal;
@@ -219,7 +220,7 @@ public class HandlerEvents {
                         if (GuardVillagers.canFollow(player)) {
                             event.setCancellationResult(InteractionResult.SUCCESS);
                             guard.setFollowing(!guard.isFollowing());
-                            guard.playSound(SoundEvents.VILLAGER_YES);
+                            guard.playSound(GuardSounds.GUARD_YES.value());
                             if (guard.isFollowing()) {
                                 guard.setOwnerId(player.getUUID());
                                 guard.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 1));
@@ -252,7 +253,7 @@ public class HandlerEvents {
             }
         }
         guard.copyPosition(villager);
-        guard.playSound(SoundEvents.VILLAGER_YES, 1.0F, 1.0F);
+        guard.playSound(GuardSounds.GUARD_YES.value(), 1.0F, 1.0F);
         guard.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copy());
         guard.setVariant(villager.getVariant().toString());
         guard.setPersistenceRequired();

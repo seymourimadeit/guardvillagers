@@ -1498,7 +1498,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                     this.mob.stopUsingItem();
                     this.mob.setChargingCrossbow(false);
                     if (this.findPosition())
-                        this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, this.mob.isCrouching() ? 0.5F : 1.2D);
+                        this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, this.mob.isCrouching() ? 0.5D : 0.9D);
                     this.crossbowState = CrossbowState.UNCHARGED;
                 } else if (this.crossbowState == CrossbowState.UNCHARGED) {
                     if (!canSee2) {
