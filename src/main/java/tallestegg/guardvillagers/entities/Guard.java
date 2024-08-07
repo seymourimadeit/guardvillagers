@@ -37,6 +37,7 @@ import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.gossip.GossipContainer;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.animal.PolarBear;
@@ -55,6 +56,10 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
@@ -615,7 +620,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             }
         });
         this.goalSelector.addGoal(3, new GuardMeleeGoal(this, 0.8D, true));
-        this.goalSelector.addGoal(4, new Guard.FollowHeroGoal(this));
+        this.goalSelector.addGoal(4, new FollowHeroGoal(this, 0.8F, 10.0F, 4.0F));
         if (GuardConfig.GuardsRunFromPolarBears)
             this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, PolarBear.class, 12.0F, 1.0D, 1.2D));
         this.goalSelector.addGoal(4, new MoveBackToVillageGoal(this, 0.5D, false));
@@ -930,6 +935,55 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         return item instanceof BowItem || item instanceof CrossbowItem || super.canFireProjectileWeapon(item);
     }
 
+    public void tryToTeleportToOwner() {
+        LivingEntity livingentity = this.getOwner();
+        if (livingentity != null)
+            this.teleportToAroundBlockPos(livingentity.blockPosition());
+    }
+
+    public boolean shouldTryTeleportToOwner() {
+        LivingEntity livingentity = this.getOwner();
+        return livingentity != null && this.distanceToSqr(this.getOwner()) >= 144.0 && GuardConfig.COMMON.guardTeleport.get() && this.getTarget() == null;
+    }
+
+    private void teleportToAroundBlockPos(BlockPos pos) {
+        for (int i = 0; i < 10; i++) {
+            int j = this.random.nextIntBetweenInclusive(-4, 4);
+            int k = this.random.nextIntBetweenInclusive(-4, 4);
+            if (Math.abs(j) >= 3 || Math.abs(k) >= 3) {
+                int l = this.random.nextIntBetweenInclusive(-1, 1);
+                if (this.maybeTeleportTo(pos.getX() + j, pos.getY() + l, pos.getZ() + k)) {
+                    return;
+                }
+            }
+        }
+    }
+
+    private boolean maybeTeleportTo(int x, int y, int z) {
+        if (!this.canTeleportTo(new BlockPos(x, y, z))) {
+            return false;
+        } else {
+            this.moveTo((double) x + 0.5, y, (double) z + 0.5, this.getYRot(), this.getXRot());
+            this.navigation.stop();
+            return true;
+        }
+    }
+
+    private boolean canTeleportTo(BlockPos pos) {
+        BlockPathTypes pathtype = WalkNodeEvaluator.getBlockPathTypeStatic(this.level(), pos.mutable());
+        if (pathtype != BlockPathTypes.WALKABLE) {
+            return false;
+        } else {
+            BlockState blockstate = this.level().getBlockState(pos.below());
+            if (blockstate.getBlock() instanceof LeavesBlock) {
+                return false;
+            } else {
+                BlockPos blockpos = pos.subtract(this.blockPosition());
+                return this.level().noCollision(this, this.getBoundingBox().move(blockpos));
+            }
+        }
+    }
+
     public static class GuardData implements SpawnGroupData {
         public final int variantData;
 
@@ -974,36 +1028,75 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public static class FollowHeroGoal extends Goal {
-        public final Guard guard;
+        private final Guard guard;
+        private LivingEntity owner;
+        private final double speedModifier;
+        private final PathNavigation navigation;
+        private int timeToRecalcPath;
+        private final float stopDistance;
+        private final float startDistance;
+        private float oldWaterCost;
 
-        public FollowHeroGoal(Guard mob) {
-            this.guard = mob;
+        public FollowHeroGoal(Guard guard, double speedModifier, float startDistance, float stopDistance) {
+            this.guard = guard;
+            this.speedModifier = speedModifier;
+            this.navigation = guard.getNavigation();
+            this.startDistance = startDistance;
+            this.stopDistance = stopDistance;
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
 
         @Override
-        public void tick() {
-            if (guard.getOwner() != null && guard.getOwner().distanceTo(guard) > 3.0D) {
-                guard.getNavigation().moveTo(guard.getOwner(), 0.7D);
-                guard.getLookControl().setLookAt(guard.getOwner());
+        public boolean canUse() {
+            LivingEntity livingentity = this.guard.getOwner();
+            if (livingentity == null) {
+                return false;
+            } else if (this.guard.distanceToSqr(livingentity) < (double) (this.startDistance * this.startDistance)) {
+                return false;
             } else {
-                guard.getNavigation().stop();
+                this.owner = livingentity;
+                return this.guard.isFollowing();
             }
         }
 
         @Override
         public boolean canContinueToUse() {
-            return this.canUse();
+            if (!this.navigation.isDone()) {
+                return this.guard.distanceToSqr(this.owner) >= (double) (this.stopDistance * this.stopDistance) && this.guard.isFollowing();
+            } else {
+                return false;
+            }
         }
 
         @Override
-        public boolean canUse() {
-            return guard.isFollowing() && guard.getOwner() != null;
+        public void start() {
+            this.timeToRecalcPath = 0;
+            this.oldWaterCost = this.guard.getPathfindingMalus(BlockPathTypes.WATER);
+            this.guard.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
         }
 
         @Override
         public void stop() {
-            this.guard.getNavigation().stop();
+            this.owner = null;
+            this.navigation.stop();
+            this.guard.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
+        }
+
+        @Override
+        public void tick() {
+            boolean shouldTryTeleportToOwner = this.guard.shouldTryTeleportToOwner();
+            if (!shouldTryTeleportToOwner) {
+                this.guard.getLookControl().setLookAt(this.owner, 10.0F, (float) this.guard.getMaxHeadXRot());
+            }
+
+            if (--this.timeToRecalcPath <= 0) {
+                this.timeToRecalcPath = this.adjustedTickDelay(10);
+                if (shouldTryTeleportToOwner) {
+                    this.guard.tryToTeleportToOwner();
+                } else {
+                    this.navigation.moveTo(this.owner, this.speedModifier);
+                }
+            }
         }
     }
 

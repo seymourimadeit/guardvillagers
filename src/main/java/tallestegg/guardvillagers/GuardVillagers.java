@@ -22,7 +22,6 @@ import tallestegg.guardvillagers.entities.Guard;
 @Mod(GuardVillagers.MODID)
 public class GuardVillagers {
     public static final String MODID = "guardvillagers";
-
     public GuardVillagers() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, GuardConfig.COMMON_SPEC);
         GuardConfig.loadConfig(GuardConfig.COMMON_SPEC, FMLPaths.CONFIGDIR.get().resolve(MODID + "-common.toml").toString());

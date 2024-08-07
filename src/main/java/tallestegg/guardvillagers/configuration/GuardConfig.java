@@ -132,6 +132,7 @@ public class GuardConfig {
         public final ForgeConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ForgeConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ForgeConfigSpec.BooleanValue followHero;
+        public final ForgeConfigSpec.BooleanValue guardTeleport;
         public final ForgeConfigSpec.IntValue reputationRequirement;
         public final ForgeConfigSpec.IntValue reputationRequirementToBeAttacked;
         public final ForgeConfigSpec.DoubleValue chanceToDropEquipment;
@@ -169,6 +170,7 @@ public class GuardConfig {
             GuardsOpenDoors = builder.comment("This lets Guards open doors.").translation(GuardVillagers.MODID + ".config.GuardsOpenDoors").define("Have Guards open doors?", true);
             GuardRaiseShield = builder.comment("This will make guards raise their shields all the time, on default they will only raise their shields under certain conditions").translation(GuardVillagers.MODID + ".config.GuardRaiseShield").define("Have Guards raise their shield all the time?",
                     false);
+            guardTeleport = builder.define("Allow guards to teleport if following the player", true);
             GuardFormation = builder.comment("This makes guards form a phalanx").translation(GuardVillagers.MODID + ".config.GuardFormation").define("Have guards form a phalanx?", true);
             FriendlyFire = builder.translation(GuardVillagers.MODID + ".config.FriendlyFire").define("Have guards attempt to avoid firing into other friendlies?", true);
             GuardVillagerHelpRange = builder.translation(GuardVillagers.MODID + ".config.range").comment("This is the range in which the guards will be aggroed to mobs that are attacking villagers. Higher values are more resource intensive, and setting this to zero will disable the goal.")
