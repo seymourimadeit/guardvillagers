@@ -209,6 +209,23 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
+        if (compound.contains("Type", 99)) { // To accommodate guard variants in the previous updates
+            int variantint = compound.getInt("Type");
+            if (variantint == 1)
+                compound.putString("Variant", "desert");
+            else if (variantint == 2)
+                compound.putString("Variant", "savanna");
+            else if (variantint == 3)
+                compound.putString("Variant", "swamp");
+            else if (variantint == 4)
+                compound.putString("Variant", "jungle");
+            else if (variantint == 5)
+                compound.putString("Variant", "taiga");
+            else if (variantint == 6)
+                compound.putString("Variant", "snow");
+            else if (variantint == 0)
+                compound.putString("Variant", "plains");
+        }
         UUID uuid = compound.hasUUID("Owner") ? compound.getUUID("Owner") : null;
         if (uuid != null) {
             try {
@@ -226,7 +243,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.lastGossipDecayTime = compound.getLong("LastGossipDecay");
         this.lastGossipTime = compound.getLong("LastGossipTime");
         this.spawnWithArmor = compound.getBoolean("SpawnWithArmor");
-        this.setVariant(compound.getString("Type"));
+        this.setVariant(compound.getString("Variant"));
         if (compound.contains("PatrolPosX")) {
             int x = compound.getInt("PatrolPosX");
             int y = compound.getInt("PatrolPosY");
@@ -273,26 +290,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        if (compound.contains("Type", 99)) { // To accommodate guard variants in the previous updates
-            switch (compound.getInt("Type")) {
-                default:
-                    compound.putString("Type", "plains");
-                case 1:
-                    compound.putString("Type", "desert");
-                case 2:
-                    compound.putString("Type", "savanna");
-                case 3:
-                    compound.putString("Type", "swamp");
-                case 4:
-                    compound.putString("Type", "jungle");
-                case 5:
-                    compound.putString("Type", "taiga");
-                case 6:
-                    compound.putString("Type", "snow");
-            }
-        } else {
-            compound.putString("Type", this.getVariant());
-        }
+        compound.putString("Variant", this.getVariant());
         compound.putInt("KickTicks", this.kickTicks);
         compound.putInt("ShieldCooldown", this.shieldCoolDown);
         compound.putInt("KickCooldown", this.kickCoolDown);
