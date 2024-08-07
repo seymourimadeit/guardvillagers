@@ -1,6 +1,12 @@
 package tallestegg.guardvillagers;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
@@ -15,14 +21,21 @@ import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raider;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BellBlock;
+import net.minecraft.world.level.block.entity.BellBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.entities.ai.goals.*;
@@ -73,6 +86,35 @@ public class HandlerEvents {
                         return;
                     else
                         mob.setTarget((Mob) event.getSource().getEntity());
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onEntityInteract(PlayerInteractEvent.RightClickBlock event) {
+        Player player = event.getEntity();
+        Level level = event.getLevel();
+        BlockPos pos = event.getHitVec().getBlockPos();
+        BlockState originalBlock = player.level().getBlockState(pos);
+        if (GuardConfig.COMMON.multiFollow.get()) {
+            if (originalBlock.getBlock() instanceof BellBlock && level.getBlockEntity(pos) instanceof BellBlockEntity bellBlockEntity) {
+                if (!bellBlockEntity.shaking) {
+                    List<Guard> list = player.level().getEntitiesOfClass(Guard.class, player.getBoundingBox().inflate(32.0D, 32.0D, 32.0D));
+                    for (Guard guard : list) {
+                        if (GuardVillagers.canFollow(player)) {
+                            event.setCancellationResult(InteractionResult.SUCCESS);
+                            guard.setFollowing(!guard.isFollowing());
+                            guard.playSound(GuardSounds.GUARD_YES.get());
+                            if (guard.isFollowing()) {
+                                guard.setOwnerId(player.getUUID());
+                                guard.addEffect(new MobEffectInstance(MobEffects.GLOWING, 100, 1));
+                                level.playSound(null, pos, SoundEvents.BELL_RESONATE, SoundSource.BLOCKS, 1.0F, 1.0F);
+                            } else {
+                                guard.removeEffect(MobEffects.GLOWING);
+                            }
+                        }
+                    }
                 }
             }
         }

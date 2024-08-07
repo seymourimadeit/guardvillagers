@@ -49,6 +49,10 @@ public class GuardVillagers {
         }
     }
 
+    public static boolean canFollow(Player player) {
+        return GuardConfig.COMMON.followHero.get() && player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || !GuardConfig.COMMON.followHero.get();
+    }
+
     private void setup(final FMLCommonSetupEvent event) {
         if (GuardConfig.IllusionerRaids)
             Raid.RaiderType.create("thebluemengroup", EntityType.ILLUSIONER, new int[]{0, 0, 0, 0, 0, 1, 1, 2});

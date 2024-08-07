@@ -1,5 +1,6 @@
 package tallestegg.guardvillagers.client;
 
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,4 +15,6 @@ public class GuardSounds {
     public static final RegistryObject<SoundEvent> GUARD_AMBIENT = SOUNDS.register("entity.guard.ambient", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.ambient")));
     public static final RegistryObject<SoundEvent> GUARD_DEATH = SOUNDS.register("entity.guard.death", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.death")));
     public static final RegistryObject<SoundEvent> GUARD_HURT = SOUNDS.register("entity.guard.hurt", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.hurt")));
+    public static final RegistryObject<SoundEvent> GUARD_YES = SOUNDS.register("entity.guard.yes", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.yes")));
+    public static final RegistryObject<SoundEvent> GUARD_NO = SOUNDS.register("entity.guard.no", () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(GuardVillagers.MODID, "entity.guard.no")));
 }
