@@ -166,7 +166,7 @@ public class GuardConfig {
             builder.pop();
             builder.push("guard stuff");
             multiFollow = builder.translation(GuardVillagers.MODID + ".config.multifollow").define("Allow the player to right click on bells to mass order guards to follow them?", true);
-            guardPatrol = builder.define("Have guards patrol the village regularly?", true);
+            guardPatrol = builder.define("Have guards patrol the village regularly?", false);
             chanceToDropEquipment = builder.defineInRange("Chance to drop equipment", 100.0F, -999.9F, 999.0F);
             GuardsRunFromPolarBears = builder.comment("This makes Guards run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.IllagersRunFromPolarBears").define("Have Guards have some common sense?", false);
             GuardsOpenDoors = builder.comment("This lets Guards open doors.").translation(GuardVillagers.MODID + ".config.GuardsOpenDoors").define("Have Guards open doors?", true);
