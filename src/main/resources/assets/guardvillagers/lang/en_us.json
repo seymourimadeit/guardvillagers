@@ -9,6 +9,9 @@
   "subtitles.entity.guard.ambient": "Guard mumbles",
   "subtitles.entity.guard.hurt": "Guard hurts",
   "subtitles.entity.guard.death": "Guard dies",
+  "stat.guardvillagers.guards_made": "Guards made",
   "guardvillagers.advancements.adventure.recruit_guard.description": "Give a sword to an unemployed villager to help defend the village",
-  "guardvillagers.advancements.adventure.recruit_guard.title": "We Want You, as a New Recruit!"
+  "guardvillagers.advancements.adventure.recruit_guard.title": "We Want You, as a New Recruit!",
+  "subtitles.entity.guard.yes": "Guard agrees",
+  "subtitles.entity.guard.no": "Guard disagrees"
 }

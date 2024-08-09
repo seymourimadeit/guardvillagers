@@ -2,6 +2,8 @@ package tallestegg.guardvillagers;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.StatFormatter;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.gossip.GossipType;
@@ -47,7 +49,7 @@ public class VillagerToGuard {
         }
     }
 
-     private static void convertVillager(LivingEntity entity, Player player) {
+    private static void convertVillager(LivingEntity entity, Player player) {
         player.swing(InteractionHand.MAIN_HAND);
         ItemStack itemstack = player.getItemBySlot(EquipmentSlot.MAINHAND);
         Guard guard = GuardEntityType.GUARD.get().create(entity.level());
@@ -82,9 +84,12 @@ public class VillagerToGuard {
         villager.level().addFreshEntity(guard);
         villager.releasePoi(MemoryModuleType.HOME);
         villager.releasePoi(MemoryModuleType.JOB_SITE);
+        villager.releasePoi(MemoryModuleType.POTENTIAL_JOB_SITE);
         villager.releasePoi(MemoryModuleType.MEETING_POINT);
         villager.discard();
-         if (player instanceof ServerPlayer)
-             CriteriaTriggers.SUMMONED_ENTITY.trigger((ServerPlayer) player, guard);
+        if (player instanceof ServerPlayer serverPlayer) {
+            CriteriaTriggers.SUMMONED_ENTITY.trigger(serverPlayer, guard);
+            player.awardStat(GuardStats.GUARDS_MADE.get());
+        }
     }
 }

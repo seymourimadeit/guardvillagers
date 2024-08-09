@@ -1,5 +1,7 @@
 package tallestegg.guardvillagers;
 
+import net.minecraft.stats.StatFormatter;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +34,7 @@ public class GuardVillagers {
         GuardEntityType.ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         GuardItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         GuardSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        GuardStats.STATS.register(FMLJavaModLoadingContext.get().getModEventBus());
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addCreativeTabs);
         GuardPacketHandler.registerPackets();
@@ -54,6 +57,7 @@ public class GuardVillagers {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
+        Stats.CUSTOM.get(GuardStats.GUARDS_MADE.get(), StatFormatter.DEFAULT);
         if (GuardConfig.IllusionerRaids)
             Raid.RaiderType.create("thebluemengroup", EntityType.ILLUSIONER, new int[]{0, 0, 0, 0, 0, 1, 1, 2});
     }
