@@ -17,6 +17,8 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
+import net.minecraftforge.fml.ModList;
+import tallestegg.guardvillagers.ModCompat;
 import tallestegg.guardvillagers.client.GuardClientEvents;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.client.models.GuardArmorModel;
@@ -26,12 +28,11 @@ import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guard>> {
-    private final HumanoidModel<Guard> steve;
-    private final HumanoidModel<Guard> normal = this.getModel();
 
     public GuardRenderer(EntityRendererProvider.Context context) {
         super(context, new GuardModel(context.bakeLayer(GuardClientEvents.GUARD)), 0.5F);
-        this.steve = new GuardSteveModel(context.bakeLayer(GuardClientEvents.GUARD_STEVE));
+        HumanoidModel<Guard> steve = new GuardSteveModel(context.bakeLayer(GuardClientEvents.GUARD_STEVE));
+        HumanoidModel<Guard> normal = this.getModel();
         if (GuardConfig.guardSteve)
             this.model = steve;
         else
@@ -66,7 +67,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     }
 
     private HumanoidModel.ArmPose getArmPose(Guard entityIn, ItemStack itemStackMain, ItemStack itemStackOff,
-            InteractionHand handIn) {
+                                             InteractionHand handIn) {
         HumanoidModel.ArmPose bipedmodel$armpose = HumanoidModel.ArmPose.EMPTY;
         ItemStack itemstack = handIn == InteractionHand.MAIN_HAND ? itemStackMain : itemStackOff;
         if (!itemstack.isEmpty()) {
@@ -74,25 +75,29 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
             if (entityIn.getUseItemRemainingTicks() > 0) {
                 UseAnim useaction = itemstack.getUseAnimation();
                 switch (useaction) {
-                case BLOCK:
-                    bipedmodel$armpose = HumanoidModel.ArmPose.BLOCK;
-                    break;
-                case BOW:
-                    bipedmodel$armpose = HumanoidModel.ArmPose.BOW_AND_ARROW;
-                    break;
-                case SPEAR:
-                    bipedmodel$armpose = HumanoidModel.ArmPose.THROW_SPEAR;
-                    break;
-                case CROSSBOW:
-                    if (handIn == entityIn.getUsedItemHand()) {
-                        bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_CHARGE;
-                    }
-                    break;
-                default:
-                    bipedmodel$armpose = HumanoidModel.ArmPose.EMPTY;
-                    break;
+                    case BLOCK:
+                        bipedmodel$armpose = HumanoidModel.ArmPose.BLOCK;
+                        break;
+                    case BOW:
+                        bipedmodel$armpose = HumanoidModel.ArmPose.BOW_AND_ARROW;
+                        break;
+                    case SPEAR:
+                        bipedmodel$armpose = HumanoidModel.ArmPose.THROW_SPEAR;
+                        break;
+                    case CROSSBOW:
+                        if (handIn == entityIn.getUsedItemHand()) {
+                            bipedmodel$armpose = HumanoidModel.ArmPose.CROSSBOW_CHARGE;
+                        }
+                        break;
+                    default:
+                        bipedmodel$armpose = HumanoidModel.ArmPose.EMPTY;
+                        break;
                 }
+                if (ModList.get().isLoaded("musketmod"))
+                    bipedmodel$armpose = ModCompat.reloadMusketAnim(itemstack, handIn, entityIn, bipedmodel$armpose);
             } else {
+                if (ModList.get().isLoaded("musketmod"))
+                    bipedmodel$armpose = ModCompat.holdMusketAnim(itemstack, entityIn, bipedmodel$armpose);
                 boolean flag1 = itemStackMain.getItem() instanceof CrossbowItem;
                 boolean flag2 = itemStackOff.getItem() instanceof CrossbowItem;
                 if (flag1 && entityIn.isAggressive()) {
@@ -118,8 +123,8 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     public ResourceLocation getTextureLocation(Guard entity) {
         return !GuardConfig.guardSteve
                 ? new ResourceLocation(GuardVillagers.MODID,
-                        "textures/entity/guard/guard_" + entity.getGuardVariant() + ".png")
+                "textures/entity/guard/guard_" + entity.getGuardVariant() + ".png")
                 : new ResourceLocation(GuardVillagers.MODID,
-                        "textures/entity/guard/guard_steve_" + entity.getGuardVariant() + ".png");
+                "textures/entity/guard/guard_steve_" + entity.getGuardVariant() + ".png");
     }
 }

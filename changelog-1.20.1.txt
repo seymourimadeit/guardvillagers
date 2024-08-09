@@ -1,1 +1,7 @@
-- Added config to iron golem floating
+- Backport changes from 1.21
+- Made guards teleport
+- Made items guards were able to be converted by a tag
+    - Now more items can convert villagers into guards if put into the tag
+- Made guard village patrol false by default
+- Bells when rung by a player with hero of the village will make guards in a 30 block radius follow that player or stop following
+- Made guards able to fire muskets from ewewukek's Musket Mod

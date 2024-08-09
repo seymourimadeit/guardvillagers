@@ -121,13 +121,13 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
             }
             this.mob.lookAt(livingentity, 30.0F, 30.0F);
             this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-            if (this.friendlyInLineOfSight() && GuardConfig.FriendlyFire)
+            if (friendlyInLineOfSight(this.mob))
                 this.crossbowState = CrossbowState.FIND_NEW_POSITION;
             if (this.crossbowState == CrossbowState.FIND_NEW_POSITION && GuardConfig.FriendlyFire) {
                 this.mob.stopUsingItem();
                 this.mob.setChargingCrossbow(false);
                 if (this.findPosition())
-                    this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, this.mob.isCrouching() ? 0.5F : 1.2D);
+                    this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, this.mob.isCrouching() ? 0.5F : 1.0D);
                 this.crossbowState = CrossbowState.UNCHARGED;
             } else if (this.crossbowState == CrossbowState.UNCHARGED) {
                 if (!canSee2) {
@@ -162,17 +162,17 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
 
     }
 
-    private boolean friendlyInLineOfSight() {
-        List<Entity> list = this.mob.level().getEntities(this.mob, this.mob.getBoundingBox().inflate(5.0D));
+    public static boolean friendlyInLineOfSight(Mob mob) {
+        List<Entity> list = mob.level().getEntities(mob, mob.getBoundingBox().inflate(5.0D));
         for (Entity guard : list) {
-            if (guard != this.mob.getTarget()) {
-                boolean isVillager = ((Guard) this.mob).getOwner() == guard || guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
+            if (guard != mob.getTarget()) {
+                boolean isVillager = ((Guard) mob).getOwner() == guard || guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
                 if (isVillager) {
-                    Vec3 vector3d = this.mob.getLookAngle();
-                    Vec3 vector3d1 = guard.position().vectorTo(this.mob.position()).normalize();
+                    Vec3 vector3d = mob.getLookAngle();
+                    Vec3 vector3d1 = guard.position().vectorTo(mob.position()).normalize();
                     vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
-                    if (vector3d1.dot(vector3d) < 1.0D && this.mob.hasLineOfSight(guard) && guard.distanceTo(this.mob) <= 4.0D)
-                        return true;
+                    if (vector3d1.dot(vector3d) < 1.0D && mob.hasLineOfSight(guard) && guard.distanceTo(mob) <= 4.0D)
+                        return GuardConfig.FriendlyFire;
                 }
             }
         }

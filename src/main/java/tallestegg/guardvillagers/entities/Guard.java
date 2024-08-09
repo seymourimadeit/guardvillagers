@@ -67,10 +67,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.network.PacketDistributor;
 import tallestegg.guardvillagers.GuardItems;
 import tallestegg.guardvillagers.GuardLootTables;
 import tallestegg.guardvillagers.GuardPacketHandler;
+import tallestegg.guardvillagers.ModCompat;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.ai.goals.*;
@@ -619,6 +621,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 return (this.canUse() || !Guard.this.getNavigation().isDone()) && this.isBowInMainhand();
             }
         });
+        if (ModList.get().isLoaded("musketmod"))
+            this.goalSelector.addGoal(3, new ModCompat.UseMusketGoal(this, 1.55D, 20, 15.0F));
         this.goalSelector.addGoal(3, new GuardMeleeGoal(this, 0.8D, true));
         this.goalSelector.addGoal(4, new FollowHeroGoal(this, 0.8F, 10.0F, 4.0F));
         if (GuardConfig.GuardsRunFromPolarBears)
@@ -663,26 +667,21 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.shieldCoolDown = 8;
         if (this.getMainHandItem().getItem() instanceof CrossbowItem) this.performCrossbowAttack(this, 1.6F);
         if (this.getMainHandItem().getItem() instanceof BowItem) {
-            ItemStack itemstack = this.getProjectile(this.getItemInHand(GuardItems.getHandWith(this, item -> item instanceof BowItem)));
             ItemStack hand = this.getMainHandItem();
+            ItemStack itemstack = this.getProjectile(hand);
             AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(this, itemstack, distanceFactor);
-            abstractarrowentity = ((net.minecraft.world.item.BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
-            int powerLevel = itemstack.getEnchantmentLevel(Enchantments.POWER_ARROWS);
-            if (powerLevel > 0)
-                abstractarrowentity.setBaseDamage(abstractarrowentity.getBaseDamage() + (double) powerLevel * 0.5D + 0.5D);
-            int punchLevel = itemstack.getEnchantmentLevel(Enchantments.PUNCH_ARROWS);
-            if (punchLevel > 0) abstractarrowentity.setKnockback(punchLevel);
-            if (itemstack.getEnchantmentLevel(Enchantments.FLAMING_ARROWS) > 0)
-                abstractarrowentity.setSecondsOnFire(100);
+            abstractarrowentity = ((BowItem) this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
             double d0 = target.getX() - this.getX();
             double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
             double d2 = target.getZ() - this.getZ();
             double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
-            abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - level().getDifficulty().getId() * 4));
+            abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, 1.0F);
             this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            level().addFreshEntity(abstractarrowentity);
+            this.level().addFreshEntity(abstractarrowentity);
             hand.hurtAndBreak(1, this, (entity) -> entity.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         }
+        if (ModList.get().isLoaded("musketmod"))
+            ModCompat.shootGun(this);
     }
 
     @Override
@@ -1109,7 +1108,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canUse() {
-            return !(mob.isHolding(is -> is.getItem() instanceof CrossbowItem) || mob.isHolding(is -> is.getItem() instanceof BowItem)) && this.guard.getTarget() != null && !this.guard.isEating() && super.canUse();
+            return (!(mob.getMainHandItem().getItem() instanceof CrossbowItem) || !(mob.getMainHandItem().getItem() instanceof BowItem)) && this.guard.getTarget() != null && !this.guard.isEating() && super.canUse();
         }
 
         @Override
