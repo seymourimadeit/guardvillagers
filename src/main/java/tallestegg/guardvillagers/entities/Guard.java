@@ -614,6 +614,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                     Guard.this.getNavigation().stop();
                     Guard.this.getMoveControl().strafe(0.0F, 0.0F);
                 }
+                if (RangedCrossbowAttackPassiveGoal.friendlyInLineOfSight(Guard.this)) {
+                    Guard.this.stopUsingItem();
+                }
             }
 
             @Override
@@ -686,12 +689,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void performCrossbowAttack(LivingEntity pUser, float pVelocity) {
-        InteractionHand interactionhand = ProjectileUtil.getWeaponHoldingHand(pUser, item -> item instanceof CrossbowItem);
-        ItemStack itemstack = pUser.getItemInHand(interactionhand);
-        if (pUser.isHolding(is -> is.getItem() instanceof CrossbowItem)) {
-            CrossbowItem.performShooting(pUser.level(), pUser, interactionhand, itemstack, pVelocity, 1.0F);
-        }
-
+        ItemStack stack = pUser.getMainHandItem();
+        CrossbowItem.performShooting(pUser.level(), pUser, InteractionHand.MAIN_HAND, stack, pVelocity, 1.0F);
         this.onCrossbowAttackPerformed();
     }
 

@@ -47,7 +47,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
     }
 
     private boolean isHoldingCrossbow() {
-        return this.mob.isHolding(is -> is.getItem() instanceof CrossbowItem);
+        return this.mob.getMainHandItem().getItem() instanceof CrossbowItem;
     }
 
     @Override
