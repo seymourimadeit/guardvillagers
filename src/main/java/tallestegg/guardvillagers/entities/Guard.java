@@ -610,6 +610,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             @Override
             public void tick() {
                 super.tick();
+                if (Guard.this.getTarget() != null)
+                    Guard.this.getLookControl().setLookAt(Guard.this.getTarget(), 30.0F, 30.0F);
                 if (Guard.this.isPatrolling()) {
                     Guard.this.getNavigation().stop();
                     Guard.this.getMoveControl().strafe(0.0F, 0.0F);
@@ -739,7 +741,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public boolean isFollowing() {
-        return this.entityData.get(FOLLOWING);
+        return this.entityData.get(FOLLOWING) && (this.getOwner() != null);
     }
 
     public void setFollowing(boolean following) {
