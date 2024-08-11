@@ -32,6 +32,7 @@ jobs:
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
           version-type: release
+          version: 1.20.1-1.6.7
           loaders: forge, neoforge
           game-versions: 1.20.1
           java: 17
