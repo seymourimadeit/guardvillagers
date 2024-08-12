@@ -52,7 +52,6 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -69,7 +68,6 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.network.PacketDistributor;
-import tallestegg.guardvillagers.GuardItems;
 import tallestegg.guardvillagers.GuardLootTables;
 import tallestegg.guardvillagers.GuardPacketHandler;
 import tallestegg.guardvillagers.ModCompat;
@@ -88,7 +86,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     private static final AttributeModifier USE_ITEM_SPEED_PENALTY = new AttributeModifier(MODIFIER_UUID, "Use item speed penalty", -0.25D, AttributeModifier.Operation.ADDITION);
     private static final EntityDataAccessor<Optional<BlockPos>> GUARD_POS = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
     private static final EntityDataAccessor<Boolean> PATROLLING = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Integer> GUARD_VARIANT = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<String> GUARD_VARIANT = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Boolean> RUNNING_TO_EAT = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> DATA_CHARGING_STATE = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> KICKING = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
@@ -125,33 +123,18 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public static int slotToInventoryIndex(EquipmentSlot slot) {
-        switch (slot) {
-            case CHEST:
-                return 1;
-            case FEET:
-                return 3;
-            case HEAD:
-                return 0;
-            case LEGS:
-                return 2;
-            default:
-                break;
-        }
-        return 0;
+        return switch (slot) {
+            case CHEST -> 1;
+            case FEET -> 3;
+            case HEAD -> 0;
+            case LEGS -> 2;
+            default -> 0;
+        };
     }
 
-    /**
-     * Credit - SmellyModder for Biome Specific Textures
-     */
-    public static int getRandomTypeForBiome(LevelAccessor world, BlockPos pos) {
+    public static String getVariantFromBiome(LevelAccessor world, BlockPos pos) {
         VillagerType type = VillagerType.byBiome(world.getBiome(pos));
-        if (type == VillagerType.SNOW) return 6;
-        else if (type == VillagerType.TAIGA) return 5;
-        else if (type == VillagerType.JUNGLE) return 4;
-        else if (type == VillagerType.SWAMP) return 3;
-        else if (type == VillagerType.SAVANNA) return 2;
-        else if (type == VillagerType.DESERT) return 1;
-        else return 0;
+        return type.toString();
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -161,12 +144,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
         this.setPersistenceRequired();
-        int type = Guard.getRandomTypeForBiome(level(), this.blockPosition());
-        if (spawnDataIn instanceof Guard.GuardData) {
-            type = ((Guard.GuardData) spawnDataIn).variantData;
-            spawnDataIn = new Guard.GuardData(type);
-        }
-        this.setGuardVariant(type);
+        this.setGuardVariant(Guard.getVariantFromBiome(level(), this.blockPosition()));
         RandomSource randomsource = worldIn.getRandom();
         this.populateDefaultEquipmentSlots(randomsource, difficultyIn);
         return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
@@ -219,6 +197,23 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
+        if (compound.contains("Type", 99)) { // To accommodate guard variants in the previous updates
+            int variantint = compound.getInt("Type");
+            if (variantint == 1)
+                compound.putString("Variant", "desert");
+            else if (variantint == 2)
+                compound.putString("Variant", "savanna");
+            else if (variantint == 3)
+                compound.putString("Variant", "swamp");
+            else if (variantint == 4)
+                compound.putString("Variant", "jungle");
+            else if (variantint == 5)
+                compound.putString("Variant", "taiga");
+            else if (variantint == 6)
+                compound.putString("Variant", "snow");
+            else if (variantint == 0)
+                compound.putString("Variant", "plains");
+        }
         UUID uuid = compound.hasUUID("Owner") ? compound.getUUID("Owner") : null;
         if (uuid != null) {
             try {
@@ -227,7 +222,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 this.setOwnerId(null);
             }
         }
-        this.setGuardVariant(compound.getInt("Type"));
+        this.setGuardVariant(compound.getString("Variant"));
         this.kickTicks = compound.getInt("KickTicks");
         this.setFollowing(compound.getBoolean("Following"));
         this.interacting = compound.getBoolean("Interacting");
@@ -271,7 +266,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
-        compound.putInt("Type", this.getGuardVariant());
+        compound.putString("Variant", this.getGuardVariant());
         compound.putInt("KickTicks", this.kickTicks);
         compound.putInt("ShieldCooldown", this.shieldCoolDown);
         compound.putInt("KickCooldown", this.kickCoolDown);
@@ -537,7 +532,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(GUARD_VARIANT, 0);
+        this.entityData.define(GUARD_VARIANT, VillagerType.PLAINS.toString());
         this.entityData.define(DATA_CHARGING_STATE, false);
         this.entityData.define(KICKING, false);
         this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
@@ -581,11 +576,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
 
-    public int getGuardVariant() {
+    public String getGuardVariant() {
         return this.entityData.get(GUARD_VARIANT);
     }
 
-    public void setGuardVariant(int typeId) {
+    public void setGuardVariant(String typeId) {
         this.entityData.set(GUARD_VARIANT, typeId);
     }
 
@@ -982,15 +977,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             }
         }
     }
-
-    public static class GuardData implements SpawnGroupData {
-        public final int variantData;
-
-        public GuardData(int type) {
-            this.variantData = type;
-        }
-    }
-
     public static class DefendVillageGuardGoal extends TargetGoal {
         private final Guard guard;
         private LivingEntity villageAggressorTarget;

@@ -4,13 +4,17 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.minecraft.ResourceLocationException;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidArmorModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -28,7 +32,6 @@ import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guard>> {
-
     public GuardRenderer(EntityRendererProvider.Context context) {
         super(context, new GuardModel(context.bakeLayer(GuardClientEvents.GUARD)), 0.5F);
         HumanoidModel<Guard> steve = new GuardSteveModel(context.bakeLayer(GuardClientEvents.GUARD_STEVE));
@@ -37,6 +40,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
             this.model = steve;
         else
             this.model = normal;
+        this.addLayer(new GuardVariantLayer(this));
         this.addLayer(new HumanoidArmorLayer(this, !GuardConfig.guardSteve ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_INNER)) : new HumanoidArmorModel<>(context.bakeLayer(ModelLayers.PLAYER_INNER_ARMOR)),
                 !GuardConfig.guardSteve ? new GuardArmorModel(context.bakeLayer(GuardClientEvents.GUARD_ARMOR_OUTER)) : new HumanoidArmorModel<>(context.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR)), context.getModelManager()));
     }
@@ -121,10 +125,29 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     @Nullable
     @Override
     public ResourceLocation getTextureLocation(Guard entity) {
-        return !GuardConfig.guardSteve
-                ? new ResourceLocation(GuardVillagers.MODID,
-                "textures/entity/guard/guard_" + entity.getGuardVariant() + ".png")
-                : new ResourceLocation(GuardVillagers.MODID,
-                "textures/entity/guard/guard_steve_" + entity.getGuardVariant() + ".png");
+        String guardSteve = GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "";
+        return new ResourceLocation(GuardVillagers.MODID,
+                "textures/entity/guard/guard" + guardSteve + ".png");
+    }
+
+    public static class GuardVariantLayer extends RenderLayer<Guard, HumanoidModel<Guard>> {
+        public GuardVariantLayer(RenderLayerParent renderer) {
+            super(renderer);
+        }
+
+        @Override
+        public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, Guard livingEntity, float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+            if (!livingEntity.isInvisible()) {
+                EntityModel m = this.getParentModel();
+                String guardSteve = GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "";
+                ResourceLocation resourcelocation;
+                try {
+                    resourcelocation = new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_" + livingEntity.getGuardVariant() + ".png");
+                } catch (ResourceLocationException res) {
+                    resourcelocation = new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_plains.png");
+                }
+                renderColoredCutoutModel(this.getParentModel(), resourcelocation, poseStack, bufferSource, packedLight, livingEntity, 1.0F, 1.0F, 1.0F);
+            }
+        }
     }
 }
