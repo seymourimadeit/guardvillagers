@@ -2,7 +2,7 @@
   "replace": false,
   "values": [
     {
-      "id": "#forge:tools/crossbow",
+      "id": "#forge:tools/crossbows",
       "required": false
     },
     "#minecraft:swords"
