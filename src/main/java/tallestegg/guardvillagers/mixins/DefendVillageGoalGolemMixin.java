@@ -19,14 +19,13 @@ import tallestegg.guardvillagers.configuration.GuardConfig;
 import java.util.List;
 
 @Mixin(DefendVillageTargetGoal.class)
-public class DefendVillageGoalGolemMixin {
-    @Shadow
+public abstract class DefendVillageGoalGolemMixin {
     @Final
+    @Shadow
     private IronGolem golem;
-
-    @Shadow
     @Final
-    private TargetingConditions attackTargeting = TargetingConditions.forCombat().range(64.0);
+    @Shadow
+    private TargetingConditions attackTargeting;
 
     @Shadow
     private LivingEntity potentialTarget;

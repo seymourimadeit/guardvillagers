@@ -724,7 +724,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-        if (entity != null && (this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(this.getTeam()) || GuardConfig.COMMON.MobBlackList.get().contains(entity.getEncodeId()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || entity instanceof TamableAnimal tamed && tamed.getOwnerUUID() == this.getOwnerId()))
+        if (entity != null && (this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(this.getTeam()) || GuardConfig.COMMON.MobBlackList.get().contains(EntityType.getKey(entity.getType()).toString()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || entity instanceof TamableAnimal tamed && tamed.getOwnerUUID() == this.getOwnerId()))
             return;
         super.setTarget(entity);
     }
@@ -1055,11 +1055,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         public void tick() {
             LivingEntity target = guard.getTarget();
             if (target != null) {
-                if (target.distanceTo(guard) <= 2.5D && !guard.isBlocking()) {
+                if (target.distanceTo(guard) <= 3.0D) {
                     guard.getMoveControl().strafe(-2.0F, 0.0F);
                     guard.lookAt(target, 30.0F, 30.0F);
                 }
-                if (path != null && target.distanceTo(guard) <= 2.0D) guard.getNavigation().stop();
+                if (path != null && target.distanceTo(guard) <= 2.5D) guard.getNavigation().stop();
                 super.tick();
             }
         }

@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -18,8 +19,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableWitchTargetGoal;
 import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.IronGolem;
@@ -48,16 +51,15 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
-import tallestegg.guardvillagers.common.entities.ai.goals.AttackEntityDaytimeGoal;
-import tallestegg.guardvillagers.common.entities.ai.goals.GetOutOfWaterGoal;
-import tallestegg.guardvillagers.common.entities.ai.goals.HealGolemGoal;
-import tallestegg.guardvillagers.common.entities.ai.goals.HealGuardAndPlayerGoal;
+import tallestegg.guardvillagers.common.entities.ai.goals.*;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @EventBusSubscriber(modid = GuardVillagers.MODID)
 public class HandlerEvents {
+    private static final Predicate<LivingEntity> ISNT_BABY = mob -> !mob.isBaby();
     @SubscribeEvent
     public static void onEntityTarget(LivingChangeTargetEvent event) {
         LivingEntity entity = event.getEntity();
@@ -158,8 +160,8 @@ public class HandlerEvents {
                     golem.targetSelector.addGoal(2, tolerateFriendlyFire);
                 });
                 if (GuardConfig.COMMON.golemFloat.get()) {
-                    golem.goalSelector.addGoal(1, new tallestegg.guardvillagers.entities.ai.goals.GolemFloatWaterGoal(golem));
                     golem.goalSelector.addGoal(0, new GetOutOfWaterGoal(golem, 1.0D));
+                    golem.goalSelector.addGoal(1, new GolemFloatWaterGoal(golem));
 
                 }
             }
@@ -174,9 +176,9 @@ public class HandlerEvents {
 
             if (mob instanceof Witch witch) {
                 if (GuardConfig.COMMON.WitchesVillager.get()) {
-                    witch.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witch, AbstractVillager.class, true));
-                    witch.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witch, IronGolem.class, true));
-                    witch.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(witch, Guard.class, false));
+                    witch.targetSelector.addGoal(3, new NearestAttackableWitchTargetGoal<>(witch, AbstractVillager.class, 10, true, false, ISNT_BABY));
+                    witch.targetSelector.addGoal(3, new NearestAttackableWitchTargetGoal<>(witch, IronGolem.class, 10, true, false, null));
+                    witch.targetSelector.addGoal(2, new NearestAttackableWitchTargetGoal<>(witch, Guard.class, 10, true, false, null));
                 }
             }
 
