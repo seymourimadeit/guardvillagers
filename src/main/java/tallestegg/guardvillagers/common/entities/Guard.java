@@ -921,7 +921,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public String getVariant() {
-        return this.entityData.get(GUARD_VARIANT);
+        String variant = this.entityData.get(GUARD_VARIANT);
+        return !variant.isEmpty() ? variant : "plains";
     }
 
     public static class DefendVillageGuardGoal extends TargetGoal {

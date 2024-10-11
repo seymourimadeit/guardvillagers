@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.gradle.userdev' version '7.0.151'
+    id 'net.neoforged.gradle.userdev' version '7.0.165'
 }
 
 version = mod_version + "-" + minecraft_version
