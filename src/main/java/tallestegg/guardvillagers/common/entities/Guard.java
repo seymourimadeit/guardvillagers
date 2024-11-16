@@ -574,7 +574,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(3, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, 8.0F));
         this.goalSelector.addGoal(3, new GuardBowAttack(this, 0.5D, 20, 15.0F));
         if (ModList.get().isLoaded("musketmod"))
-            this.goalSelector.addGoal(3, new ModCompat.UseMusketGoal(this, 1.55D, 20, 15.0F));
+            this.goalSelector.addGoal(3, new ModCompat.UseMusketGoal(this, 20, 15.0F));
         this.goalSelector.addGoal(3, new GuardMeleeGoal(this, 0.8D, true));
         this.goalSelector.addGoal(4, new FollowHeroGoal(this, 0.8F, 10.0F, 4.0F));
         if (GuardConfig.COMMON.GuardsRunFromPolarBears.get())
@@ -724,7 +724,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-        if (entity != null && (this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(this.getTeam()) || GuardConfig.COMMON.MobBlackList.get().contains(EntityType.getKey(entity.getType()).toString()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || entity instanceof TamableAnimal tamed && tamed.getOwnerUUID() == this.getOwnerId()))
+        if (entity != null && ((this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(this.getTeam())) || GuardConfig.COMMON.MobBlackList.get().contains(EntityType.getKey(entity.getType()).toString()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || (entity instanceof TamableAnimal tamed && tamed.getOwnerUUID().equals(this.getOwnerId()))))
             return;
         super.setTarget(entity);
     }

@@ -101,7 +101,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
                     bipedmodel$armpose = ModCompat.reloadMusketAnim(itemstack, handIn, entityIn, bipedmodel$armpose);
             } else {
                 if (ModList.get().isLoaded("musketmod"))
-                    bipedmodel$armpose = ModCompat.holdMusketAnim(itemstack, entityIn, bipedmodel$armpose);
+                    bipedmodel$armpose = ModCompat.holdMusketAnim(itemstack, entityIn);
                 boolean flag1 = itemStackMain.getItem() instanceof CrossbowItem;
                 boolean flag2 = itemStackOff.getItem() instanceof CrossbowItem;
                 if (flag1 && entityIn.isAggressive()) {

@@ -32,7 +32,7 @@ public class ModCompat {
         return stack.getItem() instanceof GunItem;
     }
 
-    public static HumanoidModel.ArmPose holdMusketAnim(ItemStack stack, Guard guard, HumanoidModel.ArmPose bipedmodel$armpose) {
+    public static HumanoidModel.ArmPose holdMusketAnim(ItemStack stack, Guard guard) {
         if (stack.getItem() instanceof GunItem && GunItem.isLoaded(stack) && guard.isAggressive())
             return HumanoidModel.ArmPose.CROSSBOW_HOLD;
         return HumanoidModel.ArmPose.ITEM;
@@ -49,20 +49,16 @@ public class ModCompat {
     }
 
     public static class UseMusketGoal<T extends PathfinderMob & RangedAttackMob> extends Goal {
-        private final double speedModifier;
         private final float attackRadiusSqr;
         private final T mob;
         private int attackIntervalMin;
         private Path path;
         private int attackTime = -1;
         private int seeTime;
-        private int avoidTime;
-        private int bulletsShot = 0;
         private int timeUntilShoot = 20;
 
-        public UseMusketGoal(T pMob, double pSpeedModifier, int pAttackIntervalMin, float pAttackRadius) {
+        public UseMusketGoal(T pMob, int pAttackIntervalMin, float pAttackRadius) {
             this.mob = pMob;
-            this.speedModifier = pSpeedModifier;
             this.attackIntervalMin = pAttackIntervalMin;
             this.attackRadiusSqr = pAttackRadius * pAttackRadius;
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
@@ -107,7 +103,6 @@ public class ModCompat {
                         if (timeUntilShoot <= 0) {
                             this.mob.performRangedAttack(target, ((GunItem) this.mob.getMainHandItem().getItem()).bulletSpeed());
                             this.attackTime = this.attackIntervalMin;
-                            this.bulletsShot++;
                         }
                     }
                 } else if (--this.attackTime <= 0 && this.seeTime >= -60 && !GunItem.isLoaded(this.mob.getMainHandItem())) {
@@ -121,23 +116,15 @@ public class ModCompat {
                 } else {
                     --this.seeTime;
                 }
-                if (distanceSquared <= 6.0D || bulletsShot >= 3) {
-                    if (this.avoidTime <= 0)
-                        this.avoidTime = 60;
-                    else
-                        this.avoidTime -= 10;
-                    this.bulletsShot = 0;
+                if (distanceSquared <= 6.0D) {
+                    this.mob.getMoveControl().strafe(-0.5F, 0.0F);
                 }
-                if (this.avoidTime <= 0)
-                    this.mob.getNavigation().stop();
                 if ((distanceSquared > (double) this.attackRadiusSqr) || this.seeTime < 5) {
                     this.mob.getNavigation().moveTo(target, 1.0D);
                 } else if (distanceSquared < (double) this.attackRadiusSqr) {
                     this.mob.getNavigation().stop();
                 }
-                if (this.avoidTime > 60)
-                    this.avoidTime = 60;
-                if (--this.avoidTime > 0 || Guard.RangedCrossbowAttackPassiveGoal.friendlyInLineOfSight(this.mob)) {
+                if (Guard.RangedCrossbowAttackPassiveGoal.friendlyInLineOfSight(this.mob)) {
                     Vec3 vec3 = this.getPosition(this.mob);
                     if (distanceSquared <= this.attackRadiusSqr) {
                         if (vec3 != null && mob.getNavigation().isDone()) {
