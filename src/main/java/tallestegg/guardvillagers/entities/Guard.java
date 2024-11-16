@@ -769,7 +769,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-        if (entity != null && (this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(this.getTeam()) || GuardConfig.COMMON.MobBlackList.get().contains(entity.getEncodeId()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || entity instanceof TamableAnimal tamed && tamed.getOwnerUUID() == this.getOwnerId()))
+        if (entity != null && ((this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(this.getTeam())) || GuardConfig.COMMON.MobBlackList.get().contains(EntityType.getKey(entity.getType()).toString()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || (entity instanceof TamableAnimal tamed && (tamed.getOwnerUUID() != null && tamed.getOwnerUUID().equals(this.getOwnerId())))))
             return;
         super.setTarget(entity);
     }
