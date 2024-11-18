@@ -30,6 +30,7 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           curseforge-id: 360203
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          github-token: ${{ secrets.GIT_TOKEN }}
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
           version-type: release
           loaders: neoforge
