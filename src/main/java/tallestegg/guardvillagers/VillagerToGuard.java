@@ -32,7 +32,7 @@ public class VillagerToGuard {
         if (itemstack.is(GuardTags.GUARD_CONVERT) && player.isCrouching()) {
             if (target instanceof Villager villager) {
                 if (!villager.isBaby()) {
-                    if (villager.getVillagerData().getProfession() == VillagerProfession.NONE || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
+                    if (GuardConfig.COMMON.convertibleProfessions.get().contains(villager.getVillagerData().getProfession().name())) {
                         if (!GuardConfig.ConvertVillagerIfHaveHOTV || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.ConvertVillagerIfHaveHOTV) {
                             VillagerToGuard.convertVillager(villager, player);
                             if (!player.getAbilities().instabuild)
