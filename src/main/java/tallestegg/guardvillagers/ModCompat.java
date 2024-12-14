@@ -44,7 +44,7 @@ public class ModCompat {
             musketItem.fire(guard, front);
             GunItem.setLoaded(guard.getMainHandItem(), false);
             guard.playSound(musketItem.fireSound(), 3.5F, 1);
-            guard.getMainHandItem().hurtAndBreak(1, guard, EquipmentSlot.MAINHAND);
+            guard.damageGuardItem(1, EquipmentSlot.MAINHAND, guard.getMainHandItem());
         }
     }
 

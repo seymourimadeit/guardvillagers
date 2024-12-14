@@ -196,7 +196,7 @@ public class HandlerEvents {
         if (itemstack.is(GuardVillagerTags.GUARD_CONVERT) && player.isCrouching()) {
             if (target instanceof Villager villager) {
                 if (!villager.isBaby()) {
-                    if (villager.getVillagerData().getProfession() == VillagerProfession.NONE || villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
+                    if (GuardConfig.COMMON.convertibleProfessions.get().contains(villager.getVillagerData().getProfession().name())) {
                         if (!GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get() || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get()) {
                             convertVillager(villager, player);
                             if (!player.getAbilities().instabuild)
