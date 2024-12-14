@@ -391,7 +391,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             this.lookAt(entityIn, 90.0F, 90.0F);
         }
         ItemStack hand = this.getMainHandItem();
-        hand.hurtAndBreak(1, this, (entity) -> entity.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+        this.damageGuardItem(1, EquipmentSlot.MAINHAND, hand);
         return super.doHurtTarget(entityIn);
     }
 
@@ -487,6 +487,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             if (damage >= 3.0F) {
                 int i = 1 + Mth.floor(damage);
                 InteractionHand hand = this.getUsedItemHand();
+                this.damageGuardItem(i, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND, this.useItem);
                 this.useItem.hurtAndBreak(i, this, (entity) -> entity.broadcastBreakEvent(hand));
                 if (this.useItem.isEmpty()) {
                     if (hand == InteractionHand.MAIN_HAND) {
@@ -622,7 +623,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             }
         });
         if (ModList.get().isLoaded("musketmod"))
-            this.goalSelector.addGoal(3, new ModCompat.UseMusketGoal(this, 1.55D, 20, 15.0F));
+            this.goalSelector.addGoal(3, new ModCompat.UseMusketGoal(this, 20, 15.0F));
         this.goalSelector.addGoal(3, new GuardMeleeGoal(this, 0.8D, true));
         this.goalSelector.addGoal(4, new FollowHeroGoal(this, 0.8F, 10.0F, 4.0F));
         if (GuardConfig.GuardsRunFromPolarBears)
@@ -678,7 +679,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, 1.0F);
             this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
             this.level().addFreshEntity(abstractarrowentity);
-            hand.hurtAndBreak(1, this, (entity) -> entity.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+            this.damageGuardItem(1, EquipmentSlot.MAINHAND, hand);
         }
         if (ModList.get().isLoaded("musketmod"))
             ModCompat.shootGun(this);
@@ -769,7 +770,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-        if (entity != null && ((this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(this.getTeam())) || GuardConfig.COMMON.MobBlackList.get().contains(EntityType.getKey(entity.getType()).toString()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || (entity instanceof TamableAnimal tamed && (tamed.getOwnerUUID() != null && tamed.getOwnerUUID().equals(this.getOwnerId())))))
+        if (entity != null && ((this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(entity.getTeam())) || GuardConfig.COMMON.MobBlackList.get().contains(EntityType.getKey(entity.getType()).toString()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || (entity instanceof TamableAnimal tamed && (tamed.getOwnerUUID() != null && tamed.getOwnerUUID().equals(this.getOwnerId())))))
             return;
         super.setTarget(entity);
     }
@@ -830,9 +831,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 ItemStack itemstack = this.guardInventory.getItem(i);
                 if ((!damageSource.is(DamageTypes.ON_FIRE) || !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem) {
                     int j = i;
-                    itemstack.hurtAndBreak((int) damage, this, (p_214023_1_) -> {
-                        p_214023_1_.broadcastBreakEvent(EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, j));
-                    });
+                    this.damageGuardItem(1, EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, j), itemstack);
                 }
             }
         }
@@ -977,6 +976,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             }
         }
     }
+
+    public void damageGuardItem(int damage, EquipmentSlot slotToDamage, ItemStack item) {
+        if (this.random.nextFloat() < GuardConfig.COMMON.chanceToBreakEquipment.get().floatValue()) {
+            item.hurtAndBreak(damage, this, (entity) -> entity.broadcastBreakEvent(slotToDamage));
+        }
+    }
+
+
     public static class DefendVillageGuardGoal extends TargetGoal {
         private final Guard guard;
         private LivingEntity villageAggressorTarget;

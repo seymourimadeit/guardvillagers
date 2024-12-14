@@ -2,6 +2,7 @@ package tallestegg.guardvillagers.configuration;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -139,6 +140,9 @@ public class GuardConfig {
         public final ForgeConfigSpec.DoubleValue chanceToDropEquipment;
         public final ForgeConfigSpec.BooleanValue MobsAttackGuards;
         public final ForgeConfigSpec.BooleanValue guardPatrol;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> convertibleProfessions;
+        public final ForgeConfigSpec.DoubleValue chanceToBreakEquipment;
+
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
             builder.push("raids and illagers");
@@ -160,6 +164,7 @@ public class GuardConfig {
             BlacksmithHealing = builder.translation(GuardVillagers.MODID + ".config.blacksmith").define("Have it so blacksmiths heal golems under 60 health?", true);
             ClericHealing = builder.translation(GuardVillagers.MODID + ".config.cleric").define("Have it so clerics heal guards and players with hero of the village?", true);
             VillagersRunFromPolarBears = builder.comment("This makes villagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.VillagersRunFromPolarBears").define("Have Villagers have some common sense?", true);
+            convertibleProfessions = builder.comment("Professions that can be converted into guards").define("Profession Whitelist for guard conversion", ImmutableList.of("nitwit", "none"), obj -> true);
             builder.pop();
             builder.push("golem stuff");
             ironGolemFloat = builder.define("Allow Iron Golems to float on water?", true);
@@ -172,6 +177,7 @@ public class GuardConfig {
             GuardsOpenDoors = builder.comment("This lets Guards open doors.").translation(GuardVillagers.MODID + ".config.GuardsOpenDoors").define("Have Guards open doors?", true);
             GuardRaiseShield = builder.comment("This will make guards raise their shields all the time, on default they will only raise their shields under certain conditions").translation(GuardVillagers.MODID + ".config.GuardRaiseShield").define("Have Guards raise their shield all the time?",
                     false);
+            chanceToBreakEquipment = builder.defineInRange("Chance for guards to lose durability", 1.0F, -999.9F, 999.0F);
             guardTeleport = builder.define("Allow guards to teleport if following the player", true);
             GuardFormation = builder.comment("This makes guards form a phalanx").translation(GuardVillagers.MODID + ".config.GuardFormation").define("Have guards form a phalanx?", true);
             FriendlyFire = builder.translation(GuardVillagers.MODID + ".config.FriendlyFire").define("Have guards attempt to avoid firing into other friendlies?", true);
