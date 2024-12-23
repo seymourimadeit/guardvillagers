@@ -1,5 +1,5 @@
 - Update ru_ru.json
-- Fixed players not being able to be blacklisted
+- Fixed players not being able to be blacklisted from being attacked by guards
 - Fixed witches being able to attack baby villagers
 - Fixed mixin warning error appearing
 - Fixed tameables not being able to be attacked by guards
