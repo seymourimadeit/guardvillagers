@@ -5,23 +5,24 @@ import java.util.function.Consumer;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 public class GuardLootTables {
     public static final BiMap<ResourceLocation, LootContextParamSet> REGISTRY = HashBiMap.create();
     public static final LootContextParamSet SLOT = register("slot", (p_216252_0_) -> {
         p_216252_0_.required(LootContextParams.THIS_ENTITY);
     });
-    
-    public static final ResourceLocation GUARD_MAIN_HAND = new ResourceLocation(GuardVillagers.MODID, "entities/guard_main_hand");
-    public static final ResourceLocation GUARD_OFF_HAND = new ResourceLocation(GuardVillagers.MODID, "entities/guard_off_hand");
-    public static final ResourceLocation GUARD_HELMET = new ResourceLocation(GuardVillagers.MODID, "entities/guard_helmet");
-    public static final ResourceLocation GUARD_CHEST = new ResourceLocation(GuardVillagers.MODID, "entities/guard_chestplate");
-    public static final ResourceLocation GUARD_LEGGINGS = new ResourceLocation(GuardVillagers.MODID, "entities/guard_legs");
-    public static final ResourceLocation GUARD_FEET = new ResourceLocation(GuardVillagers.MODID, "entities/guard_feet");
+
+    public static final DeferredRegister<LootItemFunctionType> LOOT_ITEM_FUNCTION_TYPES = DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, GuardVillagers.MODID);
+    public static final RegistryObject<LootItemFunctionType> ARMOR_SLOT = LOOT_ITEM_FUNCTION_TYPES.register("slot", () ->  new LootItemFunctionType(new ArmorSlotFunction.Serializer()));
     
     public static LootContextParamSet register(String p_81429_, Consumer<LootContextParamSet.Builder> p_81430_) {
         LootContextParamSet.Builder lootcontextparamset$builder = new LootContextParamSet.Builder();

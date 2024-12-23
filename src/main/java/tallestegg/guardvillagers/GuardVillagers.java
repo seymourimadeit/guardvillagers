@@ -35,6 +35,7 @@ public class GuardVillagers {
         GuardItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         GuardSounds.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
         GuardStats.STATS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        GuardLootTables.LOOT_ITEM_FUNCTION_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addAttributes);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::addCreativeTabs);
         GuardPacketHandler.registerPackets();

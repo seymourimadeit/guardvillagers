@@ -5,12 +5,14 @@ import com.google.common.collect.Maps;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -70,6 +72,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.network.PacketDistributor;
 import tallestegg.guardvillagers.GuardLootTables;
 import tallestegg.guardvillagers.GuardPacketHandler;
+import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.ModCompat;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.configuration.GuardConfig;
@@ -93,14 +96,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     private static final EntityDataAccessor<Boolean> FOLLOWING = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
     private static final Map<Pose, EntityDimensions> SIZE_BY_POSE = ImmutableMap.<Pose, EntityDimensions>builder().put(Pose.STANDING, EntityDimensions.scalable(0.6F, 1.95F)).put(Pose.SLEEPING, SLEEPING_DIMENSIONS).put(Pose.FALL_FLYING, EntityDimensions.scalable(0.6F, 0.6F)).put(Pose.SWIMMING, EntityDimensions.scalable(0.6F, 0.6F)).put(Pose.SPIN_ATTACK, EntityDimensions.scalable(0.6F, 0.6F)).put(Pose.CROUCHING, EntityDimensions.scalable(0.6F, 1.75F)).put(Pose.DYING, EntityDimensions.fixed(0.2F, 0.2F)).build();
     private static final UniformInt angerTime = TimeUtil.rangeOfSeconds(20, 39);
-    private static final Map<EquipmentSlot, ResourceLocation> EQUIPMENT_SLOT_ITEMS = Util.make(Maps.newHashMap(), (slotItems) -> {
-        slotItems.put(EquipmentSlot.MAINHAND, GuardLootTables.GUARD_MAIN_HAND);
-        slotItems.put(EquipmentSlot.OFFHAND, GuardLootTables.GUARD_OFF_HAND);
-        slotItems.put(EquipmentSlot.HEAD, GuardLootTables.GUARD_HELMET);
-        slotItems.put(EquipmentSlot.CHEST, GuardLootTables.GUARD_CHEST);
-        slotItems.put(EquipmentSlot.LEGS, GuardLootTables.GUARD_LEGGINGS);
-        slotItems.put(EquipmentSlot.FEET, GuardLootTables.GUARD_FEET);
-    });
     private final GossipContainer gossips = new GossipContainer();
     public long lastGossipTime;
     public long lastGossipDecayTime;
@@ -443,11 +438,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             this.heal(GuardConfig.amountOfHealthRegenerated);
         }
         if (spawnWithArmor) {
-            for (EquipmentSlot equipmentslottype : EquipmentSlot.values()) {
-                for (ItemStack stack : this.getItemsFromLootTable(equipmentslottype, (ServerLevel) this.level())) {
-                    this.setItemSlot(equipmentslottype, stack);
-                }
-            }
+            getItemsFromLootTable(this);
             this.spawnWithArmor = false;
         }
         if (!level().isClientSide) this.updatePersistentAnger((ServerLevel) level(), true);
@@ -566,16 +557,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.spawnWithArmor = true;
     }
 
-    public List<ItemStack> getItemsFromLootTable(EquipmentSlot slot, ServerLevel level) {
-        if (EQUIPMENT_SLOT_ITEMS.containsKey(slot)) {
-            ServerLevel serverlevel = (ServerLevel) this.level();
-            LootTable loot = serverlevel.getServer().getLootData().getLootTable(EQUIPMENT_SLOT_ITEMS.get(slot));
-            LootParams.Builder lootcontext$builder = (new LootParams.Builder(level).withParameter(LootContextParams.THIS_ENTITY, this));
-            return loot.getRandomItems(lootcontext$builder.create(GuardLootTables.SLOT));
-        }
-        return null;
+    public static List<ItemStack> getItemsFromLootTable(LivingEntity entity) {
+        LootTable loot = entity.level().getServer().getLootData().getLootTable(new ResourceLocation(GuardVillagers.MODID, "entities/guard_armor"));
+        LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) entity.level()).withParameter(LootContextParams.THIS_ENTITY, entity));
+        return loot.getRandomItems(lootcontext$builder.create(GuardLootTables.SLOT));
     }
-
 
     public String getGuardVariant() {
         return this.entityData.get(GUARD_VARIANT);
