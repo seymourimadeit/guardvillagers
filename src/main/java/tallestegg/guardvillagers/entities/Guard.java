@@ -663,7 +663,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
             double d2 = target.getZ() - this.getZ();
             double d3 = Mth.sqrt((float) (d0 * d0 + d2 * d2));
-            abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, 1.0F);
+            abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, 0.0F);
             this.playSound(SoundEvents.ARROW_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
             this.level().addFreshEntity(abstractarrowentity);
             this.damageGuardItem(1, EquipmentSlot.MAINHAND, hand);
@@ -675,7 +675,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void performCrossbowAttack(LivingEntity pUser, float pVelocity) {
         ItemStack stack = pUser.getMainHandItem();
-        CrossbowItem.performShooting(pUser.level(), pUser, InteractionHand.MAIN_HAND, stack, pVelocity, 1.0F);
+        CrossbowItem.performShooting(pUser.level(), pUser, InteractionHand.MAIN_HAND, stack, pVelocity, 0.0F);
         this.onCrossbowAttackPerformed();
     }
 
