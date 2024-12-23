@@ -1,4 +1,4 @@
-- Fixed players not being able to be blacklisted
+- Fixed players not being able to be blacklisted from being attacked by guards
 - Fixed tameables not being able to be attacked by guards
 - Fixed Guard Villagers not attacking you if your reputation is low and you're on a team
 - Added configs for guard durability and what professions a guard can be created from
