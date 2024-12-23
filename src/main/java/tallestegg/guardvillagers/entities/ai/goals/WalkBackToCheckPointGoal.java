@@ -11,7 +11,6 @@ import java.util.EnumSet;
 public class WalkBackToCheckPointGoal extends Goal {
     private final Guard guard;
     private final double speed;
-
     public WalkBackToCheckPointGoal(Guard guard, double speedIn) {
         this.guard = guard;
         this.speed = speedIn;
@@ -20,9 +19,10 @@ public class WalkBackToCheckPointGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return guard.getPatrolPos() != null && !this.guard.getPatrolPos().closerThan(this.guard.blockPosition(), 1.0D) && !guard.isFollowing() && guard.isPatrolling();
+        return guard.getPatrolPos() != null && this.guard.blockPosition() != this.guard.getPatrolPos() && !guard.isFollowing() && guard.isPatrolling();
     }
 
+    @Override
     public boolean canContinueToUse() {
         return this.canUse() && this.guard.getNavigation().isInProgress();
     }
