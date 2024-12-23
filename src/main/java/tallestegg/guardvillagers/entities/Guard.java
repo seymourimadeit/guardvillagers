@@ -1100,7 +1100,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         public void tick() {
             LivingEntity target = guard.getTarget();
             if (target != null) {
-                if (target.distanceTo(guard) <= 2.5D && !guard.isBlocking()) {
+                if (target.distanceTo(guard) <= 3.0D) {
                     guard.getMoveControl().strafe(-2.0F, 0.0F);
                     guard.lookAt(target, 30.0F, 30.0F);
                 }
