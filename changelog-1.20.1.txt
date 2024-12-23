@@ -4,5 +4,6 @@
 - Added configs for guard durability and what professions a guard can be created from
 - Port over new guard equipment data pack system from 1.21.1
 - Fixed guards not being able to be created with crossbows in 1.20.1
+- Fixed witches attacking baby villagers
 
 THIS UPDATE WILL BREAK DATA PACKS THAT MODIFY GUARD EQUIPMENT, PLEASE BE WARY OF THIS BEFORE INSTALLING!!!!!!!!!!!

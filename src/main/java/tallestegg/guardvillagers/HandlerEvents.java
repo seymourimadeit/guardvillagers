@@ -13,6 +13,7 @@ import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableWitchTargetGoal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Cat;
 import net.minecraft.world.entity.animal.IronGolem;
@@ -41,9 +42,12 @@ import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.entities.ai.goals.*;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 @Mod.EventBusSubscriber(modid = GuardVillagers.MODID)
 public class HandlerEvents {
+    private static final Predicate<LivingEntity> ISNT_BABY = mob -> !mob.isBaby();
+
     @SubscribeEvent
     public static void onEntityTarget(LivingChangeTargetEvent event) {
         LivingEntity entity = event.getEntity();
@@ -188,9 +192,9 @@ public class HandlerEvents {
 
             if (mob instanceof Witch witch) {
                 if (GuardConfig.WitchesVillager) {
-                    witch.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witch, AbstractVillager.class, true));
-                    witch.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witch, IronGolem.class, true));
-                    witch.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(witch, Guard.class, false));
+                    witch.targetSelector.addGoal(3, new NearestAttackableWitchTargetGoal<>(witch, AbstractVillager.class, 10, true, false, ISNT_BABY));
+                    witch.targetSelector.addGoal(3, new NearestAttackableWitchTargetGoal<>(witch, IronGolem.class, 10, true, false, null));
+                    witch.targetSelector.addGoal(2, new NearestAttackableWitchTargetGoal<>(witch, Guard.class, 10, true, false, null));
                 }
             }
 
