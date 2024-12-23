@@ -1,10 +1,7 @@
-- Improvements to CTM integration
-    - Path to model is now the same as fabric
-- Added compatibility with Musket mod
-- Added more compatibility with modded villager types with new guard system (now no longer limited to a specific amount)
-- Added statistics for guard conversions
-- Set guard village patrol village ai to not operate by default due to lag concerns
-    - If you were experiencing extreme unintended lag from this mod, consider disabling this ability
-        - For Ctrl F purposes the specific option is "Allow guards to naturally patrol villages? This feature can cause lag if a lot of guards are spawned"
-- Added unique guard yes and no sounds ids for resource pack purposes
-- PLEASE NOTE THAT THIS UPDATE CONTAINS BREAKING CHANGES TO ANY RESOURCE PACKS THAT MODIFY GUARDS
+- Update ru_ru.json
+- Fixed players not being able to be blacklisted
+- Fixed witches being able to attack baby villagers
+- Fixed mixin warning error appearing
+- Fixed tameables not being able to be attacked by guards
+- Fixed Guard Villagers not attacking you if your reputation is low and you're on a team
+- Added configs for guard durability and what professions a guard can be created from
