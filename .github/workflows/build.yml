@@ -21,7 +21,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           arguments: build
-          gradle-version: current
+          gradle-version: 8.9
 
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3.0
