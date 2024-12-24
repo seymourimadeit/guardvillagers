@@ -144,7 +144,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
                 EntityModel m = this.getParentModel();
                 String guardSteve = GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "";
                 ResourceLocation resourcelocation = new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_" + livingEntity.getGuardVariant() + ".png");
-                AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager().getTexture(resourcelocation, MissingTextureAtlasSprite.getTexture());
+                AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager().getTexture(resourcelocation);
                 if (abstracttexture == MissingTextureAtlasSprite.getTexture())
                     resourcelocation = new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_plains.png");
                 renderColoredCutoutModel(m, resourcelocation, poseStack, bufferSource, packedLight, livingEntity, 1.0F, 1.0F, 1.0F);
