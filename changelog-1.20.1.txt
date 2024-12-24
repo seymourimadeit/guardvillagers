@@ -1,10 +1,3 @@
-- Fixed players not being able to be blacklisted from being attacked by guards
-- Fixed tameables not being able to be attacked by guards
-- Fixed Guard Villagers not attacking you if your reputation is low, and you're on a team
-- Added configs for guard durability and what professions a guard can be created from
-- Port over new guard equipment data pack system from 1.21.1
-- Fixed guards not being able to be created with crossbows in 1.20.1
-- Fixed witches attacking baby villagers
-- Alleviate issues with guards not staying on patrol point
+- Added proper fallback system incase guard is missing texture for variant
 
 THIS UPDATE WILL BREAK DATA PACKS THAT MODIFY GUARD EQUIPMENT, PLEASE BE WARY OF THIS BEFORE INSTALLING!!!!!!!!!!!
