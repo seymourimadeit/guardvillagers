@@ -2,6 +2,7 @@ package tallestegg.guardvillagers.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.ResourceLocationException;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidArmorModel;
 import net.minecraft.client.model.HumanoidModel;
@@ -11,6 +12,8 @@ import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -140,12 +143,10 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
             if (!livingEntity.isInvisible()) {
                 EntityModel m = this.getParentModel();
                 String guardSteve = GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "";
-                ResourceLocation resourcelocation;
-                try {
-                    resourcelocation = ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_" + livingEntity.getVariant() + ".png");
-                } catch (ResourceLocationException res) {
+                ResourceLocation resourcelocation = ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_" + livingEntity.getVariant() + ".png");
+                AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager().getTexture(resourcelocation);
+                if (abstracttexture == MissingTextureAtlasSprite.getTexture())
                     resourcelocation = ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_plains.png");
-                }
                 renderColoredCutoutModel(m, resourcelocation, poseStack, bufferSource, packedLight, livingEntity, -1);
             }
         }
