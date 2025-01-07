@@ -1,18 +1,14 @@
 package tallestegg.guardvillagers.entities;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -121,7 +117,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         return switch (slot) {
             case CHEST -> 1;
             case FEET -> 3;
-            case HEAD -> 0;
             case LEGS -> 2;
             default -> 0;
         };
@@ -129,7 +124,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     public static String getVariantFromBiome(LevelAccessor world, BlockPos pos) {
         VillagerType type = VillagerType.byBiome(world.getBiome(pos));
-        return type.toString();
+        return GuardVillagers.removeModIdFromVillagerType(type.toString());
     }
 
     public static AttributeSupplier.Builder createAttributes() {

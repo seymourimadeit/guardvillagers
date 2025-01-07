@@ -35,6 +35,9 @@ import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
 
 public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guard>> {
+    private static final ResourceLocation guardTextures = new ResourceLocation(GuardVillagers.MODID,
+            "textures/entity/guard/guard" + (GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "") + ".png");
+
     public GuardRenderer(EntityRendererProvider.Context context) {
         super(context, new GuardModel(context.bakeLayer(GuardClientEvents.GUARD)), 0.5F);
         HumanoidModel<Guard> steve = new GuardSteveModel(context.bakeLayer(GuardClientEvents.GUARD_STEVE));
@@ -128,9 +131,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     @Nullable
     @Override
     public ResourceLocation getTextureLocation(Guard entity) {
-        String guardSteve = GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "";
-        return new ResourceLocation(GuardVillagers.MODID,
-                "textures/entity/guard/guard" + guardSteve + ".png");
+        return guardTextures;
     }
 
     public static class GuardVariantLayer extends RenderLayer<Guard, HumanoidModel<Guard>> {
@@ -143,7 +144,8 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
             if (!livingEntity.isInvisible()) {
                 EntityModel m = this.getParentModel();
                 String guardSteve = GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "";
-                ResourceLocation resourcelocation = new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_" + livingEntity.getGuardVariant() + ".png");
+                String guardSkin = GuardVillagers.removeModIdFromVillagerType(livingEntity.getGuardVariant());
+                ResourceLocation resourcelocation = new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_" + guardSkin + ".png");
                 AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager().getTexture(resourcelocation);
                 if (abstracttexture == MissingTextureAtlasSprite.getTexture())
                     resourcelocation = new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_plains.png");

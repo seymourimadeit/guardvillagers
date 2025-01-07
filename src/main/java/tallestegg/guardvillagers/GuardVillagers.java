@@ -24,12 +24,12 @@ import tallestegg.guardvillagers.entities.Guard;
 @Mod(GuardVillagers.MODID)
 public class GuardVillagers {
     public static final String MODID = "guardvillagers";
+
     public GuardVillagers() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, GuardConfig.COMMON_SPEC);
         GuardConfig.loadConfig(GuardConfig.COMMON_SPEC, FMLPaths.CONFIGDIR.get().resolve(MODID + "-common.toml").toString());
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, GuardConfig.CLIENT_SPEC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
         MinecraftForge.EVENT_BUS.register(this);
         GuardEntityType.ENTITIES.register(FMLJavaModLoadingContext.get().getModEventBus());
         GuardItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -67,6 +67,12 @@ public class GuardVillagers {
         event.put(GuardEntityType.GUARD.get(), Guard.createAttributes().build());
     }
 
-    private void doClientStuff(final FMLClientSetupEvent event) {
+    // Turns something like modid:john to simply john
+    public static String removeModIdFromVillagerType(String stringWithModId) {
+        String[] parts = stringWithModId.split(":");
+        if (parts.length <= 1)
+            return parts[0];
+        else
+            return parts[1];
     }
 }
