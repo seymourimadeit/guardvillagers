@@ -35,6 +35,8 @@ import javax.annotation.Nullable;
 public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guard>> {
     private final HumanoidModel<Guard> steve;
     private final HumanoidModel<Guard> normal = this.getModel();
+    private static final ResourceLocation guardTextures = ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID,
+            "textures/entity/guard/guard" + (GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "") + ".png");
 
     public GuardRenderer(EntityRendererProvider.Context context) {
         super(context, new GuardModel(context.bakeLayer(GuardClientEvents.GUARD)), 0.5F);
@@ -128,9 +130,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
     @Nullable
     @Override
     public ResourceLocation getTextureLocation(Guard entity) {
-        String guardSteve = GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "";
-        return ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID,
-                "textures/entity/guard/guard" + guardSteve + ".png");
+        return guardTextures;
     }
 
     public static class GuardVariantLayer extends RenderLayer<Guard, HumanoidModel<Guard>> {

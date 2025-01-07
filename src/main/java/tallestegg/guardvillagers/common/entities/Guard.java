@@ -145,7 +145,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     public static String getVariantFromBiome(LevelAccessor world, BlockPos pos) {
         VillagerType type = VillagerType.byBiome(world.getBiome(pos));
-        return type.toString();
+        return GuardVillagers.removeModIdFromVillagerType(type.toString());
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -243,7 +243,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.lastGossipDecayTime = compound.getLong("LastGossipDecay");
         this.lastGossipTime = compound.getLong("LastGossipTime");
         this.spawnWithArmor = compound.getBoolean("SpawnWithArmor");
-        this.setVariant(compound.getString("Variant"));
+        if (compound.contains("Variant")) {
+            this.setVariant(GuardVillagers.removeModIdFromVillagerType(compound.getString("Variant")));
+        }
         if (compound.contains("PatrolPosX")) {
             int x = compound.getInt("PatrolPosX");
             int y = compound.getInt("PatrolPosY");

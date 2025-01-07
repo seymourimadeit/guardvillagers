@@ -82,6 +82,15 @@ public class GuardVillagers {
         event.put(GuardEntityType.GUARD.get(), Guard.createAttributes().build());
     }
 
+    // Turns something like modid:john to simply john
+    public static String removeModIdFromVillagerType(String stringWithModId) {
+        String[] parts = stringWithModId.split(":");
+        if (parts.length <= 1)
+            return parts[0];
+        else
+            return parts[1];
+    }
+
     @Mod(value = GuardVillagers.MODID, dist = Dist.CLIENT)
     public static class GuardVillagersClient {
         public GuardVillagersClient(ModContainer container, IEventBus modEventBus) {
