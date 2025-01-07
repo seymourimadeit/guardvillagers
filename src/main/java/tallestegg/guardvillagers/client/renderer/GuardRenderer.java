@@ -144,8 +144,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, HumanoidModel<Guar
             if (!livingEntity.isInvisible()) {
                 EntityModel m = this.getParentModel();
                 String guardSteve = GuardConfig.CLIENT.GuardSteve.get() ? "_steve" : "";
-                String guardSkin = GuardVillagers.removeModIdFromVillagerType(livingEntity.getGuardVariant());
-                ResourceLocation resourcelocation = new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_" + guardSkin + ".png");
+                ResourceLocation resourcelocation = new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_" + livingEntity.getGuardVariant() + ".png");
                 AbstractTexture abstracttexture = Minecraft.getInstance().getTextureManager().getTexture(resourcelocation);
                 if (abstracttexture == MissingTextureAtlasSprite.getTexture())
                     resourcelocation = new ResourceLocation(GuardVillagers.MODID, "textures/entity/guard/guard_variants/guard" + guardSteve + "_plains.png");

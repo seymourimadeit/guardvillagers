@@ -212,7 +212,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 this.setOwnerId(null);
             }
         }
-        this.setGuardVariant(compound.getString("Variant"));
+        if (compound.contains("Variant")) {
+            this.setGuardVariant(GuardVillagers.removeModIdFromVillagerType(compound.getString("Variant")));
+        }
         this.kickTicks = compound.getInt("KickTicks");
         this.setFollowing(compound.getBoolean("Following"));
         this.interacting = compound.getBoolean("Interacting");
