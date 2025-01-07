@@ -1,1 +1,1 @@
-- Added proper fallback system in case guard is missing texture for variant
+- Fixed issues if a modded variant had a funky name
