@@ -27,15 +27,13 @@ jobs:
         with:
           file: gradle.properties
           property: mod_version
-      - run: echo ${{ steps.version.outputs.value }}
-
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
-         # modrinth-id: H1sntfo8
-         # modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-         # curseforge-id: 360203
-        #  curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          modrinth-id: H1sntfo8
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          curseforge-id: 360203
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           github-token: ${{ secrets.GIT_TOKEN }}
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
           version-type: release
