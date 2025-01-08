@@ -22,20 +22,27 @@ jobs:
         with:
           arguments: build
           gradle-version: 8.9
+      - uses: madhead/read-java-properties@latest
+        id: version
+        with:
+          file: gradle.properties
+          property: version
+          default: 0.0.1
+      - run: echo ${{ steps.version.outputs.value }}
 
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
-          modrinth-id: H1sntfo8
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          curseforge-id: 360203
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+         # modrinth-id: H1sntfo8
+         # modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+         # curseforge-id: 360203
+        #  curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           github-token: ${{ secrets.GIT_TOKEN }}
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
           version-type: release
           loaders: neoforge
           game-versions: 1.21.1
-          version: 2.3.2
+          version: ${{ steps.version.outputs.value }}
           java: 21
           name: ""
           changelog-file: changelog-1.21.*
