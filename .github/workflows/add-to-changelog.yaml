@@ -18,7 +18,7 @@ jobs:
           contents: |
 
 
-             - ${{ github.event.head_commit.message }}
+             - ${{ github.event.head_commit.message }} ${{ github.event.repository.updated_at}}
       - name: Commit & Push
         uses: Andro999b/push@v1.3
         with:
