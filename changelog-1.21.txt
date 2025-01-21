@@ -1,1 +1,1 @@
-- Fixed issues if a modded variant had a funky nametestecho
+- Fixed issues if a modded variant had a funky nametestechoskibidi test
