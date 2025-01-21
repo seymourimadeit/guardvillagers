@@ -1,0 +1,26 @@
+name: Add to changelog
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1000
+          fetch-tags: true
+      - name: Append file
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: changelog-1.21.txt
+          write-mode: append
+          contents: |
+
+
+             - ${{ github.event.head_commit.message }}
+      - name: Commit & Push
+        uses: Andro999b/push@v1.3
+        with:
+          github_token: ${{ secrets.GIT_TOKEN}}
+          branch: ${{ github.ref }}
+          force: true
