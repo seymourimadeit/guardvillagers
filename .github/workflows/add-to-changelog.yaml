@@ -5,12 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        if: contains(github.event.head_commit.message, '[CHANGE]')
         uses: actions/checkout@v4
         with:
           fetch-depth: 1000
           fetch-tags: true
       - name: Append file
+        if: contains(github.event.head_commit.message, '[CHANGE]')
         uses: DamianReeves/write-file-action@master
         with:
           path: changelog-1.21.txt
@@ -22,6 +22,7 @@ jobs:
       - name: Commit & Push
         uses: Andro999b/push@v1.3
         with:
+          if: contains(github.event.head_commit.message, '[CHANGE]')
           github_token: ${{ secrets.GIT_TOKEN}}
           branch: ${{ github.ref }}
           force: true
