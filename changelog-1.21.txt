@@ -1,2 +1,1 @@
-- Fixed issues if a modded variant had a funky name
-- [CHANGE] Allowed Guards to do the Gangnam style
+- [CHANGE] Fixed issues if a modded variant had a funky name
