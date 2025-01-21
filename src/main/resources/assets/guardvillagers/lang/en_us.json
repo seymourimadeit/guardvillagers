@@ -21,7 +21,7 @@
   "guardvillagers.config.IllagersRunFromPolarBears": "Allow Illagers to run from polar bears",
   "guardvillagers.config.armorvillager": "Allow armorers and weaponsmiths repair guard items when down below half durability?",
   "guardvillagers.config.steveModel": "Enable steve model for Guards",
-  "guardvillagers.config.hotvPatrolPoint": "Require hero of the village",
+  "guardvillagers.config.hotvPatrolPoint": "Require hero of the village for guards to patrol areas",
   "guardvillagers.config.hotv": "This will make it so villagers will only be converted into guards if the player has hero of the village",
   "guardvillagers.config.blacksmith": "Allow blacksmiths to repair Iron Golems below 80 health",
   "guardvillagers.configuration.Chance to drop equipment": "Chance to drop equipment",
