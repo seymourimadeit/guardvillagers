@@ -17,7 +17,7 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
       - name: Merge pull request
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
           gh pr merge --merge --delete-branch
           
