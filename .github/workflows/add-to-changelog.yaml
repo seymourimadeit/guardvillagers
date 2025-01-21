@@ -15,6 +15,7 @@ jobs:
           path: changelog-1.21.txt
           write-mode: append
           contents: |
+
               ${{ github.event.head_commit.message }}
       - name: Commit & Push
         uses: Andro999b/push@v1.3
