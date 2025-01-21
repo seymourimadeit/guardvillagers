@@ -12,8 +12,8 @@ jobs:
           path: changelog-1.21.txt
           write-mode: append
           contents: |
-            ${{ github.event.workflow_run.head_commit.message }}
-            test
+
+            ${{ github.event.workflow_run.head_commits.message }}
       - name: Commit & Push
         uses: Andro999b/push@v1.3
         with:
