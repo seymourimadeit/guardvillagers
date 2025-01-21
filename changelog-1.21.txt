@@ -1,2 +1,1 @@
 - Fixed issues if a modded variant had a funky name
-- Update add-to-changelog.yaml
