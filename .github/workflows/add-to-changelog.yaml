@@ -7,10 +7,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Append file
-        uses: "DamianReeves/write-file-action@master"
+        uses: DamianReeves/write-file-action@master
         with:
           path: changelog-1.21.txt
           write-mode: append
+          run: echo "${{ github.event.workflow_run.head_commit.message }}"
           contents: |
             ${{ github.event.workflow_run.head_commit.message }}
       - name: Commit & Push
