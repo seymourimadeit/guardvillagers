@@ -17,4 +17,5 @@ jobs:
         uses: Andro999b/push@v1.3
         with:
           github_token: ${{ secrets.GIT_TOKEN }}
+          branch: ${{ github.ref }}
           force: true
