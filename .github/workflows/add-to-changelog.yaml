@@ -11,12 +11,11 @@ jobs:
         with:
           path: changelog-1.21.txt
           write-mode: append
-          run: echo "${{ github.event.workflow_run.head_commit.message }}"
           contents: |
             ${{ github.event.workflow_run.head_commit.message }}
-      - name: Commit & Push
-        uses: Andro999b/push@v1.3
-        with:
-          github_token: ${{ secrets.GIT_TOKEN }}
-          branch: ${{ github.ref }}
-          force: true
+            test
+      - name: Merge pull request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge --merge --delete-branch
