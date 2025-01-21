@@ -14,8 +14,9 @@ jobs:
           contents: |
             ${{ github.event.workflow_run.head_commit.message }}
             test
-      - name: Merge pull request
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr merge --merge --delete-branch
+      - name: Commit & Push
+        uses: Andro999b/push@v1.3
+        with:
+          github_token: ${{ secrets.GIT_TOKEN}}
+          branch: ${{ github.ref }}
+          force: true
