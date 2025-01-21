@@ -1,2 +1,2 @@
 - Fixed issues if a modded variant had a funky name
-- Update changelog-1.21.txt- Added internal system for putting github commit names into changelog.txt file- [CHANGE] test
+- Update changelog-1.21.txt- Added internal system for putting github commit names into changelog.txt file- [CHANGE] test- [CHANGE] please make a new line for the love of god
