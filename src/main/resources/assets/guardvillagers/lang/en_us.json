@@ -32,7 +32,7 @@
   "guardvillagers.config.VillagersRunFromPolarBears": "Allow villagers to run from polar bears?",
   "guardvillagers.configuration.Allow guards to teleport if following the player": "Allow guards to teleport if following the player",
   "guardvillagers.configuration.Have guards randomly spawn with biome variants?": "Have guards randomly spawn with biome variants?",
-  "guardvillagers.config.FriendlyFire": "Have guards attempt to avoid firing into other friendlies?",
+  "guardvillagers.config.FriendlyFire": "Have guards attempt to avoid firing into other friendly mobs?",
   "guardvillagers.config.amountofHealthRegenerated": "Amount of hearts regenerated",
   "guardvillagers.configuration.How low of a reputation of a player should have to be instantly aggroed upon by guards and golems?": "How low of a reputation of a player should have to be instantly aggroed upon by guards and golems?",
   "guardvillagers.configuration.guard stuff": "guard stuff",
