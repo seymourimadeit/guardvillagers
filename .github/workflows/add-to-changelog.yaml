@@ -9,7 +9,7 @@ jobs:
       - name: Append file
         uses: "DamianReeves/write-file-action@master"
         with:
-          path: ${{ github.workspace }}/changelog-1.21.txt
+          path: changelog-1.21.txt
           write-mode: append
           contents: |
             ${{ github.event.workflow_run.head_commit.message }}
