@@ -54,14 +54,12 @@ jobs:
         with:
           current-version: ${{ steps.version.outputs.value }}
           version-fragment: 'hotfix'
-      - name: Write value to Properties-file
-        uses: anbazhagan45/update-property-value@1.0.1
+      - name: Replace single file
+        uses: richardrigutins/replace-in-files@v2
         with:
-          source_path: 'gradle.properties'
-          properties: |
-            mod_version
-          values: |
-            ${{ steps.bump_version.outputs.next-version }}
+          files: 'gradle.properties'
+          search-text: ${{ steps.version.outputs.value }}
+          replacement-text: ${{ steps.bump_version.outputs.next-version }}
       - name: Commit & Push
         uses: Andro999b/push@v1.3
         with:
