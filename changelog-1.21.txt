@@ -1,2 +1,4 @@
 - [CHANGE] Fixed issues if a modded variant had a funky name
-- [CHANGE] fixed vague 'Require hero of the village' to 'Require hero of the village for guards to patrol areas' in config gui 2025-01-21T00:55:48Z
+- [CHANGE] fixed vague 'Require hero of the village' to 'Require hero of the village for guards to patrol areas' in config gui 2025-01-21T00:55:48Z- Revert "[CHANGE] test test test will undo this"
+
+This reverts commit 4746b3134f3b539f68c13a0dda82fb40bd19e5b7.
