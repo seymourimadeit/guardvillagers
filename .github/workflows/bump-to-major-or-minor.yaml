@@ -4,6 +4,7 @@ on: [push]
 jobs:
   bump-to-major-or-minor:
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[MAJOR]')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -17,7 +18,6 @@ jobs:
           property: mod_version
       - name: Increment version variable
         id: bump_version
-        if: contains(github.event.head_commit.message, '[MAJOR]')
         uses: christian-draeger/increment-semantic-version@1.2.3
         with:
           current-version: ${{ steps.version.outputs.value }}
