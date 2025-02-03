@@ -1,2 +1,3 @@
 - [CHANGE] Fixed issues if a modded variant had a funky name
 - [CHANGE] fixed vague 'Require hero of the village' to 'Require hero of the village for guards to patrol areas' in config gui 
+- [MAJOR] test
