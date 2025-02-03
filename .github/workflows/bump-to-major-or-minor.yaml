@@ -10,7 +10,7 @@ jobs:
         with:
           fetch-depth: 1000
           fetch-tags: true
-      - uses: BrycensRanch/read-properties-action@latest
+      - uses: BrycensRanch/read-properties-action@v1
         id: version
         with:
           file: gradle.properties
