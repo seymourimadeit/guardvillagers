@@ -28,6 +28,15 @@ jobs:
           files: 'gradle.properties'
           search-text: ${{ steps.version.outputs.value }}
           replacement-text: ${{ steps.bump_version.outputs.next-version }}
+      - name: Append changelog file
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: changelog-1.21.txt
+          write-mode: append
+          contents: |
+
+
+            - ${{ github.event.head_commit.message }}
       - name: Commit & Push
         uses: Andro999b/push@v1.3
         with:
