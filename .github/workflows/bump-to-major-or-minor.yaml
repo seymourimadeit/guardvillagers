@@ -17,7 +17,7 @@ jobs:
           property: mod_version
       - name: Increment version variable
         id: bump_version
-        if: contains(github.event.head_commit.message, '[MAJOR_BUMP]')
+        if: contains(github.event.head_commit.message, '[MAJOR]')
         uses: christian-draeger/increment-semantic-version@1.2.3
         with:
           current-version: ${{ steps.version.outputs.value }}
