@@ -13,7 +13,7 @@ jobs:
       - name: Append changelog file
         uses: slegare/write-file-action@1.0.2
         with:
-          path: changelog.txt
+          path: changelog-1.21.txt
           write-mode: append
           empty-line-eof: true
           contents: |
