@@ -1,7 +1,7 @@
 name: Add to changelog
 on: [push]
 jobs:
-  add-to-changelog:
+  build:
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, '[CHANGE]')
     steps:
@@ -11,14 +11,13 @@ jobs:
           fetch-depth: 1000
           fetch-tags: true
       - name: Append changelog file
-        uses: DamianReeves/write-file-action@master
+        uses: slegare/write-file-action@1.0.2
         with:
-          path: changelog-1.21.txt
+          path: changelog.txt
           write-mode: append
+          empty-line-eof: true
           contents: |
-
-
-             - ${{ github.event.head_commit.message }}
+            - ${{ github.event.head_commit.message }}
       - name: Commit & Push
         uses: Andro999b/push@v1.3
         with:
