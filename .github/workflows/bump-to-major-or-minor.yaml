@@ -29,13 +29,12 @@ jobs:
           search-text: ${{ steps.version.outputs.value }}
           replacement-text: ${{ steps.bump_version.outputs.next-version }}
       - name: Append changelog file
-        uses: DamianReeves/write-file-action@master
+        uses: slegare/write-file-action@1.0.2
         with:
           path: changelog-1.21.txt
           write-mode: append
+          empty-line-eof: true
           contents: |
-
-
             - ${{ github.event.head_commit.message }}
       - name: Commit & Push
         uses: Andro999b/push@v1.3
