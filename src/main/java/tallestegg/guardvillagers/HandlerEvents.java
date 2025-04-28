@@ -2,14 +2,11 @@ package tallestegg.guardvillagers;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.stats.Stats;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -31,12 +28,9 @@ import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raider;
-import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.entity.BellBlockEntity;
@@ -176,7 +170,7 @@ public class HandlerEvents {
 
             if (mob instanceof Witch witch) {
                 if (GuardConfig.COMMON.WitchesVillager.get()) {
-                    witch.targetSelector.addGoal(3, new NearestAttackableWitchTargetGoal<>(witch, AbstractVillager.class, 10, true, false, ISNT_BABY));
+                    witch.targetSelector.addGoal(3, new NearestAttackableWitchTargetGoal<>(witch, AbstractVillager.class, 10, true, false, (TargetingConditions.Selector) ISNT_BABY));
                     witch.targetSelector.addGoal(3, new NearestAttackableWitchTargetGoal<>(witch, IronGolem.class, 10, true, false, null));
                     witch.targetSelector.addGoal(2, new NearestAttackableWitchTargetGoal<>(witch, Guard.class, 10, true, false, null));
                 }
@@ -196,7 +190,7 @@ public class HandlerEvents {
         if (itemstack.is(GuardVillagerTags.GUARD_CONVERT) && player.isCrouching()) {
             if (target instanceof Villager villager) {
                 if (!villager.isBaby()) {
-                    if (GuardConfig.COMMON.convertibleProfessions.get().contains(villager.getVillagerData().getProfession().name())) {
+                    if (GuardConfig.COMMON.convertibleProfessions.get().contains(villager.getVillagerData().profession().value().name())) {
                         if (!GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get() || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get()) {
                             convertVillager(villager, player);
                             if (!player.getAbilities().instabuild)
@@ -240,7 +234,7 @@ public class HandlerEvents {
     private static void convertVillager(LivingEntity entity, Player player) {
         player.swing(InteractionHand.MAIN_HAND);
         ItemStack itemstack = player.getItemBySlot(EquipmentSlot.MAINHAND);
-        Guard guard = GuardEntityType.GUARD.get().create(entity.level());
+        Guard guard = GuardEntityType.GUARD.get().create(entity.level(), EntitySpawnReason.CONVERSION);
         Villager villager = (Villager) entity;
         if (guard == null)
             return;
@@ -257,7 +251,7 @@ public class HandlerEvents {
         guard.copyPosition(villager);
         guard.playSound(GuardSounds.GUARD_YES.value(), 1.0F, 1.0F);
         guard.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copy());
-        guard.setVariant(villager.getVariant().toString());
+        //guard.setVariant(villager.getVariant().toString());
         guard.setPersistenceRequired();
         guard.setCustomName(villager.getCustomName());
         guard.setCustomNameVisible(villager.isCustomNameVisible());
