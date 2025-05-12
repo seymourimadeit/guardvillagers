@@ -15,11 +15,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:iron_sword"
+          "name": "minecraft:netherite_axe{Enchantments:[{sharpness,lvl:5}]}"
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:crossbow"
+          "name": "minecraft:crossbow{Enchantments:[{id:quick_charge,lvl:5}]}"
         }
       ],
       "functions": [
@@ -34,26 +34,26 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:bread",
+          "name": "minecraft:golden_apple",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 1,
-                "max": 8
+                "min": 10,
+                "max": 64
               }
             }
           ],
           "conditions": [
             {
               "condition": "minecraft:random_chance",
-              "chance": 0.1
+              "chance": 0.5
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:shield",
+          "name": "minecraft:shield{Enchantments:[{id:unbreaking,lvl:3}]}",
           "conditions": [
             {
               "condition": "minecraft:random_chance",
