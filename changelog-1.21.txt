@@ -1,1 +1,2 @@
-- [CHANGE] fixed vague 'Require hero of the village' to 'Require hero of the village for guards to patrol areas' in config gui 
+
+- [CHANGE] - Update pt_br.json
