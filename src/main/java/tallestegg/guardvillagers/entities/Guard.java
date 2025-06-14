@@ -805,17 +805,18 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    protected void hurtArmor(DamageSource damageSource, float damage) {
-        if (damage >= 0.0F) {
-            damage = damage / 4.0F;
-            if (damage < 1.0F) {
-                damage = 1.0F;
+    protected void hurtArmor(DamageSource damageSource, float pDamage) {
+        if (!(pDamage <= 0.0F)) {
+            pDamage /= 4.0F;
+            if (pDamage < 1.0F) {
+                pDamage = 1.0F;
             }
+
             for (int i = 0; i < this.guardInventory.getContainerSize(); ++i) {
                 ItemStack itemstack = this.guardInventory.getItem(i);
-                if ((!damageSource.is(DamageTypes.ON_FIRE) || !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem) {
-                    int j = i;
-                    this.damageGuardItem(1, EquipmentSlot.byTypeAndIndex(EquipmentSlot.Type.ARMOR, j), itemstack);
+                if ((!damageSource.is(DamageTypes.ON_FIRE) || !itemstack.getItem().isFireResistant()) && itemstack.getItem() instanceof ArmorItem armorItem) {
+                    EquipmentSlot slot = armorItem.getEquipmentSlot();
+                    this.damageGuardItem(1, slot, itemstack);
                 }
             }
         }
