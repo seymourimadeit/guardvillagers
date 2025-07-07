@@ -589,7 +589,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (GuardConfig.COMMON.ClericHealing.get()) this.goalSelector.addGoal(6, new RunToClericGoal(this));
         if (GuardConfig.COMMON.armorersRepairGuardArmor.get())
             this.goalSelector.addGoal(6, new ArmorerRepairGuardArmorGoal(this));
-        this.goalSelector.addGoal(5, new WalkBackToCheckPointGoal(this, 0.5D));
+        this.goalSelector.addGoal(3, new WalkBackToCheckPointGoal(this, 0.5D));
         this.goalSelector.addGoal(5, new GolemRandomStrollInVillageGoal(this, 0.5D));
         if (GuardConfig.COMMON.guardPatrolVillageAi.get())
             this.goalSelector.addGoal(5, new MoveThroughVillageGoal(this, 0.5D, false, 4, () -> false));
@@ -1784,7 +1784,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canUse() {
-            return guard.getPatrolPos() != null && this.guard.blockPosition() != this.guard.getPatrolPos() && !guard.isFollowing() && guard.isPatrolling();
+            return guard.getTarget() == null && guard.getPatrolPos() != null && this.guard.blockPosition() != this.guard.getPatrolPos() && !guard.isFollowing() && guard.isPatrolling();
         }
 
         @Override
