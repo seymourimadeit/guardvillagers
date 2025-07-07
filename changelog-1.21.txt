@@ -1,2 +1,3 @@
 
 - [CHANGE] - Update pt_br.json
+- [CHANGE] - Guard inventory now has heart and armor images instead of just pure numbers
