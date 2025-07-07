@@ -1,6 +1,7 @@
 package tallestegg.guardvillagers.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -27,6 +28,10 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     private static final WidgetSprites GUARD_NOT_FOLLOWING_ICONS = new WidgetSprites(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "following/not_following"), ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "following/not_following_highlighted"));
     private static final WidgetSprites GUARD_PATROLLING_ICONS = new WidgetSprites(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "patrolling/patrolling1"), ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "patrolling/patrolling2"));
     private static final WidgetSprites GUARD_NOT_PATROLLING_ICONS = new WidgetSprites(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "patrolling/notpatrolling1"), ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "patrolling/notpatrolling2"));
+    private static final ResourceLocation ARMOR_EMPTY_SPRITE = ResourceLocation.withDefaultNamespace("hud/armor_empty");
+    private static final ResourceLocation ARMOR_HALF_SPRITE = ResourceLocation.withDefaultNamespace("hud/armor_half");
+    private static final ResourceLocation ARMOR_FULL_SPRITE = ResourceLocation.withDefaultNamespace("hud/armor_full");
+
     private final Guard guard;
     private Player player;
     private float mousePosX;
@@ -73,11 +78,45 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         super.renderLabels(graphics, x, y);
         int health = Mth.ceil(guard.getHealth());
         int armor = guard.getArmorValue();
-        Component guardHealthText = Component.translatable("guardinventory.health", health);
-        Component guardArmorText = Component.translatable("guardinventory.armor", armor);
-        graphics.drawString(font, guardHealthText, 80, 20, 4210752, false);
-        graphics.drawString(font, guardArmorText, 80, 30, 4210752, false);
+        int yValueWithOrWithoutArmor = armor <= 0 ? 20 : 30;
+        for (int i = 0; i < 10; i++) {
+            int heartXValue = i * 8 + 80;
+            this.renderHeart(graphics, Gui.HeartType.CONTAINER, heartXValue, yValueWithOrWithoutArmor, false);
+        }
+        for (int i = 0; i < health / 2; i++) {
+            int heartXValue = i * 8 + 80;
+            if (health % 2 != 0 && health / 2 == i + 1) {
+                this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, true);
+            } else {
+                this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, false);
+            }
+        }
+        if (armor > 0) {
+            RenderSystem.enableBlend();
+            for (int k = 0; k < 10; k++) {
+                int l = k * 8 + 80;
+                if (k * 2 + 1 < armor) {
+                    graphics.blitSprite(ARMOR_FULL_SPRITE, l, 20, 9, 9);
+                }
+
+                if (k * 2 + 1 == armor) {
+                    graphics.blitSprite(ARMOR_HALF_SPRITE, l, 20, 9, 9);
+                }
+
+                if (k * 2 + 1 > armor) {
+                    graphics.blitSprite(ARMOR_EMPTY_SPRITE, l, 20, 9, 9);
+                }
+            }
+            RenderSystem.disableBlend();
+        }
     }
+
+    private void renderHeart(GuiGraphics guiGraphics, Gui.HeartType heartType, int x, int y, boolean halfHeart) {
+        RenderSystem.enableBlend();
+        guiGraphics.blitSprite(heartType.getSprite(false, halfHeart, false), x, y, 9, 9);
+        RenderSystem.disableBlend();
+    }
+
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
