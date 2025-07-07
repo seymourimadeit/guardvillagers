@@ -1,3 +1,4 @@
 
 - [CHANGE] - Update pt_br.json
 - [CHANGE] - Guard inventory now has heart and armor images instead of just pure numbers
+- [CHANGE] - fix #255 (guards not patrolling properly near villages)
