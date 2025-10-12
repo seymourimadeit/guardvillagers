@@ -2,7 +2,5 @@
 - [CHANGE] - Update pt_br.json
 - [CHANGE] - Guard inventory now has heart and armor images instead of just pure numbers
 - [CHANGE] - fix #255 (guards not patrolling properly near villages)
-- [CHANGE] - Update simplified Chinese translation (Merge pull request #257 from qwaasdqw/main_
-
-Update a simplified Chinese translation
+- [CHANGE] - Update simplified Chinese translation
 - [CHANGE] - Added a config option for guards converting to zombies on death
