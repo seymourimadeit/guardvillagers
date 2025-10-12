@@ -5,3 +5,4 @@
 - [CHANGE] - Update simplified Chinese translation (Merge pull request #257 from qwaasdqw/main_
 
 Update a simplified Chinese translation
+- [CHANGE] - Added a config option for guards converting to zombies on death
