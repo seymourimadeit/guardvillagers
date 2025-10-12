@@ -33,7 +33,7 @@ jobs:
           curseforge-id: 360203
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           github-token: ${{ secrets.GIT_TOKEN }}
-          files-primary: build/libs/!(*-@(javadoc|sources)).jar
+          files-primary: build/libs/!(*source*|*dev*|*javadoc*|*slim*).jar
           version-type: release
           loaders: neoforge
           game-versions: 1.21.1

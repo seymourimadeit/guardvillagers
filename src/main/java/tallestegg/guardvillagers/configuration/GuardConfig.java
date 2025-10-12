@@ -59,6 +59,7 @@ public class GuardConfig {
         public final ModConfigSpec.BooleanValue golemFloat;
         public final ModConfigSpec.BooleanValue multiFollow;
         public final ModConfigSpec.BooleanValue guardPatrolVillageAi;
+        public final ModConfigSpec.BooleanValue convertGuardOnDeath;
         public final ModConfigSpec.IntValue reputationRequirement;
         public final ModConfigSpec.IntValue reputationRequirementToBeAttacked;
         public final ModConfigSpec.DoubleValue chanceToDropEquipment;
@@ -89,6 +90,7 @@ public class GuardConfig {
             golemFloat = builder.define("Allow Iron Golems to float on water?", true);
             builder.pop();
             builder.push("guard stuff");
+            convertGuardOnDeath = builder.define("Allow guards to convert to zombie villagers upon being killed by zombies?", true);
             multiFollow = builder.translation(GuardVillagers.MODID + ".config.multifollow").define("Allow the player to right click on bells to mass order guards to follow them?", true);
             chanceToDropEquipment = builder.defineInRange("Chance to drop equipment", 100.0F, -999.9F, 999.0F);
             GuardsRunFromPolarBears = builder.comment("This makes Guards run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.IllagersRunFromPolarBears").define("Have Guards have some common sense?", false);
