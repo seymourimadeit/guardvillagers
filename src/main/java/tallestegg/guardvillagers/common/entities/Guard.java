@@ -573,7 +573,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(0, new GuardEatFoodGoal(this));
         this.goalSelector.addGoal(0, new RaiseShieldGoal(this));
         this.goalSelector.addGoal(1, new GuardRunToEatGoal(this));
-        this.goalSelector.addGoal(3, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, 8.0F));
+        this.goalSelector.addGoal(3, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, GuardConfig.COMMON.guardCrossbowAttackRadius.get().floatValue()));
         this.goalSelector.addGoal(3, new GuardBowAttack(this, 0.5D, 20, 15.0F));
         if (ModList.get().isLoaded("musketmod"))
             this.goalSelector.addGoal(3, new ModCompat.UseMusketGoal(this, 20, 15.0F));

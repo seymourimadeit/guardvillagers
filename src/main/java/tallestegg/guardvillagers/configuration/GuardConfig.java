@@ -66,6 +66,7 @@ public class GuardConfig {
         public final ModConfigSpec.IntValue guardSpawnInVillage;
         public final ModConfigSpec.DoubleValue chanceToDropEquipment;
         public final ModConfigSpec.DoubleValue chanceToBreakEquipment;
+        public final ModConfigSpec.DoubleValue guardCrossbowAttackRadius;
 
         public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("raids and illagers");
@@ -92,6 +93,7 @@ public class GuardConfig {
             golemFloat = builder.define("Allow Iron Golems to float on water?", true);
             builder.pop();
             builder.push("guard stuff");
+            guardCrossbowAttackRadius = builder.defineInRange("Guard crossbow attack radius", 8.0F, 0.0F, 100000000.0F);
             structuresThatSpawnGuards = builder.defineListAllowEmpty("Structure pieces that spawn guards", ImmutableList.of("minecraft:village/common/iron_golem"), () -> "", obj -> true);
             guardSpawnInVillage = builder.defineInRange("How many guards should spawn in a village?", 6, 0, 100000000);
             convertGuardOnDeath = builder.define("Allow guards to convert to zombie villagers upon being killed by zombies?", true);
