@@ -53,6 +53,7 @@ public class GuardConfig {
         public final ModConfigSpec.ConfigValue<List<? extends String>> MobBlackList;
         public final ModConfigSpec.ConfigValue<List<? extends String>> MobWhiteList;
         public final ModConfigSpec.ConfigValue<List<? extends String>> convertibleProfessions;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> structuresThatSpawnGuards;
         public final ModConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ModConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ModConfigSpec.BooleanValue followHero;
@@ -62,6 +63,7 @@ public class GuardConfig {
         public final ModConfigSpec.BooleanValue convertGuardOnDeath;
         public final ModConfigSpec.IntValue reputationRequirement;
         public final ModConfigSpec.IntValue reputationRequirementToBeAttacked;
+        public final ModConfigSpec.IntValue guardSpawnInVillage;
         public final ModConfigSpec.DoubleValue chanceToDropEquipment;
         public final ModConfigSpec.DoubleValue chanceToBreakEquipment;
 
@@ -84,12 +86,14 @@ public class GuardConfig {
             BlacksmithHealing = builder.translation(GuardVillagers.MODID + ".config.blacksmith").define("Have it so blacksmiths heal golems under 60 health?", true);
             ClericHealing = builder.translation(GuardVillagers.MODID + ".config.cleric").define("Have it so clerics heal guards and players with hero of the village?", true);
             VillagersRunFromPolarBears = builder.comment("This makes villagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.VillagersRunFromPolarBears").define("Have Villagers have some common sense?", true);
-            convertibleProfessions = builder.comment("Professions that can be converted into guards").defineListAllowEmpty("Profession Whitelist for guard conversion",  ImmutableList.of("nitwit", "none"), () -> "", obj -> true);
+            convertibleProfessions = builder.comment("Professions that can be converted into guards").defineListAllowEmpty("Profession Whitelist for guard conversion", ImmutableList.of("nitwit", "none"), () -> "", obj -> true);
             builder.pop();
             builder.push("golem stuff");
             golemFloat = builder.define("Allow Iron Golems to float on water?", true);
             builder.pop();
             builder.push("guard stuff");
+            structuresThatSpawnGuards = builder.defineListAllowEmpty("Structure pieces that spawn guards", ImmutableList.of("minecraft:village/common/iron_golem"), () -> "", obj -> true);
+            guardSpawnInVillage = builder.defineInRange("How many guards should spawn in a village?", 6, 0, 100000000);
             convertGuardOnDeath = builder.define("Allow guards to convert to zombie villagers upon being killed by zombies?", true);
             multiFollow = builder.translation(GuardVillagers.MODID + ".config.multifollow").define("Allow the player to right click on bells to mass order guards to follow them?", true);
             chanceToDropEquipment = builder.defineInRange("Chance to drop equipment", 100.0F, -999.9F, 999.0F);

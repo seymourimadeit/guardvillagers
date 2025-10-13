@@ -1,9 +1,14 @@
 package tallestegg.guardvillagers;
 
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,6 +22,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import tallestegg.guardvillagers.client.GuardSounds;
@@ -43,6 +49,7 @@ public class GuardVillagers {
         GuardLootTables.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
         GuardLootTables.LOOT_ITEM_FUNCTION_TYPES.register(modEventBus);
         GuardStats.STATS.register(modEventBus);
+        NeoForge.EVENT_BUS.addListener(this::serverStart);
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addCreativeTabs);
         modEventBus.addListener(this::register);
@@ -90,6 +97,17 @@ public class GuardVillagers {
         else
             return parts[1];
     }
+
+    private void serverStart(final ServerAboutToStartEvent event) {
+        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registries.TEMPLATE_POOL).orElseThrow();
+        Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registries.PROCESSOR_LIST).orElseThrow();
+
+        GuardConfig.COMMON.structuresThatSpawnGuards.get().forEach(structure ->
+                GVWorldGen.addBuildingToPool(templatePoolRegistry, processorListRegistry,
+                        ResourceLocation.parse(structure),
+                        "guardvillagers:village/guard", GuardConfig.COMMON.guardSpawnInVillage.get()));
+    }
+
 
     @Mod(value = GuardVillagers.MODID, dist = Dist.CLIENT)
     public static class GuardVillagersClient {
