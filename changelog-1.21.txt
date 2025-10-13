@@ -4,3 +4,4 @@
 - [CHANGE] - fix #255 (guards not patrolling properly near villages)
 - [CHANGE] - Update simplified Chinese translation
 - [CHANGE] - Added a config option for guards converting to zombies on death
+- - [CHANGE] configurable amount of guards that can spawn in village + makes it so guard villagers does not override iron_golem.nbt in the first place to avoid interference
