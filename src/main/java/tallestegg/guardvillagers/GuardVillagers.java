@@ -101,11 +101,6 @@ public class GuardVillagers {
     private void serverStart(final ServerAboutToStartEvent event) {
         Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registries.TEMPLATE_POOL).orElseThrow();
         Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registries.PROCESSOR_LIST).orElseThrow();
-
-        GuardConfig.COMMON.structuresThatSpawnGuards.get().forEach(structure ->
-                GVWorldGen.addBuildingToPool(templatePoolRegistry, processorListRegistry,
-                        ResourceLocation.parse(structure),
-                        "guardvillagers:village/guard", GuardConfig.COMMON.guardSpawnInVillage.get()));
     }
 
 

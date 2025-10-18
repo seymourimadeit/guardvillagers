@@ -5,7 +5,8 @@
   "refmap": "guardvillagers.refmap.json",
   "mixins": [
     "VillagerGoalPackagesMixin",
-    "DefendVillageGoalGolemMixin"
+    "DefendVillageGoalGolemMixin",
+    "SinglePoolElementMixin"
   ],
   "client":[
     "VillagerModelMixin"
