@@ -3,16 +3,13 @@ package tallestegg.guardvillagers.common.entities.ai.tasks;
 import java.util.List;
 
 import com.google.common.collect.ImmutableMap;
-import com.sun.jna.Memory;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
-import net.minecraft.world.entity.ai.behavior.WorkAtPoi;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.ItemStack;
@@ -21,12 +18,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.server.level.ServerLevel;
 
-public class RepairGolemTask extends Behavior<Villager> {
+public class RepairGolem extends Behavior<Villager> {
     private LivingEntity golem;
     private boolean hasStartedHealing;
     private long lastTimeSinceGolemHeal = 0;
 
-    public RepairGolemTask() {
+    public RepairGolem() {
         super(ImmutableMap.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT));
     }
 

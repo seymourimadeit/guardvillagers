@@ -147,8 +147,8 @@ public class HandlerEvents {
             }
 
             if (mob instanceof Villager villager) {
-                if (GuardConfig.COMMON.ClericHealing.get())
-                    villager.goalSelector.addGoal(1, new HealGuardAndPlayerGoal(villager, 1.0D, 100, 0, 10.0F));
+           //     if (GuardConfig.COMMON.ClericHealing.get())
+              //      villager.goalSelector.addGoal(1, new HealGuardAndPlayerGoal(villager, 1.0D, 100, 0, 10.0F));
             }
 
             if (mob instanceof IronGolem golem) {
