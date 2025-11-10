@@ -6,3 +6,4 @@
 - [CHANGE] - Added a config option for guards converting to zombies on death
 - [CHANGE] - configurable amount of guards that can spawn in village + makes it so guard villagers does not override iron_golem.nbt in the first place to avoid interference
 - [CHANGE] golems can only be repaired by smith villagers once a day
+- [CHANGE] - clerics can now only heal guards, players with hero of the village, and players 3 times a day
