@@ -14,19 +14,30 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tallestegg.guardvillagers.GuardEntityType;
+import tallestegg.guardvillagers.common.entities.ai.tasks.RepairGolemTask;
 import tallestegg.guardvillagers.common.entities.ai.tasks.ShareGossipWithGuard;
+import tallestegg.guardvillagers.configuration.GuardConfig;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(VillagerGoalPackages.class)
 public abstract class VillagerGoalPackagesMixin {
+    @Inject(method = "getCorePackage", cancellable = true, at = @At("RETURN"))
+    private static void getCorePackage(VillagerProfession pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
+        List<Pair<Integer, ? extends BehaviorControl<? super Villager>>> villagerList = new ArrayList<>(cir.getReturnValue());
+        if (GuardConfig.COMMON.BlacksmithHealing.get())
+            villagerList.add(Pair.of(10, new RepairGolemTask()));
+        cir.setReturnValue(ImmutableList.copyOf(villagerList));
+    }
+
     @Inject(method = "getMeetPackage", cancellable = true, at = @At("RETURN"))
     private static void getMeetPackage(VillagerProfession pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
         List<Pair<Integer, ? extends BehaviorControl<? super Villager>>> villagerList = new ArrayList<>(cir.getReturnValue());
         villagerList.add(Pair.of(2, new GateBehavior<>(ImmutableMap.of(), ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE, ImmutableList.of(Pair.of(new ShareGossipWithGuard(), 1), Pair.of(new TradeWithVillager(), 1)))));
         cir.setReturnValue(ImmutableList.copyOf(villagerList));
     }
+
     @Inject(method = "getIdlePackage", cancellable = true, at = @At("RETURN"))
     private static void getIdlePackage(VillagerProfession pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
         List<Pair<Integer, ? extends BehaviorControl<? super Villager>>> villagerList = new ArrayList<>(cir.getReturnValue());

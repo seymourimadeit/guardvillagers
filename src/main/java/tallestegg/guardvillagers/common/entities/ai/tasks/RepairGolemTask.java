@@ -2,35 +2,52 @@ package tallestegg.guardvillagers.common.entities.ai.tasks;
 
 import java.util.List;
 
+import com.google.common.collect.ImmutableMap;
+import com.sun.jna.Memory;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.behavior.Behavior;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.behavior.WorkAtPoi;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.server.level.ServerLevel;
 
-public class RepairGolemTask extends WorkAtPoi {
-    private IronGolem golem;
+public class RepairGolemTask extends Behavior<Villager> {
+    private LivingEntity golem;
     private boolean hasStartedHealing;
+    private long lastTimeSinceGolemHeal = 0;
 
     public RepairGolemTask() {
-        super();
+        super(ImmutableMap.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT));
     }
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, Villager owner) {
-        List<IronGolem> list = owner.level().getEntitiesOfClass(IronGolem.class, owner.getBoundingBox().inflate(10.0D, 5.0D, 10.0D));
-        if (!list.isEmpty()) {
-            for (IronGolem golem : list) {
-                if (!golem.isInvisible() && golem.isAlive() && golem.getType() == EntityType.IRON_GOLEM) { // Check if the entity is an Iron Golem, not any other golem.
-                    if (golem.getHealth() <= 60.0D || this.hasStartedHealing && golem.getHealth() < golem.getMaxHealth()) {
-                        this.golem = golem;
-                        owner.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_INGOT));
-                        return true;
+        if (owner.getVillagerData().getProfession() != VillagerProfession.WEAPONSMITH && (owner.getVillagerData().getProfession() != VillagerProfession.TOOLSMITH)
+                && (owner.getVillagerData().getProfession() != VillagerProfession.ARMORER) || owner.isSleeping()) {
+            return false;
+        }
+        long gameTime = worldIn.getGameTime();
+        if (gameTime - this.lastTimeSinceGolemHeal < 24000L) {
+            return false;
+        } else {
+            List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
+            if (!list.isEmpty()) {
+                for (LivingEntity golem : list) {
+                    if (!golem.isInvisible() && golem.isAlive() && golem.getType() == EntityType.IRON_GOLEM) { // Check only for iron golems and if a day has passed since the last time a golem was healed
+                        if (golem.getHealth() <= (golem.getMaxHealth() * 0.75F) || this.hasStartedHealing && golem.getHealth() < golem.getMaxHealth()) {
+                            this.golem = golem;
+                            return true;
+                        }
                     }
                 }
             }
@@ -43,6 +60,9 @@ public class RepairGolemTask extends WorkAtPoi {
         if (golem.getHealth() == golem.getMaxHealth()) {
             this.hasStartedHealing = false;
             entityIn.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+            this.lastTimeSinceGolemHeal = entityIn.level().getGameTime();
+            entityIn.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+            entityIn.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
         }
     }
 
@@ -61,7 +81,7 @@ public class RepairGolemTask extends WorkAtPoi {
     }
 
     public void healGolem(Villager healer) {
-        healer.getNavigation().moveTo(golem, 0.5);
+        BehaviorUtils.setWalkAndLookTargetMemories(healer, golem, 0.5F, 0);
         if (healer.distanceTo(golem) <= 2.0D) {
             this.hasStartedHealing = true;
             healer.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_INGOT));

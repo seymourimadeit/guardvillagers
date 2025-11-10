@@ -21,7 +21,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tallestegg.guardvillagers.GuardEntityType;
-import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 
