@@ -47,7 +47,6 @@ import net.minecraft.world.entity.animal.PolarBear;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -1120,6 +1119,10 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         @Override
         public void tick() {
             super.tick();
+            LivingEntity attacker = guard.getTarget();
+            if (attacker != null) {
+                this.guard.getLookControl().setLookAt(attacker.getX(), attacker.getY(), attacker.getZ());
+            }
             if (guard.isPatrolling()) {
                 guard.getNavigation().stop();
                 guard.getMoveControl().strafe(0.0F, 0.0F);
@@ -1495,7 +1498,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 }
                 this.mob.lookAt(livingentity, 30.0F, 30.0F);
                 this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-                if (friendlyInLineOfSight(this.mob))
+                if (friendlyInLineOfSight(this.mob) && !this.mob.isPatrolling())
                     this.crossbowState = CrossbowState.FIND_NEW_POSITION;
                 if (this.crossbowState == CrossbowState.FIND_NEW_POSITION) {
                     this.mob.stopUsingItem();
@@ -1518,7 +1521,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                     if (i >= CrossbowItem.getChargeDuration(itemstack, this.mob) || CrossbowItem.isCharged(itemstack)) {
                         this.mob.releaseUsingItem();
                         this.crossbowState = CrossbowState.CHARGED;
-                        this.attackDelay = 10 + this.mob.getRandom().nextInt(5);
+                        this.attackDelay = 10;
                         this.mob.setChargingCrossbow(false);
                     }
                 } else if (this.crossbowState == CrossbowState.CHARGED) {
@@ -1651,43 +1654,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 return guard.distanceTo(target) <= 4.0D || target instanceof Creeper || target instanceof RangedAttackMob && target.distanceTo(guard) >= 5.0D && !ranged || target instanceof Ravager || GuardConfig.COMMON.GuardRaiseShield.get();
             }
             return false;
-        }
-    }
-
-    public static class RunToClericGoal extends Goal {
-        public final Guard guard;
-        public Villager cleric;
-
-        public RunToClericGoal(Guard guard) {
-            this.guard = guard;
-        }
-
-        @Override
-        public boolean canUse() {
-            List<Villager> list = this.guard.level().getEntitiesOfClass(Villager.class, this.guard.getBoundingBox().inflate(10.0D, 3.0D, 10.0D));
-            if (!list.isEmpty()) {
-                for (Villager mob : list) {
-                    if (mob != null) {
-                        if (mob.getVillagerData().getProfession() == VillagerProfession.CLERIC && guard.getHealth() < guard.getMaxHealth() && guard.getTarget() == null && !guard.hasEffect(MobEffects.REGENERATION) && !mob.isSleeping()) {
-                            this.cleric = mob;
-                            return GuardConfig.COMMON.ClericHealing.get();
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public void tick() {
-            guard.lookAt(cleric, 30.0F, 30.0F);
-            guard.getLookControl().setLookAt(cleric, 30.0F, 30.0F);
-            if (guard.distanceTo(cleric) >= 6.0D) {
-                guard.getNavigation().moveTo(cleric, 0.5D);
-            } else {
-                guard.getMoveControl().strafe(-1.0F, 0.0F);
-                guard.getNavigation().stop();
-            }
         }
     }
 
