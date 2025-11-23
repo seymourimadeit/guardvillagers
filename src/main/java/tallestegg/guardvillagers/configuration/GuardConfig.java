@@ -53,6 +53,9 @@ public class GuardConfig {
         public final ModConfigSpec.ConfigValue<List<? extends String>> MobBlackList;
         public final ModConfigSpec.ConfigValue<List<? extends String>> MobWhiteList;
         public final ModConfigSpec.ConfigValue<List<? extends String>> convertibleProfessions;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> professionsThatHeal;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> professionsThatRepairGolems;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> professionsThatRepairGuards;
         public final ModConfigSpec.ConfigValue<List<? extends String>> structuresThatSpawnGuards;
         public final ModConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ModConfigSpec.BooleanValue setGuardPatrolHotv;
@@ -64,6 +67,9 @@ public class GuardConfig {
         public final ModConfigSpec.IntValue reputationRequirement;
         public final ModConfigSpec.IntValue reputationRequirementToBeAttacked;
         public final ModConfigSpec.IntValue guardSpawnInVillage;
+        public final ModConfigSpec.IntValue maxClericHeal;
+        public final ModConfigSpec.IntValue maxGolemRepair;
+        public final ModConfigSpec.IntValue maxVillageRepair;
         public final ModConfigSpec.DoubleValue chanceToDropEquipment;
         public final ModConfigSpec.DoubleValue chanceToBreakEquipment;
         public final ModConfigSpec.DoubleValue guardCrossbowAttackRadius;
@@ -81,6 +87,12 @@ public class GuardConfig {
             MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").defineListAllowEmpty("Mob Whitelist", new ArrayList<>(), () -> "", obj -> true);
             builder.pop();
             builder.push("villager stuff");
+            professionsThatHeal = builder.defineListAllowEmpty("Profession Whitelist for healing ai for clerics", ImmutableList.of("cleric"), () -> "", obj -> true);
+            professionsThatRepairGuards = builder.defineListAllowEmpty("Profession Whitelist for golem repair ai", ImmutableList.of("armorer, weaponsmith"), () -> "", obj -> true);
+            professionsThatRepairGolems = builder.defineListAllowEmpty("Profession Whitelist for guard weaponry repair ai", ImmutableList.of("weaponsmith", "armorer", "toolsmith"), () -> "", obj -> true);
+            maxClericHeal = builder.defineInRange("How many times a cleric can heal a guard in one day", 3, 0, 1000000);
+            maxGolemRepair = builder.defineInRange("How many times a smith villager can heal a golem in one day", 3, 0, 1000000);
+            maxVillageRepair = builder.defineInRange("How many times a villager can heal a guard's equipment in one day", 3, 0, 1000000);
             armorersRepairGuardArmor = builder.translation(GuardVillagers.MODID + ".config.armorvillager").define("Allow armorers and weaponsmiths repair guard items when down below half durability?", true);
             ConvertVillagerIfHaveHOTV = builder.comment("This will make it so villagers will only be converted into guards if the player has hero of the village").translation(GuardVillagers.MODID + ".config.hotv")
                     .define("Make it so players have to have hero of the village to convert villagers into guards?", false);

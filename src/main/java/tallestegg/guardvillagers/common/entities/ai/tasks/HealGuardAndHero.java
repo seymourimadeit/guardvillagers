@@ -18,7 +18,9 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import tallestegg.guardvillagers.GuardMemoryTypes;
+import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.common.entities.Guard;
+import tallestegg.guardvillagers.configuration.GuardConfig;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +30,7 @@ public class HealGuardAndHero extends VillagerHelp {
     private int waitUntilInSightTicks = 0;
 
     public HealGuardAndHero() {
-        super(ImmutableMap.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT), ImmutableList.of(VillagerProfession.CLERIC));
+        super(ImmutableMap.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT), GuardConfig.COMMON.professionsThatHeal.get());
     }
 
     @Override
@@ -55,7 +57,7 @@ public class HealGuardAndHero extends VillagerHelp {
 
     @Override
     protected boolean canStillUse(ServerLevel level, Villager entity, long gameTime) {
-        return checkIfDayHavePassedFromLastActivity(entity) && entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) < 3;
+        return checkIfDayHavePassedFromLastActivity(entity) && entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) < GuardConfig.COMMON.maxClericHeal.get();
     }
 
 
@@ -74,7 +76,7 @@ public class HealGuardAndHero extends VillagerHelp {
     @Override
     protected void stop(ServerLevel level, Villager entity, long gameTime) {
         super.stop(level, entity, gameTime);
-        if (entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) >= 3) {
+        if (entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) >= GuardConfig.COMMON.maxClericHeal.get()) {
             entity.getBrain().setMemory(GuardMemoryTypes.LAST_THROWN_POTION.get(), level.getDayTime());
             entity.getBrain().setMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get(), 0);
         }

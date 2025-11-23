@@ -15,6 +15,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import tallestegg.guardvillagers.GuardMemoryTypes;
 import tallestegg.guardvillagers.common.entities.Guard;
+import tallestegg.guardvillagers.configuration.GuardConfig;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +24,7 @@ public class RepairGuardEquipment extends VillagerHelp {
     private Guard guard;
 
     public RepairGuardEquipment() {
-        super(ImmutableMap.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT), ImmutableList.of(VillagerProfession.WEAPONSMITH, VillagerProfession.ARMORER));
+        super(ImmutableMap.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT), GuardConfig.COMMON.professionsThatRepairGuards.get());
     }
 
     @Override
@@ -64,12 +65,12 @@ public class RepairGuardEquipment extends VillagerHelp {
 
     @Override
     protected boolean canStillUse(ServerLevel level, Villager entity, long gameTime) {
-        return entity.getBrain().getMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get()).orElse(null) < 3;
+        return entity.getBrain().getMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get()).orElse(null) < GuardConfig.COMMON.maxVillageRepair.get();
     }
 
     @Override
     protected void stop(ServerLevel worldIn, Villager entityIn, long gameTimeIn) {
-        if (entityIn.getBrain().getMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get()).orElse(null) >= 3) {
+        if (entityIn.getBrain().getMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get()).orElse(null) >= GuardConfig.COMMON.maxVillageRepair.get()) {
             entityIn.getBrain().setMemory(GuardMemoryTypes.LAST_REPAIRED_GUARD.get(), worldIn.getDayTime());
             entityIn.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
             entityIn.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);

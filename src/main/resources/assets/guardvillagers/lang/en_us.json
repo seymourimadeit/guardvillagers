@@ -51,9 +51,19 @@
   "guardvillagers.configuration.golem stuff": "golem stuff",
   "guardvillagers.config.hotvArmor": "Allow players to give guards stuff only if they have the hero of the village effect?",
   "guardvillagers.config.multifollow": "Allow the player to right click on bells to mass order guards to follow them?",
+  "guardvillagers.configuration.Structure pieces that spawn guards": "Structure pieces that spawn guards",
+  "guardvillagers.configuration.How many guards should spawn in a village?": "How many guards should spawn in a village?",
+  "guardvillagers.configuration.Allow guards to convert to zombie villagers upon being killed by zombies?": "Allow guards to convert to zombie villagers upon being killed by zombies?",
+  "guardvillagers.configuration.Guard crossbow attack radius": "",
   "stat.guardvillagers.guards_made": "Guards created",
   "subtitles.entity.guard.yes": "Guard agrees",
   "subtitles.entity.guard.no": "Guard disagrees",
   "guardvillagers.configuration.Chance for guards to lose durability": "Chance for guards to lose durability",
-  "guardvillagers.configuration.Profession Whitelist for guard conversion": "Profession Whitelist for guard conversion"
+  "guardvillagers.configuration.Profession Whitelist for guard conversion": "Profession Whitelist for guard conversion",
+  "guardvillagers.configuration.How many times a villager can heal a guard's equipment in one day": "How many times a villager can heal a guard's equipment in one day",
+  "guardvillagers.configuration.How many times a cleric can heal a guard in one day": "How many times a cleric can heal a guard in one day",
+  "guardvillagers.configuration.Profession Whitelist for guard weaponry repair ai": "Profession Whitelist for guard weaponry repair ai\"",
+  "guardvillagers.configuration.How many times a smith villager can heal a golem in one day": "How many times a smith villager can heal a golem in one day",
+  "guardvillagers.configuration.Profession Whitelist for healing ai for clerics": "Profession Whitelist for healing ai for clerics",
+  "guardvillagers.configuration.Profession Whitelist for golem repair ai": "Profession Whitelist for golem repair ai"
 }

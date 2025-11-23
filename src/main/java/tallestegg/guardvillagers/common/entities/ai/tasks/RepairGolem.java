@@ -16,6 +16,7 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import tallestegg.guardvillagers.GuardMemoryTypes;
+import tallestegg.guardvillagers.configuration.GuardConfig;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,7 @@ public class RepairGolem extends VillagerHelp {
     private LivingEntity golem;
 
     public RepairGolem() {
-        super(ImmutableMap.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT), ImmutableList.of(VillagerProfession.WEAPONSMITH, VillagerProfession.TOOLSMITH, VillagerProfession.ARMORER));
+        super(ImmutableMap.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT), GuardConfig.COMMON.professionsThatRepairGolems.get());
     }
 
     @Override
@@ -51,12 +52,12 @@ public class RepairGolem extends VillagerHelp {
 
     @Override
     protected boolean canStillUse(ServerLevel level, Villager entity, long gameTime) {
-        return entity.getBrain().getMemory(GuardMemoryTypes.TIMES_HEALED_GOLEM.get()).orElse(null) < 3;
+        return entity.getBrain().getMemory(GuardMemoryTypes.TIMES_HEALED_GOLEM.get()).orElse(null) < GuardConfig.COMMON.maxGolemRepair.get() && this.golem.getHealth() <= this.golem.getMaxHealth();
     }
 
     @Override
     protected void stop(ServerLevel worldIn, Villager entityIn, long gameTimeIn) {
-        if (entityIn.getBrain().getMemory(GuardMemoryTypes.TIMES_HEALED_GOLEM.get()).orElse(null) >= 3) {
+        if (entityIn.getBrain().getMemory(GuardMemoryTypes.TIMES_HEALED_GOLEM.get()).orElse(null) >= GuardConfig.COMMON.maxGolemRepair.get()) {
             entityIn.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
             entityIn.getBrain().setMemory(GuardMemoryTypes.LAST_REPAIRED_GOLEM.get(), worldIn.getDayTime());
             entityIn.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);

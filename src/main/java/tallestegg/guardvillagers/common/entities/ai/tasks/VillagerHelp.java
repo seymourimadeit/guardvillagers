@@ -6,18 +6,15 @@ import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.schedule.Activity;
-import tallestegg.guardvillagers.GuardMemoryTypes;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class VillagerHelp extends Behavior<Villager> {
-    private final List<VillagerProfession> allowedProfessions;
+    private final List<? extends String> allowedProfessions;
 
-    public VillagerHelp(Map<MemoryModuleType<?>, MemoryStatus> entryCondition, List<VillagerProfession> allowedProfessions) {
+    public VillagerHelp(Map<MemoryModuleType<?>, MemoryStatus> entryCondition, List<? extends String> allowedProfessions) {
         super(entryCondition);
         this.allowedProfessions = allowedProfessions;
     }
@@ -28,7 +25,7 @@ public class VillagerHelp extends Behavior<Villager> {
         if (!checkIfDayHavePassedFromLastActivity(owner))
             return false;
         else
-            return this.allowedProfessions.contains(owner.getVillagerData().getProfession()) && !owner.isSleeping() && activity != Activity.AVOID && activity != Activity.HIDE && activity != Activity.PANIC;
+            return this.allowedProfessions.contains(owner.getVillagerData().getProfession().name()) && !owner.isSleeping() && activity != Activity.AVOID && activity != Activity.HIDE && activity != Activity.PANIC;
     }
 
     protected boolean checkIfDayHavePassedFromLastActivity(LivingEntity owner) {
