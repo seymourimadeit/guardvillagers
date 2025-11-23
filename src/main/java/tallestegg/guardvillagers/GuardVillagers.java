@@ -49,6 +49,7 @@ public class GuardVillagers {
         GuardLootTables.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
         GuardLootTables.LOOT_ITEM_FUNCTION_TYPES.register(modEventBus);
         GuardStats.STATS.register(modEventBus);
+        GuardMemoryTypes.MEMORY_MODULE_TYPE.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addCreativeTabs);

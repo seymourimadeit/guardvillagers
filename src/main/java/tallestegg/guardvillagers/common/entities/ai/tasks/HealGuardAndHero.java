@@ -1,59 +1,45 @@
 package tallestegg.guardvillagers.common.entities.ai.tasks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.phys.Vec3;
+import tallestegg.guardvillagers.GuardMemoryTypes;
 import tallestegg.guardvillagers.common.entities.Guard;
 
 import java.util.List;
+import java.util.Optional;
 
-public class HealGuardAndHero extends Behavior<Villager> {
+public class HealGuardAndHero extends VillagerHelp {
     private LivingEntity targetToHeal;
     private int waitUntilInSightTicks = 0;
-    private int timesThrownPotion = 0;
-    private long lastTimeSinceUsed = 0;
 
     public HealGuardAndHero() {
-        super(ImmutableMap.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT));
+        super(ImmutableMap.of(MemoryModuleType.NEAREST_LIVING_ENTITIES, MemoryStatus.VALUE_PRESENT), ImmutableList.of(VillagerProfession.CLERIC));
     }
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, Villager owner) {
-        long gameTime = level.getGameTime();
-        Activity activity = owner.getBrain().getActiveNonCoreActivity().orElse(null);
-        if (owner.getVillagerData().getProfession() != VillagerProfession.CLERIC && (activity != Activity.AVOID && activity != Activity.HIDE && activity != Activity.PANIC)) {
-            return false;
-        }
-        if (gameTime - this.lastTimeSinceUsed < 24000L) {
-            return false;
-        } else {
-            List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
-            if (!list.isEmpty()) {
-                for (LivingEntity searchedForHeal : list) {
-                    if (searchedForHeal instanceof Guard || searchedForHeal.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || searchedForHeal instanceof Villager) {
-                        if (searchedForHeal.getHealth() < searchedForHeal.getMaxHealth() && searchedForHeal.distanceTo(owner) <= 4.0D) {
-                            this.targetToHeal = searchedForHeal;
-                            return true;
-                        }
+        List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
+        if (!list.isEmpty()) {
+            for (LivingEntity searchedForHeal : list) {
+                if (searchedForHeal instanceof Guard || searchedForHeal.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || searchedForHeal instanceof Villager) {
+                    if (searchedForHeal.getHealth() < searchedForHeal.getMaxHealth() && searchedForHeal.distanceTo(owner) <= 4.0D) {
+                        this.targetToHeal = searchedForHeal;
+                        return super.checkExtraStartConditions(level, owner);
                     }
                 }
             }
@@ -62,40 +48,48 @@ public class HealGuardAndHero extends Behavior<Villager> {
     }
 
     @Override
-    protected boolean canStillUse(ServerLevel level, Villager entity, long gameTime) {
-        return this.targetToHeal.getHealth() < this.targetToHeal.getMaxHealth() && (!this.targetToHeal.hasEffect(MobEffects.HEAL) || !this.targetToHeal.hasEffect(MobEffects.REGENERATION));
+    protected long timeToCheck(LivingEntity owner) {
+        Optional<Long> optional = owner.getBrain().getMemory(GuardMemoryTypes.LAST_THROWN_POTION.get());
+        return optional.isPresent() ? optional.get() : 0;
     }
+
+    @Override
+    protected boolean canStillUse(ServerLevel level, Villager entity, long gameTime) {
+        return checkIfDayHavePassedFromLastActivity(entity) && entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) < 3;
+    }
+
 
     @Override
     protected void tick(ServerLevel level, Villager owner, long gameTime) {
         super.tick(level, owner, gameTime);
-        owner.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
+        BehaviorUtils.lookAtEntity(owner, targetToHeal);
         owner.lookAt(this.targetToHeal, 30.0F, 30.0F);
         owner.getLookControl().setLookAt(this.targetToHeal);
         if (!owner.hasLineOfSight(this.targetToHeal)) {
             this.waitUntilInSightTicks += 5;
-        } else
-            this.waitUntilInSightTicks--;
-        if (waitUntilInSightTicks == 0)
-            this.throwPotion(owner);
+        } else this.waitUntilInSightTicks--;
+        if (waitUntilInSightTicks == 0) this.throwPotion(owner);
     }
 
     @Override
     protected void stop(ServerLevel level, Villager entity, long gameTime) {
         super.stop(level, entity, gameTime);
-        if (this.timesThrownPotion >= 3) {
-            this.lastTimeSinceUsed = gameTime;
-            this.timesThrownPotion = 0;
+        if (entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) >= 3) {
+            entity.getBrain().setMemory(GuardMemoryTypes.LAST_THROWN_POTION.get(), level.getDayTime());
+            entity.getBrain().setMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get(), 0);
         }
     }
 
     @Override
     protected void start(ServerLevel level, Villager entity, long gameTime) {
         this.waitUntilInSightTicks = 10;
+        if (!entity.getBrain().hasMemoryValue(GuardMemoryTypes.TIMES_THROWN_POTION.get())) {
+            entity.getBrain().setMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get(), 0);
+        }
     }
 
     public void throwPotion(LivingEntity healer) {
-        this.timesThrownPotion++;
+        healer.getBrain().setMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get(), healer.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) + 1);
         Holder<Potion> potion = targetToHeal.getHealth() > 4.0F ? Potions.REGENERATION : Potions.HEALING;
         ThrownPotion potionentity = new ThrownPotion(healer.level(), healer);
         potionentity.setItem(PotionContents.createItemStack(Items.SPLASH_POTION, potion));

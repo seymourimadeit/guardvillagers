@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.common.entities.ai.tasks.HealGuardAndHero;
 import tallestegg.guardvillagers.common.entities.ai.tasks.RepairGolem;
+import tallestegg.guardvillagers.common.entities.ai.tasks.RepairGuardEquipment;
 import tallestegg.guardvillagers.common.entities.ai.tasks.ShareGossipWithGuard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 
@@ -31,6 +32,8 @@ public abstract class VillagerGoalPackagesMixin {
             villagerList.add(Pair.of(10, new RepairGolem()));
         if (GuardConfig.COMMON.ClericHealing.get())
             villagerList.add(Pair.of(10, new HealGuardAndHero()));
+        if (GuardConfig.COMMON.armorersRepairGuardArmor.get())
+            villagerList.add(Pair.of(10, new RepairGuardEquipment()));
         cir.setReturnValue(ImmutableList.copyOf(villagerList));
     }
 

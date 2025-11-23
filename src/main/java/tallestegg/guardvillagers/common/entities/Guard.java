@@ -81,7 +81,6 @@ import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.GuardVillagers;
 import tallestegg.guardvillagers.ModCompat;
 import tallestegg.guardvillagers.client.GuardSounds;
-import tallestegg.guardvillagers.common.entities.ai.goals.ArmorerRepairGuardArmorGoal;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.loot_tables.GuardLootTables;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
@@ -586,9 +585,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             this.goalSelector.addGoal(4, new GuardInteractDoorGoal(this, true));
         if (GuardConfig.COMMON.GuardFormation.get())
             this.goalSelector.addGoal(6, new FollowShieldGuards(this)); // phalanx
-       // if (GuardConfig.COMMON.ClericHealing.get()) this.goalSelector.addGoal(6, new RunToClericGoal(this));
-        if (GuardConfig.COMMON.armorersRepairGuardArmor.get())
-            this.goalSelector.addGoal(6, new ArmorerRepairGuardArmorGoal(this));
         this.goalSelector.addGoal(3, new WalkBackToCheckPointGoal(this, 0.5D));
         this.goalSelector.addGoal(5, new GolemRandomStrollInVillageGoal(this, 0.5D));
         if (GuardConfig.COMMON.guardPatrolVillageAi.get())
