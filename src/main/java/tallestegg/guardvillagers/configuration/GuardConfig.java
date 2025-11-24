@@ -102,7 +102,7 @@ public class GuardConfig {
             convertibleProfessions = builder.comment("Professions that can be converted into guards").defineListAllowEmpty("Profession Whitelist for guard conversion", ImmutableList.of("nitwit", "none"), () -> "", obj -> true);
             builder.pop();
             builder.push("golem stuff");
-            golemFloat = builder.define("Allow Iron Golems to float on water?", true);
+            golemFloat = builder.define("Allow Iron Golems to float on water?", false);
             builder.pop();
             builder.push("guard stuff");
             guardCrossbowAttackRadius = builder.defineInRange("Guard crossbow attack radius", 8.0F, 0.0F, 100000000.0F);
