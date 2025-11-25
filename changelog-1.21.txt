@@ -1,1 +1,1 @@
-CHANGELOG:
+CHANGELOG:- [CHANGE] - fix swapped config options with professions that repair golems and professions that repair guards
