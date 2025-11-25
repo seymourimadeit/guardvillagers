@@ -53,7 +53,7 @@ public class HandlerEvents {
         LivingEntity entity = event.getEntity();
         LivingEntity target = event.getNewTarget();
         if (target == null || entity.getType() == GuardEntityType.GUARD.get()) return;
-        boolean isVillager = target.getType() == EntityType.VILLAGER || target.getType() == GuardEntityType.GUARD.get();
+        boolean isVillager = GuardConfig.COMMON.mobsGuardsProtectTargeted.get().contains(target.getEncodeId());
         if (isVillager) {
             List<Mob> list = entity.level().getEntitiesOfClass(Mob.class, entity.getBoundingBox().inflate(GuardConfig.GuardVillagerHelpRange, 5.0D, GuardConfig.GuardVillagerHelpRange));
             for (Mob mob : list) {
@@ -74,9 +74,8 @@ public class HandlerEvents {
         LivingEntity entity = event.getEntity();
         Entity trueSource = event.getSource().getEntity();
         if (entity == null || trueSource == null) return;
-        boolean isVillager = entity.getType() == EntityType.VILLAGER || entity.getType() == GuardEntityType.GUARD.get();
-        boolean isGolem = isVillager || entity.getType() == EntityType.IRON_GOLEM;
-        if (isGolem && trueSource.getType() == GuardEntityType.GUARD.get() && !GuardConfig.guardArrowsHurtVillagers) {
+        boolean isVillager = GuardConfig.COMMON.mobsGuardsProtectHurt.get().contains(entity.getEncodeId());
+        if (isVillager && trueSource.getType() == GuardEntityType.GUARD.get() && !GuardConfig.COMMON.guardArrowsHurtVillagers.get()) {
             event.setAmount(0.0F);
             event.setCanceled(true);
         }
