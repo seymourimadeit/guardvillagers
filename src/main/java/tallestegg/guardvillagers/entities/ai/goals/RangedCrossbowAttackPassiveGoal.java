@@ -121,8 +121,6 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
             }
             this.mob.lookAt(livingentity, 30.0F, 30.0F);
             this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-            if (friendlyInLineOfSight(this.mob))
-                this.crossbowState = CrossbowState.FIND_NEW_POSITION;
             if (this.crossbowState == CrossbowState.FIND_NEW_POSITION && GuardConfig.FriendlyFire) {
                 this.mob.stopUsingItem();
                 this.mob.setChargingCrossbow(false);
@@ -153,9 +151,13 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                     this.crossbowState = CrossbowState.READY_TO_ATTACK;
                 }
             } else if (this.crossbowState == CrossbowState.READY_TO_ATTACK && canSee) {
-                this.mob.performRangedAttack(livingentity, 1.0F);
-                ItemStack itemstack1 = this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
-                CrossbowItem.setCharged(itemstack1, false);
+                if (friendlyInLineOfSight(this.mob)) {
+                    this.crossbowState = CrossbowState.FIND_NEW_POSITION;
+                } else {
+                    this.mob.performRangedAttack(livingentity, 1.0F);
+                    ItemStack itemstack1 = this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
+                    CrossbowItem.setCharged(itemstack1, false);
+                }
                 this.crossbowState = CrossbowState.UNCHARGED;
             }
         }
@@ -193,10 +195,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
 
     @Nullable
     protected Vec3 getPosition() {
-        if (this.isValidTarget())
-            return DefaultRandomPos.getPosAway(this.mob, 16, 7, this.mob.getTarget().position());
-        else
-            return DefaultRandomPos.getPos(this.mob, 16, 7);
+        return DefaultRandomPos.getPos(this.mob, 16, 7);
     }
 
     private boolean canRun() {

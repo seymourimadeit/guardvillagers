@@ -164,12 +164,6 @@ public class HandlerEvents {
                     abstractvillager.goalSelector.addGoal(2, new AvoidEntityGoal<>(abstractvillager, Witch.class, 6.0F, 1.0D, 1.2D));
             }
 
-            if (mob instanceof Villager villager) {
-                if (GuardConfig.BlackSmithHealing) villager.goalSelector.addGoal(1, new HealGolemGoal(villager));
-                if (GuardConfig.ClericHealing)
-                    villager.goalSelector.addGoal(1, new HealGuardAndPlayerGoal(villager, 1.0D, 100, 0, 10.0F));
-            }
-
             if (mob instanceof IronGolem golem) {
                 HurtByTargetGoal tolerateFriendlyFire = new HurtByTargetGoal(golem, Guard.class).setAlertOthers();
                 golem.targetSelector.availableGoals.stream().map(it -> it.goal).filter(it -> it instanceof HurtByTargetGoal).findFirst().ifPresent(angerGoal -> {

@@ -170,13 +170,9 @@ public class GuardConfig {
             MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").define("Mob Whitelist", new ArrayList<>());
             builder.pop();
             builder.push("villager stuff");
-            guardSpawnInVillage = builder.defineInRange("How many guards should spawn in a village?", 6, 0, 100000000);
-            guardSinkToFightUnderWater = builder.define("Allow guards to sink temporarily to fight mobs that are under water?", true);
-            mobsGuardsProtectTargeted = builder.defineListAllowEmpty("Mobs that guards actively protect when they get targeted", Lists.newArrayList("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"), obj -> true);
-            mobsGuardsProtectHurt = builder.comment("Mobs in this list also won't get hurt by a guard's arrow if the config option to disable guard arrows hurting villagers is enabled.").defineListAllowEmpty("Mobs that guards actively protect when they get hurt", Lists.newArrayList("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"),  obj -> true);
             professionsThatHeal = builder.defineListAllowEmpty("Profession Whitelist for healing ai for clerics", Lists.newArrayList("cleric"), obj -> true);
-            professionsThatRepairGuards = builder.defineListAllowEmpty("Profession Whitelist for golem repair ai", Lists.newArrayList("armorer, weaponsmith"), obj -> true);
-            professionsThatRepairGolems = builder.defineListAllowEmpty("Profession Whitelist for guard weaponry repair ai", Lists.newArrayList("weaponsmith", "armorer", "toolsmith"), obj -> true);
+            professionsThatRepairGolems = builder.defineListAllowEmpty("Profession Whitelist for golem repair ai", Lists.newArrayList("armorer, weaponsmith"), obj -> true);
+            professionsThatRepairGuards = builder.defineListAllowEmpty("Profession Whitelist for guard weaponry repair ai", Lists.newArrayList("weaponsmith", "armorer", "toolsmith"), obj -> true);
             maxClericHeal = builder.defineInRange("How many times a cleric can heal a guard in one day", 3, 0, 1000000);
             maxGolemRepair = builder.defineInRange("How many times a smith villager can heal a golem in one day", 3, 0, 1000000);
             maxVillageRepair = builder.defineInRange("How many times a villager can heal a guard's equipment in one day", 3, 0, 1000000);
@@ -192,6 +188,10 @@ public class GuardConfig {
             ironGolemFloat = builder.define("Allow Iron Golems to float on water?", false);
             builder.pop();
             builder.push("guard stuff");
+            guardSpawnInVillage = builder.defineInRange("How many guards should spawn in a village?", 6, 0, 100000000);
+            guardSinkToFightUnderWater = builder.define("Allow guards to sink temporarily to fight mobs that are under water?", true);
+            mobsGuardsProtectTargeted = builder.defineListAllowEmpty("Mobs that guards actively protect when they get targeted", Lists.newArrayList("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"), obj -> true);
+            mobsGuardsProtectHurt = builder.comment("Mobs in this list also won't get hurt by a guard's arrow if the config option to disable guard arrows hurting villagers is enabled.").defineListAllowEmpty("Mobs that guards actively protect when they get hurt", Lists.newArrayList("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"),  obj -> true);
             structuresThatSpawnGuards = builder.comment("Guards are placed in the middle, thus more advanced placement should be done via datapacks").define("Structure pieces that spawn guards", Lists.newArrayList("minecraft:village/common/iron_golem"), obj -> true);
             guardCrossbowAttackRadius = builder.defineInRange("Guard crossbow attack radius", 8.0F, 0.0F, 100000000.0F);
             convertGuardOnDeath = builder.define("Allow guards to convert to zombie villagers upon being killed by zombies?", true);

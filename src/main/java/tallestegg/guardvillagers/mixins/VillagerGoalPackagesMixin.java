@@ -14,6 +14,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tallestegg.guardvillagers.GuardEntityType;
+import tallestegg.guardvillagers.configuration.GuardConfig;
+import tallestegg.guardvillagers.entities.ai.tasks.HealGuardAndHero;
+import tallestegg.guardvillagers.entities.ai.tasks.RepairGolem;
+import tallestegg.guardvillagers.entities.ai.tasks.RepairGuardEquipment;
 import tallestegg.guardvillagers.entities.ai.tasks.ShareGossipWithGuard;
 
 import java.util.ArrayList;
@@ -21,6 +25,19 @@ import java.util.List;
 
 @Mixin(VillagerGoalPackages.class)
 public abstract class VillagerGoalPackagesMixin {
+
+    @Inject(method = "getCorePackage", cancellable = true, at = @At("RETURN"))
+    private static void getCorePackage(VillagerProfession pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
+        List<Pair<Integer, ? extends BehaviorControl<? super Villager>>> villagerList = new ArrayList<>(cir.getReturnValue());
+        if (GuardConfig.COMMON.BlacksmithHealing.get())
+            villagerList.add(Pair.of(10, new RepairGolem()));
+        if (GuardConfig.COMMON.ClericHealing.get())
+            villagerList.add(Pair.of(10, new HealGuardAndHero()));
+        if (GuardConfig.COMMON.armorersRepairGuardArmor.get())
+            villagerList.add(Pair.of(10, new RepairGuardEquipment()));
+        cir.setReturnValue(ImmutableList.copyOf(villagerList));
+    }
+
     @Inject(method = "getMeetPackage", cancellable = true, at = @At("RETURN"))
     private static void getMeetPackage(VillagerProfession pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
         List<Pair<Integer, ? extends BehaviorControl<? super Villager>>> villagerList = new ArrayList<>(cir.getReturnValue());
