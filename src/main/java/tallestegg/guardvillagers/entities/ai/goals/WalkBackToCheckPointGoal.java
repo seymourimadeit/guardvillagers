@@ -19,7 +19,7 @@ public class WalkBackToCheckPointGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return guard.getPatrolPos() != null && this.guard.blockPosition() != this.guard.getPatrolPos() && !guard.isFollowing() && guard.isPatrolling();
+        return guard.getTarget() == null && guard.getPatrolPos() != null && this.guard.blockPosition() != this.guard.getPatrolPos() && !guard.isFollowing() && guard.isPatrolling();
     }
 
     @Override

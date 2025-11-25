@@ -609,7 +609,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (ModList.get().isLoaded("musketmod"))
             this.goalSelector.addGoal(3, new ModCompat.UseMusketGoal(this, 20, 15.0F));
         this.goalSelector.addGoal(3, new GuardMeleeGoal(this, 0.8D, true));
-        this.goalSelector.addGoal(4, new FollowHeroGoal(this, 0.8F, 10.0F, 4.0F));
+        this.goalSelector.addGoal(3, new WalkBackToCheckPointGoal(this, 0.5D));
+       this.goalSelector.addGoal(4, new FollowHeroGoal(this, 0.8F, 10.0F, 4.0F));
         if (GuardConfig.GuardsRunFromPolarBears)
             this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, PolarBear.class, 12.0F, 1.0D, 1.2D));
         this.goalSelector.addGoal(4, new MoveBackToVillageGoal(this, 0.5D, false));
@@ -617,7 +618,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (GuardConfig.GuardFormation) this.goalSelector.addGoal(6, new FollowShieldGuards(this)); // phalanx
         if (GuardConfig.ClericHealing) this.goalSelector.addGoal(6, new RunToClericGoal(this));
         if (GuardConfig.armorerRepairGuardArmor) this.goalSelector.addGoal(6, new ArmorerRepairGuardArmorGoal(this));
-        this.goalSelector.addGoal(5, new WalkBackToCheckPointGoal(this, 0.5D));
         this.goalSelector.addGoal(5, new GolemRandomStrollInVillageGoal(this, 0.5D));
         if (GuardConfig.COMMON.guardPatrol.get())
             this.goalSelector.addGoal(5, new MoveThroughVillageGoal(this, 0.5D, false, 4, () -> false));
