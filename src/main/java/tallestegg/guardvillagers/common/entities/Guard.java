@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
@@ -566,7 +567,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(0, new KickGoal(this));
         this.goalSelector.addGoal(0, new GuardEatFoodGoal(this));
         this.goalSelector.addGoal(0, new RaiseShieldGoal(this));
@@ -592,6 +592,16 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, AbstractVillager.class, 8.0F));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(8, new GuardLookAtAndStopMovingWhenBeingTheInteractionTarget(this));
+        if (GuardConfig.COMMON.guardSinkToFightUnderWater.get()) {
+            this.goalSelector.addGoal(10, new FloatGoal(this) {
+                @Override
+                public boolean canUse() {
+                    return super.canUse() && ((Guard.this.getTarget() != null && Guard.this.getTarget().getY() > Guard.this.getY()) || Guard.this.getMainHandItem().getItem() instanceof ProjectileWeaponItem || Guard.this.getTarget() == null || Guard.this.getAirSupply() <= 0); // If I have a target in the water, stop floating, otherwise float
+                }
+            });
+        } else {
+            this.goalSelector.addGoal(10, new FloatGoal(this));
+        }
         this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, Guard.class, IronGolem.class)).setAlertOthers());
         this.targetSelector.addGoal(3, new HeroHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
@@ -1360,15 +1370,17 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                             .getNearbyEntities(Guard.class, NEARBY_GUARDS.range(3.0D), guard,
                                     this.taskOwner.getBoundingBox().inflate(5.0D))
                             .size() < 5) {
-                        this.guardtofollow = guard;
-                        Vec3 vec3d = this.getPosition();
-                        if (vec3d == null) {
-                            return false;
-                        } else {
-                            this.x = vec3d.x;
-                            this.y = vec3d.y;
-                            this.z = vec3d.z;
-                            return true;
+                        if (!(taskOwner.getMainHandItem().getItem() instanceof ProjectileWeaponItem)) {
+                            this.guardtofollow = guard;
+                            Vec3 vec3d = this.getPosition();
+                            if (vec3d == null) {
+                                return false;
+                            } else {
+                                this.x = vec3d.x;
+                                this.y = vec3d.y;
+                                this.z = vec3d.z;
+                                return true;
+                            }
                         }
                     }
                 }
@@ -1498,8 +1510,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 }
                 this.mob.lookAt(livingentity, 30.0F, 30.0F);
                 this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
-                if (friendlyInLineOfSight(this.mob) && !this.mob.isPatrolling())
-                    this.crossbowState = CrossbowState.FIND_NEW_POSITION;
                 if (this.crossbowState == CrossbowState.FIND_NEW_POSITION) {
                     this.mob.stopUsingItem();
                     this.mob.setChargingCrossbow(false);
@@ -1530,8 +1540,12 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                         this.crossbowState = CrossbowState.READY_TO_ATTACK;
                     }
                 } else if (this.crossbowState == CrossbowState.READY_TO_ATTACK && canSee) {
-                    this.mob.performRangedAttack(livingentity, 1.0F);
-                    this.crossbowState = CrossbowState.UNCHARGED;
+                    if (friendlyInLineOfSight(this.mob) && !this.mob.isPatrolling())
+                        this.crossbowState = CrossbowState.FIND_NEW_POSITION;
+                    else {
+                        this.mob.performRangedAttack(livingentity, 1.0F);
+                        this.crossbowState = CrossbowState.UNCHARGED;
+                    }
                 }
             }
 
@@ -1570,10 +1584,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Nullable
         protected Vec3 getPosition() {
-            if (this.isValidTarget() && this.mob.getTarget().position() != null)
-                return DefaultRandomPos.getPosAway(this.mob, 16, 7, this.mob.getTarget().position());
-            else
-                return DefaultRandomPos.getPos(this.mob, 16, 7);
+            return DefaultRandomPos.getPos(this.mob, 16, 7);
         }
 
         private boolean canRun() {

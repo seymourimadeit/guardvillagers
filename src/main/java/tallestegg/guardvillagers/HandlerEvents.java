@@ -67,7 +67,7 @@ public class HandlerEvents {
         LivingEntity entity = event.getEntity();
         LivingEntity target = event.getNewAboutToBeSetTarget();
         if (target == null || entity.getType() == GuardEntityType.GUARD.get()) return;
-        boolean isVillager = target.getType() == EntityType.VILLAGER || target.getType() == GuardEntityType.GUARD.get();
+        boolean isVillager = GuardConfig.COMMON.mobsGuardsProtectTargeted.get().contains(target.getEncodeId());
         if (isVillager) {
             List<Mob> list = entity.level().getEntitiesOfClass(Mob.class, entity.getBoundingBox().inflate(GuardConfig.COMMON.GuardVillagerHelpRange.get(), 5.0D, GuardConfig.COMMON.GuardVillagerHelpRange.get()));
             for (Mob mob : list) {
@@ -88,9 +88,8 @@ public class HandlerEvents {
         LivingEntity entity = event.getEntity();
         Entity trueSource = event.getContainer().getSource().getEntity();
         if (entity == null || trueSource == null) return;
-        boolean isVillager = entity.getType() == EntityType.VILLAGER || entity.getType() == GuardEntityType.GUARD.get();
-        boolean isGolem = isVillager || entity.getType() == EntityType.IRON_GOLEM;
-        if (isGolem && trueSource.getType() == GuardEntityType.GUARD.get() && !GuardConfig.COMMON.guardArrowsHurtVillagers.get()) {
+        boolean isVillager = GuardConfig.COMMON.mobsGuardsProtectHurt.get().contains(entity.getEncodeId());
+        if (isVillager && trueSource.getType() == GuardEntityType.GUARD.get() && !GuardConfig.COMMON.guardArrowsHurtVillagers.get()) {
             event.getContainer().setNewDamage(0.0F);
         }
         if (isVillager && event.getContainer().getSource().getEntity() instanceof Mob) {
@@ -104,17 +103,6 @@ public class HandlerEvents {
                     else
                         mob.setTarget((Mob) event.getContainer().getSource().getEntity());
                 }
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onLivingTick(EntityTickEvent.Pre event) {
-        if (event.getEntity() instanceof AbstractHorse horse) {
-            Vec3 vec3 = new Vec3(horse.xxa, horse.yya, horse.zza);
-            if (horse.hasControllingPassenger() && horse.getControllingPassenger() instanceof Guard) {
-                horse.setSpeed((float) horse.getAttributeValue(Attributes.MOVEMENT_SPEED));
-                horse.travel(vec3);
             }
         }
     }
@@ -146,11 +134,6 @@ public class HandlerEvents {
                     abstractvillager.goalSelector.addGoal(2, new AvoidEntityGoal<>(abstractvillager, PolarBear.class, 6.0F, 1.0D, 1.2D));
                 if (GuardConfig.COMMON.WitchesVillager.get())
                     abstractvillager.goalSelector.addGoal(2, new AvoidEntityGoal<>(abstractvillager, Witch.class, 6.0F, 1.0D, 1.2D));
-            }
-
-            if (mob instanceof Villager villager) {
-           //     if (GuardConfig.COMMON.ClericHealing.get())
-              //      villager.goalSelector.addGoal(1, new HealGuardAndPlayerGoal(villager, 1.0D, 100, 0, 10.0F));
             }
 
             if (mob instanceof IronGolem golem) {

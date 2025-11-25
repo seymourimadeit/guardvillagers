@@ -46,17 +46,8 @@ public class GuardConfig {
         public final ModConfigSpec.BooleanValue guardTeleport;
         public final ModConfigSpec.BooleanValue BlacksmithHealing;
         public final ModConfigSpec.BooleanValue ClericHealing;
-        public final ModConfigSpec.DoubleValue GuardVillagerHelpRange;
-        public final ModConfigSpec.DoubleValue amountOfHealthRegenerated;
         public final ModConfigSpec.BooleanValue guardArrowsHurtVillagers;
         public final ModConfigSpec.BooleanValue armorersRepairGuardArmor;
-        public final ModConfigSpec.ConfigValue<List<? extends String>> MobBlackList;
-        public final ModConfigSpec.ConfigValue<List<? extends String>> MobWhiteList;
-        public final ModConfigSpec.ConfigValue<List<? extends String>> convertibleProfessions;
-        public final ModConfigSpec.ConfigValue<List<? extends String>> professionsThatHeal;
-        public final ModConfigSpec.ConfigValue<List<? extends String>> professionsThatRepairGolems;
-        public final ModConfigSpec.ConfigValue<List<? extends String>> professionsThatRepairGuards;
-        public final ModConfigSpec.ConfigValue<List<? extends String>> structuresThatSpawnGuards;
         public final ModConfigSpec.BooleanValue giveGuardStuffHOTV;
         public final ModConfigSpec.BooleanValue setGuardPatrolHotv;
         public final ModConfigSpec.BooleanValue followHero;
@@ -64,6 +55,16 @@ public class GuardConfig {
         public final ModConfigSpec.BooleanValue multiFollow;
         public final ModConfigSpec.BooleanValue guardPatrolVillageAi;
         public final ModConfigSpec.BooleanValue convertGuardOnDeath;
+        public final ModConfigSpec.BooleanValue guardSinkToFightUnderWater;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> MobBlackList;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> MobWhiteList;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> convertibleProfessions;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> professionsThatHeal;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> professionsThatRepairGolems;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> professionsThatRepairGuards;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> structuresThatSpawnGuards;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> mobsGuardsProtectTargeted;
+        public final ModConfigSpec.ConfigValue<List<? extends String>> mobsGuardsProtectHurt;
         public final ModConfigSpec.IntValue reputationRequirement;
         public final ModConfigSpec.IntValue reputationRequirementToBeAttacked;
         public final ModConfigSpec.IntValue guardSpawnInVillage;
@@ -73,6 +74,8 @@ public class GuardConfig {
         public final ModConfigSpec.DoubleValue chanceToDropEquipment;
         public final ModConfigSpec.DoubleValue chanceToBreakEquipment;
         public final ModConfigSpec.DoubleValue guardCrossbowAttackRadius;
+        public final ModConfigSpec.DoubleValue GuardVillagerHelpRange;
+        public final ModConfigSpec.DoubleValue amountOfHealthRegenerated;
 
         public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("raids and illagers");
@@ -105,8 +108,11 @@ public class GuardConfig {
             golemFloat = builder.define("Allow Iron Golems to float on water?", false);
             builder.pop();
             builder.push("guard stuff");
+            guardSinkToFightUnderWater = builder.define("Allow guards to sink temporarily to fight mobs that are under water?", true);
+            mobsGuardsProtectTargeted = builder.defineListAllowEmpty("Mobs that guards actively protect when they get targeted", ImmutableList.of("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"), () -> "", obj -> true);
+            mobsGuardsProtectHurt = builder.comment("Mobs in this list also won't get hurt by a guard's arrow if the config option to disable guard arrows hurting villagers is enabled.").defineListAllowEmpty("Mobs that guards actively protect when they get hurt", ImmutableList.of("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"), () -> "", obj -> true);
             guardCrossbowAttackRadius = builder.defineInRange("Guard crossbow attack radius", 8.0F, 0.0F, 100000000.0F);
-            structuresThatSpawnGuards = builder.defineListAllowEmpty("Structure pieces that spawn guards", ImmutableList.of("minecraft:village/common/iron_golem"), () -> "", obj -> true);
+            structuresThatSpawnGuards = builder.comment("Guards are placed in the middle, thus more advanced placement should be done via datapacks").defineListAllowEmpty("Structure pieces that spawn guards", ImmutableList.of("minecraft:village/common/iron_golem"), () -> "", obj -> true);
             guardSpawnInVillage = builder.defineInRange("How many guards should spawn in a village?", 6, 0, 100000000);
             convertGuardOnDeath = builder.define("Allow guards to convert to zombie villagers upon being killed by zombies?", true);
             multiFollow = builder.translation(GuardVillagers.MODID + ".config.multifollow").define("Allow the player to right click on bells to mass order guards to follow them?", true);
