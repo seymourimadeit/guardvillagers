@@ -41,8 +41,7 @@ public class RepairGuardEquipment extends VillagerHelp {
                                 return super.checkExtraStartConditions(worldIn, owner);
                             }
                         }
-                    }
-                    if (owner.getVillagerData().getProfession() == VillagerProfession.WEAPONSMITH) {
+                    } else {
                         for (int i = 4; i < 6; ++i) {
                             ItemStack itemstack = guard.guardInventory.getItem(i);
                             if (itemstack.isDamaged() && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
