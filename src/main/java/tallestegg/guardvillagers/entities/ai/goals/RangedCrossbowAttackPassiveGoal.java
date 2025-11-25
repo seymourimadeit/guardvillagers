@@ -151,21 +151,23 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                     this.crossbowState = CrossbowState.READY_TO_ATTACK;
                 }
             } else if (this.crossbowState == CrossbowState.READY_TO_ATTACK && canSee) {
-                if (friendlyInLineOfSight(this.mob)) {
+                if (friendlyInLineOfSight(this.mob))
                     this.crossbowState = CrossbowState.FIND_NEW_POSITION;
-                } else {
+                else {
                     this.mob.performRangedAttack(livingentity, 1.0F);
                     ItemStack itemstack1 = this.mob.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
                     CrossbowItem.setCharged(itemstack1, false);
+                    this.crossbowState = CrossbowState.UNCHARGED;
                 }
-                this.crossbowState = CrossbowState.UNCHARGED;
             }
         }
 
     }
 
     public static boolean friendlyInLineOfSight(Mob mob) {
-        List<Entity> list = mob.level().getEntities(mob, mob.getBoundingBox().inflate(5.0D));
+        Vec3 lookAngle = mob.getViewVector(1.0F);
+        AABB aabb = mob.getBoundingBox().expandTowards(lookAngle.scale(6.0D)).inflate(1.0, 1.0, 1.0);
+        List<Entity> list = mob.level().getEntities(mob, aabb);
         for (Entity guard : list) {
             if (guard != mob.getTarget()) {
                 boolean isVillager = ((Guard) mob).getOwner() == guard || guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
@@ -173,8 +175,9 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                     Vec3 vector3d = mob.getLookAngle();
                     Vec3 vector3d1 = guard.position().vectorTo(mob.position()).normalize();
                     vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
-                    if (vector3d1.dot(vector3d) < 1.0D && mob.hasLineOfSight(guard) && guard.distanceTo(mob) <= 4.0D)
-                        return GuardConfig.FriendlyFire;
+                    System.out.println(vector3d1.dot(vector3d));
+                    if (vector3d1.dot(vector3d) < -0.9D && mob.hasLineOfSight(guard))
+                        return GuardConfig.COMMON.FriendlyFire.get();
                 }
             }
         }
