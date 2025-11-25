@@ -9,3 +9,6 @@
 - [CHANGE] - clerics can now only heal guards, players with hero of the village, and villagers 3 times a day
 - [CHANGE] - armorers and weaponsmiths can only repair guard armor 3 times a day
 - [CHANGE] disable iron golems floating in water by default
+- [CHANGE] - add configs for mobs that guards actively protect
+
+- add mechanic where guards can sink temporarily to fight mobs underwater
