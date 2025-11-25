@@ -125,7 +125,6 @@ public class GuardConfig {
         public final ForgeConfigSpec.DoubleValue healthModifier;
         public final ForgeConfigSpec.DoubleValue speedModifier;
         public final ForgeConfigSpec.DoubleValue followRangeModifier;
-
         public final ForgeConfigSpec.BooleanValue ironGolemFloat;
         public final ForgeConfigSpec.BooleanValue guardArrowsHurtVillagers;
         public final ForgeConfigSpec.BooleanValue armorersRepairGuardArmor;
@@ -142,6 +141,7 @@ public class GuardConfig {
         public final ForgeConfigSpec.BooleanValue guardPatrol;
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> convertibleProfessions;
         public final ForgeConfigSpec.DoubleValue chanceToBreakEquipment;
+        public final ForgeConfigSpec.BooleanValue convertGuardOnDeath;
 
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
@@ -170,6 +170,7 @@ public class GuardConfig {
             ironGolemFloat = builder.define("Allow Iron Golems to float on water?", true);
             builder.pop();
             builder.push("guard stuff");
+            convertGuardOnDeath = builder.define("Allow guards to convert to zombie villagers upon being killed by zombies?", true);
             multiFollow = builder.translation(GuardVillagers.MODID + ".config.multifollow").define("Allow the player to right click on bells to mass order guards to follow them?", true);
             guardPatrol = builder.define("Have guards patrol the village regularly?", false);
             chanceToDropEquipment = builder.defineInRange("Chance to drop equipment", 100.0F, -999.9F, 999.0F);
