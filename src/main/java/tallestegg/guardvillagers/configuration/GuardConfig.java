@@ -143,6 +143,17 @@ public class GuardConfig {
         public final ForgeConfigSpec.DoubleValue chanceToBreakEquipment;
         public final ForgeConfigSpec.BooleanValue convertGuardOnDeath;
         public final ForgeConfigSpec.DoubleValue guardCrossbowAttackRadius;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> professionsThatHeal;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> professionsThatRepairGolems;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> professionsThatRepairGuards;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> structuresThatSpawnGuards;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> mobsGuardsProtectTargeted;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> mobsGuardsProtectHurt;
+        public final ForgeConfigSpec.IntValue maxClericHeal;
+        public final ForgeConfigSpec.IntValue maxGolemRepair;
+        public final ForgeConfigSpec.IntValue maxVillageRepair;
+        public final ForgeConfigSpec.BooleanValue guardSinkToFightUnderWater;
+        public final ForgeConfigSpec.IntValue guardSpawnInVillage;
 
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
@@ -159,18 +170,29 @@ public class GuardConfig {
             MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").define("Mob Whitelist", new ArrayList<>());
             builder.pop();
             builder.push("villager stuff");
+            guardSpawnInVillage = builder.defineInRange("How many guards should spawn in a village?", 6, 0, 100000000);
+            guardSinkToFightUnderWater = builder.define("Allow guards to sink temporarily to fight mobs that are under water?", true);
+            mobsGuardsProtectTargeted = builder.defineListAllowEmpty("Mobs that guards actively protect when they get targeted", Lists.newArrayList("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"), obj -> true);
+            mobsGuardsProtectHurt = builder.comment("Mobs in this list also won't get hurt by a guard's arrow if the config option to disable guard arrows hurting villagers is enabled.").defineListAllowEmpty("Mobs that guards actively protect when they get hurt", Lists.newArrayList("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"),  obj -> true);
+            professionsThatHeal = builder.defineListAllowEmpty("Profession Whitelist for healing ai for clerics", Lists.newArrayList("cleric"), obj -> true);
+            professionsThatRepairGuards = builder.defineListAllowEmpty("Profession Whitelist for golem repair ai", Lists.newArrayList("armorer, weaponsmith"), obj -> true);
+            professionsThatRepairGolems = builder.defineListAllowEmpty("Profession Whitelist for guard weaponry repair ai", Lists.newArrayList("weaponsmith", "armorer", "toolsmith"), obj -> true);
+            maxClericHeal = builder.defineInRange("How many times a cleric can heal a guard in one day", 3, 0, 1000000);
+            maxGolemRepair = builder.defineInRange("How many times a smith villager can heal a golem in one day", 3, 0, 1000000);
+            maxVillageRepair = builder.defineInRange("How many times a villager can heal a guard's equipment in one day", 3, 0, 1000000);
             armorersRepairGuardArmor = builder.translation(GuardVillagers.MODID + ".config.armorvillager").define("Allow armorers and weaponsmiths repair guard items when down below half durability?", true);
             ConvertVillagerIfHaveHOTV = builder.comment("This will make it so villagers will only be converted into guards if the player has hero of the village").translation(GuardVillagers.MODID + ".config.hotv")
                     .define("Make it so players have to have hero of the village to convert villagers into guards?", false);
             BlacksmithHealing = builder.translation(GuardVillagers.MODID + ".config.blacksmith").define("Have it so blacksmiths heal golems under 60 health?", true);
             ClericHealing = builder.translation(GuardVillagers.MODID + ".config.cleric").define("Have it so clerics heal guards and players with hero of the village?", true);
             VillagersRunFromPolarBears = builder.comment("This makes villagers run from polar bears, as anyone with common sense would.").translation(GuardVillagers.MODID + ".config.VillagersRunFromPolarBears").define("Have Villagers have some common sense?", true);
-            convertibleProfessions = builder.comment("Professions that can be converted into guards").define("Profession Whitelist for guard conversion", ImmutableList.of("nitwit", "none"), obj -> true);
+            convertibleProfessions = builder.comment("Professions that can be converted into guards").define("Profession Whitelist for guard conversion", Lists.newArrayList("nitwit", "none"), obj -> true);
             builder.pop();
             builder.push("golem stuff");
-            ironGolemFloat = builder.define("Allow Iron Golems to float on water?", true);
+            ironGolemFloat = builder.define("Allow Iron Golems to float on water?", false);
             builder.pop();
             builder.push("guard stuff");
+            structuresThatSpawnGuards = builder.comment("Guards are placed in the middle, thus more advanced placement should be done via datapacks").define("Structure pieces that spawn guards", Lists.newArrayList("minecraft:village/common/iron_golem"), obj -> true);
             guardCrossbowAttackRadius = builder.defineInRange("Guard crossbow attack radius", 8.0F, 0.0F, 100000000.0F);
             convertGuardOnDeath = builder.define("Allow guards to convert to zombie villagers upon being killed by zombies?", true);
             multiFollow = builder.translation(GuardVillagers.MODID + ".config.multifollow").define("Allow the player to right click on bells to mass order guards to follow them?", true);
