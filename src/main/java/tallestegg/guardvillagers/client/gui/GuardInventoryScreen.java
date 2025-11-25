@@ -1,13 +1,12 @@
 package tallestegg.guardvillagers.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
@@ -27,6 +26,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     private static final ResourceLocation GUARD_NOT_FOLLOWING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/not_following_icons.png");
     private static final ResourceLocation PATROL_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/patrollingui.png");
     private static final ResourceLocation NOT_PATROLLING_ICON = new ResourceLocation(GuardVillagers.MODID, "textures/container/notpatrollingui.png");
+    protected static final ResourceLocation GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png");
     private final Guard guard;
     private Player player;
     private float mousePosX;
@@ -73,11 +73,41 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         super.renderLabels(graphics, x, y);
         int health = Mth.ceil(guard.getHealth());
         int armor = guard.getArmorValue();
-        Component guardHealthText = Component.translatable("guardinventory.health", health);
-        Component guardArmorText = Component.translatable("guardinventory.armor", armor);
-        graphics.drawString(font, guardHealthText, 80, 20, 4210752, false);
-        graphics.drawString(font, guardArmorText, 80, 30, 4210752, false);
+        int yValueWithOrWithoutArmor = armor <= 0 ? 20 : 30;
+        for (int i = 0; i < 10; i++) {
+            int heartXValue = i * 8 + 80;
+            this.renderHeart(graphics, Gui.HeartType.CONTAINER, heartXValue, yValueWithOrWithoutArmor, 0, false, false);
+        }
+        for (int i = 0; i < health / 2; i++) {
+            int heartXValue = i * 8 + 80;
+            if (health % 2 != 0 && health / 2 == i + 1) {
+                this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, 0, false, true);
+            } else {
+                this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, 0, false, false);
+            }
+        }
+        if (armor > 0) {
+            for (int k = 0; k < 10; k++) {
+                int l = k * 8 + 80;
+                if (k * 2 + 1 < armor) {
+                    graphics.blit(GUI_ICONS_LOCATION, l, 20, 34, 9, 9, 9);
+                }
+
+                if (k * 2 + 1 == armor) {
+                    graphics.blit(GUI_ICONS_LOCATION, l, 20, 25, 9, 9, 9);
+                }
+
+                if (k * 2 + 1 > armor) {
+                    graphics.blit(GUI_ICONS_LOCATION, l, 20, 16, 9, 9, 9);
+                }
+            }
+        }
     }
+
+    private void renderHeart(GuiGraphics pGuiGraphics, Gui.HeartType pHeartType, int pX, int pY, int pYOffset, boolean pRenderHighlight, boolean pHalfHeart) {
+        pGuiGraphics.blit(GUI_ICONS_LOCATION, pX, pY, pHeartType.getX(pHalfHeart, pRenderHighlight), pYOffset, 9, 9);
+    }
+
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
