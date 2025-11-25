@@ -142,6 +142,7 @@ public class GuardConfig {
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> convertibleProfessions;
         public final ForgeConfigSpec.DoubleValue chanceToBreakEquipment;
         public final ForgeConfigSpec.BooleanValue convertGuardOnDeath;
+        public final ForgeConfigSpec.DoubleValue guardCrossbowAttackRadius;
 
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
@@ -170,6 +171,7 @@ public class GuardConfig {
             ironGolemFloat = builder.define("Allow Iron Golems to float on water?", true);
             builder.pop();
             builder.push("guard stuff");
+            guardCrossbowAttackRadius = builder.defineInRange("Guard crossbow attack radius", 8.0F, 0.0F, 100000000.0F);
             convertGuardOnDeath = builder.define("Allow guards to convert to zombie villagers upon being killed by zombies?", true);
             multiFollow = builder.translation(GuardVillagers.MODID + ".config.multifollow").define("Allow the player to right click on bells to mass order guards to follow them?", true);
             guardPatrol = builder.define("Have guards patrol the village regularly?", false);
