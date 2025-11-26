@@ -1,2 +1,3 @@
 CHANGELOG:- [CHANGE] - fix swapped config options with professions that repair golems and professions that repair guards
 - [CHANGE]  Update French translations for guard villagers - acorsicanfrog
+- [CHANGE] added config option for exact angle ranged guards check for friendlies before firing
