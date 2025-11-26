@@ -1562,7 +1562,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                         Vec3 vector3d = mob.getLookAngle();
                         Vec3 vector3d1 = guard.position().vectorTo(mob.position()).normalize();
                         vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
-                        if (vector3d1.dot(vector3d) < 1.0D && mob.hasLineOfSight(guard))
+                        if (vector3d1.dot(vector3d) < GuardConfig.COMMON.friendlyFireCheckValue.get().doubleValue() && mob.hasLineOfSight(guard))
                             return GuardConfig.COMMON.FriendlyFire.get();
                     }
                 }

@@ -76,6 +76,7 @@ public class GuardConfig {
         public final ModConfigSpec.DoubleValue guardCrossbowAttackRadius;
         public final ModConfigSpec.DoubleValue GuardVillagerHelpRange;
         public final ModConfigSpec.DoubleValue amountOfHealthRegenerated;
+        public final ModConfigSpec.DoubleValue friendlyFireCheckValue;
 
         public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("raids and illagers");
@@ -124,6 +125,7 @@ public class GuardConfig {
             chanceToBreakEquipment = builder.defineInRange("Chance for guards to lose durability", 1.0F, -999.9F, 999.0F);
             guardTeleport = builder.define("Allow guards to teleport if following the player", true);
             GuardFormation = builder.comment("This makes guards form a phalanx").translation(GuardVillagers.MODID + ".config.GuardFormation").define("Have guards form a phalanx?", true);
+            friendlyFireCheckValue = builder.comment("Angle is determined by taking the arccos of the inputted value, for example -1 is a straight 180 degree angle thus if that value is inputted guards will only check straight ahead to see if any friendly mobs are in the way.").defineInRange("Angle of how ranged guards determine if a friendly mob is infront of them before firing", -0.9, -1000000, 1000000);
             FriendlyFire = builder.translation(GuardVillagers.MODID + ".config.FriendlyFire").define("Have guards attempt to avoid firing into other friendlies?", true);
             GuardVillagerHelpRange = builder.translation(GuardVillagers.MODID + ".config.range").comment("This is the range in which the guards will be aggroed to mobs that are attacking villagers. Higher values are more resource intensive, and setting this to zero will disable the goal.")
                     .defineInRange("Range", 50.0D, -500.0D, 500.0D);
