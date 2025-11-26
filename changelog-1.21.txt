@@ -1,2 +1,3 @@
-CHANGELOG:- [CHANGE] fix #273 and golem repair ai not working
+CHANGELOG:
+- [CHANGE] fix #273 (guards not spawning) and golem repair ai not working
 - [CHANGE] fix #272 by adding a config option and automatically display text when max health above default
