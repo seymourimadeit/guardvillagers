@@ -158,10 +158,12 @@ public class GuardConfig {
     public static class ClientConfig {
         public final ModConfigSpec.BooleanValue GuardSteve;
         public final ModConfigSpec.BooleanValue bigHeadBabyVillager;
+        public final ModConfigSpec.BooleanValue guardInventoryNumbers;
 
         public ClientConfig(ModConfigSpec.Builder builder) {
             GuardSteve = builder.comment("Textures not included, make your own textures by making a resource pack that adds guard_steve_0 - 6").translation(GuardVillagers.MODID + ".config.steveModel").define("Have guards use the steve model?", false);
             bigHeadBabyVillager = builder.define("Have baby villagers have big heads like in bedrock?", true);
+            guardInventoryNumbers = builder.comment("Note that this option will automatically activate if a guard has more hearts than default").define("Display guard health in icons", true);
         }
     }
 }

@@ -65,5 +65,11 @@
   "guardvillagers.configuration.Profession Whitelist for guard weaponry repair ai": "Profession Whitelist for guard weaponry repair ai",
   "guardvillagers.configuration.How many times a smith villager can heal a golem in one day": "How many times a smith villager can heal a golem in one day",
   "guardvillagers.configuration.Profession Whitelist for healing ai for clerics": "Profession Whitelist for healing ai for clerics",
-  "guardvillagers.configuration.Profession Whitelist for golem repair ai": "Profession Whitelist for golem repair ai"
+  "guardvillagers.configuration.Profession Whitelist for golem repair ai": "Profession Whitelist for golem repair ai",
+  "guardvillagers.configuration.Display guard health in icons": "Display guard health in icons",
+  "guardvillagers.configuration.Mobs that guards actively protect when they get hurt": "Mobs that guards actively protect when they get hurt",
+  "guardvillagers.configuration.Angle of how ranged guards determine if a friendly mob is infront of them before firing": "Angle of how ranged guards determine if a friendly mob is infront of them before firing",
+  "guardvillagers.configuration.Depth value for guards fighting underwater mobs": "Depth value for guards fighting underwater mobs",
+  "guardvillagers.configuration.Allow guards to sink temporarily to fight mobs that are under water?": "Allow guards to sink temporarily to fight mobs that are under water?",
+  "guardvillagers.configuration.Mobs that guards actively protect when they get targeted": "Mobs that guards actively protect when they get targeted"
 }

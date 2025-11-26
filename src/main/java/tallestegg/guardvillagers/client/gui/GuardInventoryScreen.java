@@ -78,36 +78,46 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         super.renderLabels(graphics, x, y);
         int health = Mth.ceil(guard.getHealth());
         int armor = guard.getArmorValue();
+        Component guardHealthText = Component.translatable("guardinventory.health", health);
+        Component guardArmorText = Component.translatable("guardinventory.armor", armor);
         int yValueWithOrWithoutArmor = armor <= 0 ? 20 : 30;
-        for (int i = 0; i < 10; i++) {
-            int heartXValue = i * 8 + 80;
-            this.renderHeart(graphics, Gui.HeartType.CONTAINER, heartXValue, yValueWithOrWithoutArmor, false);
-        }
-        for (int i = 0; i < health / 2; i++) {
-            int heartXValue = i * 8 + 80;
-            if (health % 2 != 0 && health / 2 == i + 1) {
-                this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, true);
-            } else {
-                this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, false);
+        if (!GuardConfig.CLIENT.guardInventoryNumbers.get() || guard.getMaxHealth() > 20) {
+            graphics.drawString(font, guardHealthText, 80, yValueWithOrWithoutArmor, 4210752, false);
+        } else if (guard.getMaxHealth() <= 20) {
+            for (int i = 0; i < (guard.getMaxHealth() * 0.5); i++) {
+                int heartXValue = i * 8 + 80;
+                this.renderHeart(graphics, Gui.HeartType.CONTAINER, heartXValue, yValueWithOrWithoutArmor, false);
+            }
+            for (int i = 0; i < health / 2; i++) {
+                int heartXValue = i * 8 + 80;
+                if (health % 2 != 0 && health / 2 == i + 1) {
+                    this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, true);
+                } else {
+                    this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, false);
+                }
             }
         }
-        if (armor > 0) {
-            RenderSystem.enableBlend();
-            for (int k = 0; k < 10; k++) {
-                int l = k * 8 + 80;
-                if (k * 2 + 1 < armor) {
-                    graphics.blitSprite(ARMOR_FULL_SPRITE, l, 20, 9, 9);
-                }
+        if (!GuardConfig.CLIENT.guardInventoryNumbers.get()) {
+            graphics.drawString(font, guardArmorText, 80, 20, 4210752, false);
+        } else {
+            if (armor > 0) {
+                RenderSystem.enableBlend();
+                for (int k = 0; k < 10; k++) {
+                    int l = k * 8 + 80;
+                    if (k * 2 + 1 < armor) {
+                        graphics.blitSprite(ARMOR_FULL_SPRITE, l, 20, 9, 9);
+                    }
 
-                if (k * 2 + 1 == armor) {
-                    graphics.blitSprite(ARMOR_HALF_SPRITE, l, 20, 9, 9);
-                }
+                    if (k * 2 + 1 == armor) {
+                        graphics.blitSprite(ARMOR_HALF_SPRITE, l, 20, 9, 9);
+                    }
 
-                if (k * 2 + 1 > armor) {
-                    graphics.blitSprite(ARMOR_EMPTY_SPRITE, l, 20, 9, 9);
+                    if (k * 2 + 1 > armor) {
+                        graphics.blitSprite(ARMOR_EMPTY_SPRITE, l, 20, 9, 9);
+                    }
                 }
+                RenderSystem.disableBlend();
             }
-            RenderSystem.disableBlend();
         }
     }
 
