@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffects;
@@ -65,7 +66,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(GUARD_GUI_TEXTURES, i, j, 0, 0, this.imageWidth, this.imageHeight);
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics,i + 51, j + 75, 30, (float) (i + 51) - this.mousePosX, (float) (j + 75 - 50) - this.mousePosY, this.guard);
+        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, i + 51, j + 75, 30, (float) (i + 51) - this.mousePosX, (float) (j + 75 - 50) - this.mousePosY, this.guard);
     }
 
     @Override
@@ -74,37 +75,48 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         int health = Mth.ceil(guard.getHealth());
         int armor = guard.getArmorValue();
         int yValueWithOrWithoutArmor = armor <= 0 ? 20 : 30;
-        for (int i = 0; i < 10; i++) {
-            int heartXValue = i * 8 + 80;
-            this.renderHeart(graphics, Gui.HeartType.CONTAINER, heartXValue, yValueWithOrWithoutArmor, 0, false, false);
-        }
-        for (int i = 0; i < health / 2; i++) {
-            int heartXValue = i * 8 + 80;
-            if (health % 2 != 0 && health / 2 == i + 1) {
-                this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, 0, false, true);
-            } else {
-                this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, 0, false, false);
+        Component guardHealthText = Component.translatable("guardinventory.health", health);
+        Component guardArmorText = Component.translatable("guardinventory.armor", armor);
+        if (!GuardConfig.CLIENT.guardInventoryNumbers.get() || guard.getMaxHealth() > 20) {
+            graphics.drawString(font, guardHealthText, 80, yValueWithOrWithoutArmor, 4210752, false);
+        } else if (guard.getMaxHealth() <= 20) {
+            for (int i = 0; i < 10; i++) {
+                int heartXValue = i * 8 + 80;
+                this.renderHeart(graphics, Gui.HeartType.CONTAINER, heartXValue, yValueWithOrWithoutArmor, 0, false, false);
+            }
+            for (int i = 0; i < health / 2; i++) {
+                int heartXValue = i * 8 + 80;
+                if (health % 2 != 0 && health / 2 == i + 1) {
+                    this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, 0, false, true);
+                } else {
+                    this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, 0, false, false);
+                }
             }
         }
-        if (armor > 0) {
-            for (int k = 0; k < 10; k++) {
-                int l = k * 8 + 80;
-                if (k * 2 + 1 < armor) {
-                    graphics.blit(GUI_ICONS_LOCATION, l, 20, 34, 9, 9, 9);
-                }
+        if (!GuardConfig.CLIENT.guardInventoryNumbers.get()) {
+            graphics.drawString(font, guardArmorText, 80, 20, 2, false);
+        } else {
+            if (armor > 0) {
+                for (int k = 0; k < 10; k++) {
+                    int l = k * 8 + 80;
+                    if (k * 2 + 1 < armor) {
+                        graphics.blit(GUI_ICONS_LOCATION, l, 20, 34, 9, 9, 9);
+                    }
 
-                if (k * 2 + 1 == armor) {
-                    graphics.blit(GUI_ICONS_LOCATION, l, 20, 25, 9, 9, 9);
-                }
+                    if (k * 2 + 1 == armor) {
+                        graphics.blit(GUI_ICONS_LOCATION, l, 20, 25, 9, 9, 9);
+                    }
 
-                if (k * 2 + 1 > armor) {
-                    graphics.blit(GUI_ICONS_LOCATION, l, 20, 16, 9, 9, 9);
+                    if (k * 2 + 1 > armor) {
+                        graphics.blit(GUI_ICONS_LOCATION, l, 20, 16, 9, 9, 9);
+                    }
                 }
             }
         }
     }
 
-    private void renderHeart(GuiGraphics pGuiGraphics, Gui.HeartType pHeartType, int pX, int pY, int pYOffset, boolean pRenderHighlight, boolean pHalfHeart) {
+    private void renderHeart(GuiGraphics pGuiGraphics, Gui.HeartType pHeartType, int pX, int pY, int pYOffset,
+                             boolean pRenderHighlight, boolean pHalfHeart) {
         pGuiGraphics.blit(GUI_ICONS_LOCATION, pX, pY, pHeartType.getX(pHalfHeart, pRenderHighlight), pYOffset, 9, 9);
     }
 

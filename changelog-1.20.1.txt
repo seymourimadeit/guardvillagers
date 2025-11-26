@@ -1,10 +1,3 @@
-- [CHANGE] Guard inventory now has heart and armor images instead of just pure numbers
-- [CHANGE] fix #255 (guards not patrolling properly near villages)
-- [CHANGE] Added a config option for guards converting to zombies on death
-- [CHANGE] configurable amount of guards that can spawn in village + makes it so guard villagers does not override iron_golem.nbt in the first place to avoid interference with other mods
-- [CHANGE] golems can only be repaired by smith villagers once a day
-- [CHANGE] clerics can now only heal guards, players with hero of the village, and villagers 3 times a day
-- [CHANGE] armorers and weaponsmiths can only repair guard armor 3 times a day
-- [CHANGE] disable iron golems floating in water by default
-- [CHANGE] add configs for mobs that guards actively protect
-- [CHANGE] mechanic where guards can sink temporarily to fight mobs underwater
+CHANGELOG:
+- [CHANGE] fix #273 (guards not spawning) and golem repair ai not working
+- [CHANGE] fix #272 by adding a config option and automatically display text when max health above default

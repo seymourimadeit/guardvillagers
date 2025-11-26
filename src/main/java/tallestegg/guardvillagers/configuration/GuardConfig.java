@@ -173,7 +173,7 @@ public class GuardConfig {
             builder.pop();
             builder.push("villager stuff");
             professionsThatHeal = builder.defineListAllowEmpty("Profession Whitelist for healing ai for clerics", Lists.newArrayList("cleric"), obj -> true);
-            professionsThatRepairGolems = builder.defineListAllowEmpty("Profession Whitelist for golem repair ai", Lists.newArrayList("armorer, weaponsmith"), obj -> true);
+            professionsThatRepairGolems = builder.defineListAllowEmpty("Profession Whitelist for golem repair ai", Lists.newArrayList("armorer", "weaponsmith"), obj -> true);
             professionsThatRepairGuards = builder.defineListAllowEmpty("Profession Whitelist for guard weaponry repair ai", Lists.newArrayList("weaponsmith", "armorer", "toolsmith"), obj -> true);
             maxClericHeal = builder.defineInRange("How many times a cleric can heal a guard in one day", 3, 0, 1000000);
             maxGolemRepair = builder.defineInRange("How many times a smith villager can heal a golem in one day", 3, 0, 1000000);
@@ -229,10 +229,12 @@ public class GuardConfig {
     public static class ClientConfig {
         public final ForgeConfigSpec.BooleanValue GuardSteve;
         public final ForgeConfigSpec.BooleanValue bigHeadBabyVillager;
+        public final ForgeConfigSpec.BooleanValue guardInventoryNumbers;
 
         public ClientConfig(ForgeConfigSpec.Builder builder) {
             GuardSteve = builder.comment("Textures not included, make your own textures by making a resource pack that adds guard_steve_0 - 6").translation(GuardVillagers.MODID + ".config.steveModel").define("Have guards use the steve model?", false);
             bigHeadBabyVillager = builder.define("Have baby villagers have big heads like in bedrock?", true);
+            guardInventoryNumbers = builder.comment("Note that this option will automatically activate if a guard has more hearts than default").define("Display guard health in icons", true);
         }
     }
 }

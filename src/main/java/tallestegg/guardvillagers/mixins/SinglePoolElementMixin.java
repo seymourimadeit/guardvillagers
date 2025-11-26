@@ -29,7 +29,7 @@ public abstract class SinglePoolElementMixin {
     @Final
     protected Either<ResourceLocation, StructureTemplate> template;
 
-    @Inject(at = @At(value = "TAIL"), method = "place", cancellable = true)
+    @Inject(at = @At(value = "RETURN"), method = "place", cancellable = true)
     public void place(StructureTemplateManager pStructureTemplateManager, WorldGenLevel pLevel, StructureManager pStructureManager, ChunkGenerator pGenerator, BlockPos pOffset, BlockPos pPos, Rotation pRotation, BoundingBox pBox, RandomSource pRandom, boolean pKeepJigsaws, CallbackInfoReturnable<Boolean> cir) {
         this.template.left().ifPresent(resourceLocation -> {
             if (GuardConfig.COMMON.structuresThatSpawnGuards.get().contains(resourceLocation.toString())) {
