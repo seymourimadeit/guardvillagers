@@ -77,6 +77,7 @@ public class GuardConfig {
         public final ModConfigSpec.DoubleValue GuardVillagerHelpRange;
         public final ModConfigSpec.DoubleValue amountOfHealthRegenerated;
         public final ModConfigSpec.DoubleValue friendlyFireCheckValue;
+        public final ModConfigSpec.IntValue depthGuardHuntUnderwater;
 
         public CommonConfig(ModConfigSpec.Builder builder) {
             builder.push("raids and illagers");
@@ -110,6 +111,7 @@ public class GuardConfig {
             builder.pop();
             builder.push("guard stuff");
             guardSinkToFightUnderWater = builder.define("Allow guards to sink temporarily to fight mobs that are under water?", true);
+            depthGuardHuntUnderwater = builder.comment("If a guard is fighting a mob underwater and the vertical distance between that mob and the guard is larger than this, the guard will instead float up to not take the risk of drowning").defineInRange("Depth value for guards fighting underwater mobs",  8, 0, 100000000);
             mobsGuardsProtectTargeted = builder.defineListAllowEmpty("Mobs that guards actively protect when they get targeted", ImmutableList.of("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"), () -> "", obj -> true);
             mobsGuardsProtectHurt = builder.comment("Mobs in this list also won't get hurt by a guard's arrow if the config option to disable guard arrows hurting villagers is enabled.").defineListAllowEmpty("Mobs that guards actively protect when they get hurt", ImmutableList.of("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"), () -> "", obj -> true);
             guardCrossbowAttackRadius = builder.defineInRange("Guard crossbow attack radius", 8.0F, 0.0F, 100000000.0F);
