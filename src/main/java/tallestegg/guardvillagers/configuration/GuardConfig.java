@@ -93,7 +93,7 @@ public class GuardConfig {
             builder.pop();
             builder.push("villager stuff");
             professionsThatHeal = builder.defineListAllowEmpty("Profession Whitelist for healing ai for clerics", ImmutableList.of("cleric"), () -> "", obj -> true);
-            professionsThatRepairGolems = builder.defineListAllowEmpty("Profession Whitelist for golem repair ai", ImmutableList.of("armorer, weaponsmith"), () -> "", obj -> true);
+            professionsThatRepairGolems = builder.defineListAllowEmpty("Profession Whitelist for golem repair ai", ImmutableList.of("armorer", "weaponsmith"), () -> "", obj -> true);
             professionsThatRepairGuards = builder.defineListAllowEmpty("Profession Whitelist for guard weaponry repair ai", ImmutableList.of("weaponsmith", "armorer", "toolsmith"), () -> "", obj -> true);
             maxClericHeal = builder.defineInRange("How many times a cleric can heal a guard in one day", 3, 0, 1000000);
             maxGolemRepair = builder.defineInRange("How many times a smith villager can heal a golem in one day", 3, 0, 1000000);
