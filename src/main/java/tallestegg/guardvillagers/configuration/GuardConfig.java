@@ -154,6 +154,8 @@ public class GuardConfig {
         public final ForgeConfigSpec.IntValue maxVillageRepair;
         public final ForgeConfigSpec.BooleanValue guardSinkToFightUnderWater;
         public final ForgeConfigSpec.IntValue guardSpawnInVillage;
+        public final ForgeConfigSpec.DoubleValue friendlyFireCheckValue;
+        public final ForgeConfigSpec.IntValue depthGuardHuntUnderwater;
 
 
         public CommonConfig(ForgeConfigSpec.Builder builder) {
@@ -190,6 +192,7 @@ public class GuardConfig {
             builder.push("guard stuff");
             guardSpawnInVillage = builder.defineInRange("How many guards should spawn in a village?", 6, 0, 100000000);
             guardSinkToFightUnderWater = builder.define("Allow guards to sink temporarily to fight mobs that are under water?", true);
+            depthGuardHuntUnderwater = builder.comment("If a guard is fighting a mob underwater and the vertical distance between that mob and the guard is larger than this, the guard will instead float up to not take the risk of drowning").defineInRange("Depth value for guards fighting underwater mobs",  8, 0, 100000000);
             mobsGuardsProtectTargeted = builder.defineListAllowEmpty("Mobs that guards actively protect when they get targeted", Lists.newArrayList("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"), obj -> true);
             mobsGuardsProtectHurt = builder.comment("Mobs in this list also won't get hurt by a guard's arrow if the config option to disable guard arrows hurting villagers is enabled.").defineListAllowEmpty("Mobs that guards actively protect when they get hurt", Lists.newArrayList("minecraft:villager", "guardvillagers:guard", "minecraft:iron_golem"),  obj -> true);
             structuresThatSpawnGuards = builder.comment("Guards are placed in the middle, thus more advanced placement should be done via datapacks").define("Structure pieces that spawn guards", Lists.newArrayList("minecraft:village/common/iron_golem"), obj -> true);
@@ -206,6 +209,7 @@ public class GuardConfig {
             guardTeleport = builder.define("Allow guards to teleport if following the player", true);
             GuardFormation = builder.comment("This makes guards form a phalanx").translation(GuardVillagers.MODID + ".config.GuardFormation").define("Have guards form a phalanx?", true);
             FriendlyFire = builder.translation(GuardVillagers.MODID + ".config.FriendlyFire").define("Have guards attempt to avoid firing into other friendlies?", true);
+            friendlyFireCheckValue = builder.comment("Angle is determined by taking the arccos of the inputted value, for example -1 is a straight 180 degree angle thus if that value is inputted guards will only check straight ahead to see if any friendly mobs are in the way.").defineInRange("Angle of how ranged guards determine if a friendly mob is in front of them before firing", -0.9, -1000000, 1000000);
             GuardVillagerHelpRange = builder.translation(GuardVillagers.MODID + ".config.range").comment("This is the range in which the guards will be aggroed to mobs that are attacking villagers. Higher values are more resource intensive, and setting this to zero will disable the goal.")
                     .defineInRange("Range", 50.0D, -500.0D, 500.0D);
             amountOfHealthRegenerated = builder.translation(GuardVillagers.MODID + ".config.amountofHealthRegenerated").comment("How much health a guard regenerates.").defineInRange("Guard health regeneration amount", 1.0D, -500.0D, 500.0D);

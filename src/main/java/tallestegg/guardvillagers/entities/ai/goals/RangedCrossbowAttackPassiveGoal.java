@@ -175,8 +175,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                     Vec3 vector3d = mob.getLookAngle();
                     Vec3 vector3d1 = guard.position().vectorTo(mob.position()).normalize();
                     vector3d1 = new Vec3(vector3d1.x, vector3d1.y, vector3d1.z);
-                    System.out.println(vector3d1.dot(vector3d));
-                    if (vector3d1.dot(vector3d) < -0.9D && mob.hasLineOfSight(guard))
+                    if (vector3d1.dot(vector3d) < GuardConfig.COMMON.friendlyFireCheckValue.get().doubleValue() && mob.hasLineOfSight(guard))
                         return GuardConfig.COMMON.FriendlyFire.get();
                 }
             }

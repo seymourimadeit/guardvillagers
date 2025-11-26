@@ -90,7 +90,6 @@ public class RepairGuardEquipment extends VillagerHelp {
     }
 
     public void repairGuardEquipment(Villager healer) {
-        System.out.println("ass");
         BehaviorUtils.setWalkAndLookTargetMemories(healer, guard, 0.5F, 0);
         if (healer.distanceTo(guard) <= 2.0D) {
             healer.getBrain().setMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get(), healer.getBrain().getMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get()).orElse(null) + 1);

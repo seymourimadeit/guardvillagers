@@ -626,7 +626,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             this.goalSelector.addGoal(10, new FloatGoal(this) {
                 @Override
                 public boolean canUse() {
-                    return super.canUse() && ((Guard.this.getTarget() != null && Guard.this.getTarget().getY() > Guard.this.getY()) || Guard.this.getMainHandItem().getItem() instanceof ProjectileWeaponItem || Guard.this.getTarget() == null || Guard.this.getAirSupply() <= 0); // If I have a target in the water, stop floating, otherwise float
+                    return super.canUse() && ((Guard.this.getTarget() != null && (Guard.this.getY() - Guard.this.getTarget().getY()) >= GuardConfig.COMMON.depthGuardHuntUnderwater.get().floatValue()) || Guard.this.getMainHandItem().getItem() instanceof ProjectileWeaponItem || Guard.this.getTarget() == null || Guard.this.getAirSupply() <= 0); // If I have a target in the water, stop floating, otherwise float
                 }
             });
         } else {
