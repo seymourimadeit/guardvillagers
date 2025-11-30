@@ -1,1 +1,2 @@
 CHANGELOG:- [CHANGE] fix crash with vampirism
+- [CHANGE] try to mitigate against clerics failing to aim towards healing target
