@@ -1487,7 +1487,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 }
                 double d0 = this.mob.distanceToSqr(livingentity);
                 double d1 = livingentity.distanceTo(this.mob);
-                if (d1 <= 4.0D) {
+                if (d1 <= 4.0D && !this.mob.isPatrolling()) {
                     this.mob.getMoveControl().strafe(this.mob.isUsingItem() ? -0.5F : -3.0F, 0.0F);
                     this.mob.lookAt(livingentity, 30.0F, 30.0F);
                 }
@@ -1517,7 +1517,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                         this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, this.mob.isCrouching() ? 0.5D : 0.9D);
                     this.crossbowState = CrossbowState.UNCHARGED;
                 } else if (this.crossbowState == CrossbowState.UNCHARGED) {
-                    if (!canSee2) {
+                    if (!canSee2 && !this.mob.isPatrolling() || this.mob.isPatrolling() && canSee && !friendlyInLineOfSight(this.mob)) {
                         this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
                         this.crossbowState = CrossbowState.CHARGING;
                         this.mob.setChargingCrossbow(true);
