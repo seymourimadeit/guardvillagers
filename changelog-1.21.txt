@@ -1,1 +1,1 @@
-CHANGELOG:
+CHANGELOG:- [CHANGE] fix crash with vampirism
