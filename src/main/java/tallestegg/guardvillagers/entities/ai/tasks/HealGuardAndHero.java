@@ -92,8 +92,6 @@ public class HealGuardAndHero extends VillagerHelp {
         Potion potion = Potions.REGENERATION;
         if (targetToHeal.getHealth() <= 4.0F) {
             potion = Potions.HEALING;
-        } else {
-            potion = Potions.REGENERATION;
         }
         ThrownPotion potionentity = new ThrownPotion(healer.level(), healer);
         potionentity.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));

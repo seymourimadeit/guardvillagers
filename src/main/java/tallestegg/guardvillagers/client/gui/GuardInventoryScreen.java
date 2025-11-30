@@ -78,7 +78,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         Component guardHealthText = Component.translatable("guardinventory.health", health);
         Component guardArmorText = Component.translatable("guardinventory.armor", armor);
         if (!GuardConfig.CLIENT.guardInventoryNumbers.get() || guard.getMaxHealth() > 20) {
-            graphics.drawString(font, guardHealthText, 80, yValueWithOrWithoutArmor, 4210752, false);
+            graphics.drawString(font, guardHealthText, 80, 30, 4210752, false);
         } else if (guard.getMaxHealth() <= 20) {
             for (int i = 0; i < 10; i++) {
                 int heartXValue = i * 8 + 80;
@@ -94,7 +94,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
             }
         }
         if (!GuardConfig.CLIENT.guardInventoryNumbers.get()) {
-            graphics.drawString(font, guardArmorText, 80, 20, 2, false);
+            graphics.drawString(font, guardArmorText, 80, 20, 4210752, false);
         } else {
             if (armor > 0) {
                 for (int k = 0; k < 10; k++) {
