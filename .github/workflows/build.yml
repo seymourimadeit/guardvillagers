@@ -22,7 +22,11 @@ jobs:
         with:
           arguments: build
           gradle-version: 7.4.2
-
+      - uses: BrycensRanch/read-properties-action@v1
+        id: version
+        with:
+          file: gradle.properties
+          property: mod_version
       - name: mc-publish
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
@@ -33,7 +37,7 @@ jobs:
           github-token: ${{ secrets.GIT_TOKEN }}
           files-primary: build/libs/!(*-@(javadoc|sources)).jar
           version-type: release
-          version: 1.20.1-1.6.11
+          version: ${{ steps.version.outputs.value }}
           loaders: |
             forge
             neoforge
@@ -41,3 +45,27 @@ jobs:
           java: 17
           name: ""
           changelog-file: changelog-1.20.1.*
+      - name: Nuke Changelog dot txt
+        uses: DamianReeves/write-file-action@master
+        with:
+          path: changelog-1.21.txt
+          write-mode: overwrite
+          contents: |
+      - name: Increment version variable
+        id: bump_version
+        uses: christian-draeger/increment-semantic-version@1.2.3
+        with:
+          current-version: ${{ steps.version.outputs.value }}
+          version-fragment: 'hotfix'
+      - name: Replace single file
+        uses: richardrigutins/replace-in-files@v2
+        with:
+          files: 'gradle.properties'
+          search-text: ${{ steps.version.outputs.value }}
+          replacement-text: ${{ steps.bump_version.outputs.next-version }}
+      - name: Commit & Push
+        uses: Andro999b/push@v1.3
+        with:
+          github_token: ${{ secrets.GIT_TOKEN}}
+          branch: ${{ github.ref }}
+          force: true
