@@ -98,7 +98,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
             }
             double d0 = this.mob.distanceToSqr(livingentity);
             double d1 = livingentity.distanceTo(this.mob);
-            if (d1 <= 4.0D) {
+            if (d1 <= 4.0D && !((Guard) this.mob).isPatrolling()) {
                 this.mob.getMoveControl().strafe(this.mob.isUsingItem() ? -0.5F : -3.0F, 0.0F);
                 this.mob.lookAt(livingentity, 30.0F, 30.0F);
             }
@@ -128,7 +128,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                     this.mob.getNavigation().moveTo(this.wantedX, this.wantedY, this.wantedZ, this.mob.isCrouching() ? 0.5F : 1.0D);
                 this.crossbowState = CrossbowState.UNCHARGED;
             } else if (this.crossbowState == CrossbowState.UNCHARGED) {
-                if (!canSee2) {
+                if (!((Guard) this.mob).isPatrolling() && !canSee2 || ((Guard) this.mob).isPatrolling() && canSee && !friendlyInLineOfSight(this.mob)) {
                     this.mob.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.mob, item -> item instanceof CrossbowItem));
                     this.crossbowState = CrossbowState.CHARGING;
                     this.mob.setChargingCrossbow(true);
@@ -151,7 +151,7 @@ public class RangedCrossbowAttackPassiveGoal<T extends PathfinderMob & RangedAtt
                     this.crossbowState = CrossbowState.READY_TO_ATTACK;
                 }
             } else if (this.crossbowState == CrossbowState.READY_TO_ATTACK && canSee) {
-                if (friendlyInLineOfSight(this.mob))
+                if (friendlyInLineOfSight(this.mob) && !((Guard) this.mob).isPatrolling())
                     this.crossbowState = CrossbowState.FIND_NEW_POSITION;
                 else {
                     this.mob.performRangedAttack(livingentity, 1.0F);
