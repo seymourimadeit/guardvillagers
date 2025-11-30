@@ -57,34 +57,41 @@ public class HealGuardAndHero extends VillagerHelp {
 
     @Override
     protected boolean canStillUse(ServerLevel level, Villager entity, long gameTime) {
-        return checkIfDayHavePassedFromLastActivity(entity) && entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) < GuardConfig.COMMON.maxClericHeal.get();
+        return targetToHeal != null && checkIfDayHavePassedFromLastActivity(entity) && entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) < GuardConfig.COMMON.maxClericHeal.get();
     }
 
 
     @Override
     protected void tick(ServerLevel level, Villager owner, long gameTime) {
         super.tick(level, owner, gameTime);
+        if (this.targetToHeal == null)
+            return;
         BehaviorUtils.lookAtEntity(owner, targetToHeal);
         owner.lookAt(this.targetToHeal, 30.0F, 30.0F);
         owner.getLookControl().setLookAt(this.targetToHeal);
         if (!owner.hasLineOfSight(this.targetToHeal)) {
             this.waitUntilInSightTicks += 5;
-        } else this.waitUntilInSightTicks--;
-        if (waitUntilInSightTicks == 0) this.throwPotion(owner);
+        } else if (waitUntilInSightTicks > 0) this.waitUntilInSightTicks--;
+        if (waitUntilInSightTicks == 0) {
+            this.throwPotion(owner);
+            this.waitUntilInSightTicks = 40;
+        }
     }
 
     @Override
     protected void stop(ServerLevel level, Villager entity, long gameTime) {
         super.stop(level, entity, gameTime);
+        this.waitUntilInSightTicks = 40;
         if (entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) >= GuardConfig.COMMON.maxClericHeal.get()) {
             entity.getBrain().setMemory(GuardMemoryTypes.LAST_THROWN_POTION.get(), level.getDayTime());
             entity.getBrain().setMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get(), 0);
         }
+        this.targetToHeal = null;
     }
 
     @Override
     protected void start(ServerLevel level, Villager entity, long gameTime) {
-        this.waitUntilInSightTicks = 10;
+        this.waitUntilInSightTicks = 40;
         if (!entity.getBrain().hasMemoryValue(GuardMemoryTypes.TIMES_THROWN_POTION.get())) {
             entity.getBrain().setMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get(), 0);
         }
