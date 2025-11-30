@@ -1,2 +1,3 @@
 - [CHANGE] fix #274 (crashes with vampirism)
 - [CHANGE] try to mitigate against clerics failing to aim towards healing target
+- [CHANGE] intentionally extend guard crossbow range when patrolling
