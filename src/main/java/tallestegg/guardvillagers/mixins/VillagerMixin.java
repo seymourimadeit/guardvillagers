@@ -21,17 +21,14 @@ import java.util.List;
 public class VillagerMixin {
     @Shadow @Final private static ImmutableList<MemoryModuleType<?>> MEMORY_TYPES;
 
-    @Shadow @Final private static ImmutableList<SensorType<? extends Sensor<? super Villager>>> SENSOR_TYPES;
-
-    @Inject(method = "brainProvider", cancellable = true, at = @At("RETURN"))
-    public void brainProvider(CallbackInfoReturnable<Brain.Provider<Villager>> cir) {
-        List<MemoryModuleType<?>> VILLAGER_MEMORY_TYPES = new ArrayList<>(MEMORY_TYPES);
-        VILLAGER_MEMORY_TYPES.addLast(GuardMemoryTypes.LAST_REPAIRED_GOLEM.get());
-        VILLAGER_MEMORY_TYPES.addLast(GuardMemoryTypes.LAST_REPAIRED_GUARD.get());
-        VILLAGER_MEMORY_TYPES.addLast(GuardMemoryTypes.LAST_THROWN_POTION.get());
-        VILLAGER_MEMORY_TYPES.addLast(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get());
-        VILLAGER_MEMORY_TYPES.addLast(GuardMemoryTypes.TIMES_HEALED_GOLEM.get());
-        VILLAGER_MEMORY_TYPES.addLast(GuardMemoryTypes.TIMES_THROWN_POTION.get());
-        cir.setReturnValue(Brain.provider(ImmutableList.copyOf(VILLAGER_MEMORY_TYPES), SENSOR_TYPES));
+    static{
+        MEMORY_TYPES = ImmutableList.<MemoryModuleType<?>>builder()
+                .addAll(MEMORY_TYPES)
+                .addAll(ImmutableList.of(GuardMemoryTypes.LAST_REPAIRED_GOLEM.get(),
+                        GuardMemoryTypes.LAST_REPAIRED_GUARD.get(),
+                        GuardMemoryTypes.LAST_THROWN_POTION.get(),
+                        GuardMemoryTypes.TIMES_REPAIRED_GUARD.get(),
+                        GuardMemoryTypes.TIMES_HEALED_GOLEM.get(),
+                        GuardMemoryTypes.TIMES_THROWN_POTION.get())).build();
     }
 }
