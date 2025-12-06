@@ -1,1 +1,1 @@
-CHANGELOG:
+CHANGELOG:- [CHANGE] fix #275 and #276 (crashes with mods that load memory modules before Guard VIllagers)
