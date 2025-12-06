@@ -6,8 +6,7 @@
   "mixins": [
     "VillagerGoalPackagesMixin",
     "DefendVillageGoalGolemMixin",
-    "SinglePoolElementMixin",
-    "VillagerMixin"
+    "SinglePoolElementMixin"
   ],
   "client":[
     "VillagerModelMixin"

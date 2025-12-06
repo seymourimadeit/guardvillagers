@@ -2,10 +2,8 @@ package tallestegg.guardvillagers;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.raid.Raid;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
@@ -16,7 +14,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
@@ -49,7 +46,7 @@ public class GuardVillagers {
         GuardLootTables.LOOT_ITEM_CONDITION_TYPES.register(modEventBus);
         GuardLootTables.LOOT_ITEM_FUNCTION_TYPES.register(modEventBus);
         GuardStats.STATS.register(modEventBus);
-        GuardMemoryTypes.MEMORY_MODULE_TYPE.register(modEventBus);
+        GuardDataAttachments.ATTACHMENT_TYPES.register(modEventBus);
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addCreativeTabs);

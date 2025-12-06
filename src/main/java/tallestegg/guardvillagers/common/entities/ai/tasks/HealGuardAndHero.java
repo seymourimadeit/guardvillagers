@@ -1,6 +1,5 @@
 package tallestegg.guardvillagers.common.entities.ai.tasks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
@@ -11,14 +10,12 @@ import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import tallestegg.guardvillagers.GuardMemoryTypes;
-import tallestegg.guardvillagers.GuardVillagers;
+import tallestegg.guardvillagers.GuardDataAttachments;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 
@@ -51,13 +48,12 @@ public class HealGuardAndHero extends VillagerHelp {
 
     @Override
     protected long timeToCheck(LivingEntity owner) {
-        Optional<Long> optional = owner.getBrain().getMemory(GuardMemoryTypes.LAST_THROWN_POTION.get());
-        return optional.isPresent() ? optional.get() : 0;
+        return owner.getData(GuardDataAttachments.LAST_THROWN_POTION.get());
     }
 
     @Override
     protected boolean canStillUse(ServerLevel level, Villager entity, long gameTime) {
-        return targetToHeal != null && checkIfDayHavePassedFromLastActivity(entity) && entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) < GuardConfig.COMMON.maxClericHeal.get();
+        return targetToHeal != null && checkIfDayHavePassedFromLastActivity(entity) && entity.getData(GuardDataAttachments.TIMES_THROWN_POTION.get()) < GuardConfig.COMMON.maxClericHeal.get();
     }
 
 
@@ -82,9 +78,9 @@ public class HealGuardAndHero extends VillagerHelp {
     protected void stop(ServerLevel level, Villager entity, long gameTime) {
         super.stop(level, entity, gameTime);
         this.waitUntilInSightTicks = 40;
-        if (entity.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) >= GuardConfig.COMMON.maxClericHeal.get()) {
-            entity.getBrain().setMemory(GuardMemoryTypes.LAST_THROWN_POTION.get(), level.getDayTime());
-            entity.getBrain().setMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get(), 0);
+        if (entity.getData(GuardDataAttachments.TIMES_THROWN_POTION.get()) >= GuardConfig.COMMON.maxClericHeal.get()) {
+            entity.setData(GuardDataAttachments.LAST_THROWN_POTION.get(), level.getDayTime());
+            entity.setData(GuardDataAttachments.TIMES_THROWN_POTION.get(), 0);
         }
         this.targetToHeal = null;
     }
@@ -92,13 +88,10 @@ public class HealGuardAndHero extends VillagerHelp {
     @Override
     protected void start(ServerLevel level, Villager entity, long gameTime) {
         this.waitUntilInSightTicks = 40;
-        if (!entity.getBrain().hasMemoryValue(GuardMemoryTypes.TIMES_THROWN_POTION.get())) {
-            entity.getBrain().setMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get(), 0);
-        }
     }
 
     public void throwPotion(LivingEntity healer) {
-        healer.getBrain().setMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get(), healer.getBrain().getMemory(GuardMemoryTypes.TIMES_THROWN_POTION.get()).orElse(null) + 1);
+        healer.setData(GuardDataAttachments.TIMES_THROWN_POTION.get(), healer.getData(GuardDataAttachments.TIMES_THROWN_POTION.get()) + 1);
         Holder<Potion> potion = targetToHeal.getHealth() > 4.0F ? Potions.REGENERATION : Potions.HEALING;
         ThrownPotion potionentity = new ThrownPotion(healer.level(), healer);
         potionentity.setItem(PotionContents.createItemStack(Items.SPLASH_POTION, potion));
