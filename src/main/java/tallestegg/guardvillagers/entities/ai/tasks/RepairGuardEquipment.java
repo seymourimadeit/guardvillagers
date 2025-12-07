@@ -11,9 +11,9 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import tallestegg.guardvillagers.GuardMemoryTypes;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.Guard;
+import tallestegg.guardvillagers.entities.GuardVillagersVillagerData;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,22 +56,21 @@ public class RepairGuardEquipment extends VillagerHelp {
 
     @Override
     protected long timeToCheck(LivingEntity owner) {
-        Optional<Long> optional = owner.getBrain().getMemory(GuardMemoryTypes.LAST_REPAIRED_GUARD.get());
-        return optional.isPresent() ? optional.get() : 0;
+        return ((GuardVillagersVillagerData) owner).getLastRepairedGuard();
     }
 
     @Override
     protected boolean canStillUse(ServerLevel level, Villager entity, long gameTime) {
-        return entity.getBrain().getMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get()).orElse(null) < GuardConfig.COMMON.maxVillageRepair.get();
+        return ((GuardVillagersVillagerData) entity).getTimesRepairedGuard() < GuardConfig.COMMON.maxVillageRepair.get();
     }
 
     @Override
     protected void stop(ServerLevel worldIn, Villager entityIn, long gameTimeIn) {
-        if (entityIn.getBrain().getMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get()).orElse(null) >= GuardConfig.COMMON.maxVillageRepair.get()) {
-            entityIn.getBrain().setMemory(GuardMemoryTypes.LAST_REPAIRED_GUARD.get(), worldIn.getDayTime());
+        if (((GuardVillagersVillagerData) entityIn).getTimesRepairedGuard() >= GuardConfig.COMMON.maxVillageRepair.get()) {
+            ((GuardVillagersVillagerData) entityIn).setLastRepairedGuard(worldIn.getDayTime());
+            ((GuardVillagersVillagerData) entityIn).setTimesRepairedGuard(0);
             entityIn.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
             entityIn.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
-            entityIn.getBrain().setMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get(), 0);
             float pitch = 1.0F + (guard.getRandom().nextFloat() - guard.getRandom().nextFloat()) * 0.2F;
             guard.playSound(SoundEvents.ANVIL_USE, 1.0F, pitch);
         }
@@ -80,8 +79,6 @@ public class RepairGuardEquipment extends VillagerHelp {
     @Override
     protected void start(ServerLevel worldIn, Villager entityIn, long gameTimeIn) {
         if (guard == null) return;
-        if (!entityIn.getBrain().hasMemoryValue(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get()))
-            entityIn.getBrain().setMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get(), 0);
     }
 
     @Override
@@ -92,7 +89,7 @@ public class RepairGuardEquipment extends VillagerHelp {
     public void repairGuardEquipment(Villager healer) {
         BehaviorUtils.setWalkAndLookTargetMemories(healer, guard, 0.5F, 0);
         if (healer.distanceTo(guard) <= 2.0D) {
-            healer.getBrain().setMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get(), healer.getBrain().getMemory(GuardMemoryTypes.TIMES_REPAIRED_GUARD.get()).orElse(null) + 1);
+            ((GuardVillagersVillagerData) healer).setTimesRepairedGuard(((GuardVillagersVillagerData) healer).getTimesRepairedGuard() + 1);
             VillagerProfession profession = healer.getVillagerData().getProfession();
             if (profession == VillagerProfession.ARMORER) {
                 for (int i = 0; i < guard.guardInventory.getContainerSize() - 2; ++i) {
@@ -101,8 +98,7 @@ public class RepairGuardEquipment extends VillagerHelp {
                         itemstack.setDamageValue(itemstack.getDamageValue() - guard.getRandom().nextInt(5));
                     }
                 }
-            }
-            if (profession == VillagerProfession.WEAPONSMITH) {
+            } else {
                 for (int i = 4; i < 6; ++i) {
                     ItemStack itemstack = guard.guardInventory.getItem(i);
                     if (itemstack.isDamaged() && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2) + guard.getRandom().nextInt(5)) {
