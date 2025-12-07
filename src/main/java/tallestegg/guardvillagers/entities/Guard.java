@@ -56,6 +56,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -111,6 +112,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.itemHandler = net.minecraftforge.common.util.LazyOptional.of(() -> new net.minecraftforge.items.wrapper.InvWrapper(this.guardInventory));
         this.setPersistenceRequired();
         if (GuardConfig.GuardsOpenDoors) ((GroundPathNavigation) this.getNavigation()).setCanOpenDoors(true);
+        this.setPathfindingMalus(BlockPathTypes.POWDER_SNOW, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.DANGER_POWDER_SNOW, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, -1.0F);
     }
 
     public static int slotToInventoryIndex(EquipmentSlot slot) {
