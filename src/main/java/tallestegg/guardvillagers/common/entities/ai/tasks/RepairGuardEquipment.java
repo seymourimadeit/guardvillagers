@@ -98,8 +98,7 @@ public class RepairGuardEquipment extends VillagerHelp {
                         itemstack.setDamageValue(itemstack.getDamageValue() - guard.getRandom().nextInt(5));
                     }
                 }
-            }
-            if (profession == VillagerProfession.WEAPONSMITH) {
+            } else {
                 for (int i = 4; i < 6; ++i) {
                     ItemStack itemstack = guard.guardInventory.getItem(i);
                     if (itemstack.isDamaged() && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2) + guard.getRandom().nextInt(5)) {
