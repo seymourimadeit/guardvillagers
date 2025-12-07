@@ -1,2 +1,1 @@
-- [CHANGE]  fix #275 and #276 (crashes with mods that load memory modules before Guard VIllagers
-- [CHANGE] make guards intentionally try to avoid powdered snow and other hazards more often
+
