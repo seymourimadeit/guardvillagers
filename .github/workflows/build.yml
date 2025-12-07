@@ -42,12 +42,13 @@ jobs:
           name: ""
           changelog-file: changelog-1.21.*
       - name: Nuke Changelog dot txt
-        uses: DamianReeves/write-file-action@master
+        uses: JesseTG/rm@v1.0.3
         with:
           path: changelog-1.21.txt
-          write-mode: overwrite
-          contents: | 
-            CHANGELOG:
+      - uses: finnp/create-file-action@master
+        env:
+          FILE_NAME: "changelog-1.21.txt"
+          FILE_DATA: ""
       - name: Increment version variable
         id: bump_version
         uses: christian-draeger/increment-semantic-version@1.2.3
