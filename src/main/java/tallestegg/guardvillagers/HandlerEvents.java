@@ -52,7 +52,7 @@ public class HandlerEvents {
     public static void onEntityTarget(LivingChangeTargetEvent event) {
         LivingEntity entity = event.getEntity();
         LivingEntity target = event.getNewTarget();
-        if (target == null || entity.getType() == GuardEntityType.GUARD.get()) return;
+        if (target == null || entity.getType() == GuardEntityType.GUARD.get() || entity instanceof IronGolem) return;
         boolean isVillager = GuardConfig.COMMON.mobsGuardsProtectTargeted.get().contains(target.getEncodeId());
         if (isVillager) {
             List<Mob> list = entity.level().getEntitiesOfClass(Mob.class, entity.getBoundingBox().inflate(GuardConfig.GuardVillagerHelpRange, 5.0D, GuardConfig.GuardVillagerHelpRange));
