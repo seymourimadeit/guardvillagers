@@ -130,6 +130,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.setPersistenceRequired();
         if (GuardConfig.COMMON.GuardsOpenDoors.get())
             ((GroundPathNavigation) this.getNavigation()).setCanOpenDoors(true);
+        this.setPathfindingMalus(PathType.POWDER_SNOW, -1.0F);
+        this.setPathfindingMalus(PathType.DANGER_POWDER_SNOW, -1.0F);
     }
 
     public static int slotToInventoryIndex(EquipmentSlot slot) {
