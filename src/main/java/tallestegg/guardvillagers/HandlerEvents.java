@@ -5,11 +5,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -36,6 +40,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
@@ -67,6 +72,14 @@ public class HandlerEvents {
         LivingEntity entity = event.getEntity();
         LivingEntity target = event.getNewAboutToBeSetTarget();
         if (target == null || entity.getType() == GuardEntityType.GUARD.get() || entity instanceof IronGolem) return;
+        
+        // Equip wandering trader when targeting a Raider, like Vindicator would
+        if (entity.getType().toString().contains("wandering_trader") && target instanceof Raider) {
+            if (entity instanceof LivingEntity living) {
+                equipeWanderingTrader(living);
+            }
+        }
+        
         boolean isVillager = GuardConfig.COMMON.mobsGuardsProtectTargeted.get().contains(target.getEncodeId());
         if (isVillager) {
             List<Mob> list = entity.level().getEntitiesOfClass(Mob.class, entity.getBoundingBox().inflate(GuardConfig.COMMON.GuardVillagerHelpRange.get(), 5.0D, GuardConfig.COMMON.GuardVillagerHelpRange.get()));
@@ -261,4 +274,51 @@ public class HandlerEvents {
             player.awardStat(GuardStats.GUARDS_MADE.get());
         }
     }
+
+    @SubscribeEvent
+    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        Entity entity = event.getEntity();
+        
+        // Set up Evil guard settings when they join the level
+        if (entity instanceof Guard guard) {
+            // Apply alignment defaults if not set
+            if (guard.getAlignment() == Guard.ALIGNMENT_VILLAGER) {
+                // Default is already VILLAGER, which is fine
+            }
+        }
+    }
+
+    private static void equipeWanderingTrader(LivingEntity trader) {
+        // Equip wandering trader with Iron Sword on back
+        // Add NBT tag for Four Primitives and Weapons attribute damage
+        
+        // Create main hand sword with element attribute
+        ItemStack mainHandItem = new ItemStack(Items.IRON_SWORD);
+        addElementalDamageNBT(mainHandItem, trader.getRandom());
+        
+        // Create back sword with same element attribute
+        ItemStack backItem = new ItemStack(Items.IRON_SWORD);
+        addElementalDamageNBT(backItem, trader.getRandom());
+        
+        // Set main hand item
+        trader.setItemSlot(EquipmentSlot.MAINHAND, mainHandItem);
+        trader.setDropChance(EquipmentSlot.MAINHAND, 0.0F); // Don't drop the weapon
+        
+        // Set back item (offhand slot shows as back visual)
+        trader.setItemSlot(EquipmentSlot.OFFHAND, backItem);
+        trader.setDropChance(EquipmentSlot.OFFHAND, 0.0F); // Don't drop the back item
+    }
+
+    private static void addElementalDamageNBT(ItemStack sword, RandomSource random) {
+        // Add simple element attribute for Four Primitives and Weapons
+        String[] elements = {"fire", "water", "earth", "wind"};
+        String element = elements[random.nextInt(elements.length)];
+        
+        // Get or create NBT tag
+        CompoundTag tag = sword.getOrCreateTag();
+        
+        // Add element attribute NBT tag only
+        tag.putString("element", element);
+    }
 }
+

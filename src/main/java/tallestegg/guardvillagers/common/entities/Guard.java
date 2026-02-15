@@ -90,6 +90,11 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAttackMob, NeutralMob, ContainerListener, ReputationEventHandler {
+    // Alignment constants
+    public static final int ALIGNMENT_EVIL = 0;
+    public static final int ALIGNMENT_NEUTRAL = 1;
+    public static final int ALIGNMENT_VILLAGER = 2;
+
     protected static final EntityDataAccessor<Optional<UUID>> OWNER_UNIQUE_ID = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final AttributeModifier USE_ITEM_SPEED_PENALTY = new AttributeModifier(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "item_slow_down"), -0.25D, AttributeModifier.Operation.ADD_VALUE);
     private static final EntityDataAccessor<Optional<BlockPos>> GUARD_POS = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
@@ -99,6 +104,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     private static final EntityDataAccessor<Boolean> DATA_CHARGING_STATE = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> KICKING = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> FOLLOWING = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> ALIGNMENT = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.INT);
     private static final Map<Pose, EntityDimensions> SIZE_BY_POSE = ImmutableMap.<Pose, EntityDimensions>builder()
             .put(Pose.SLEEPING, SLEEPING_DIMENSIONS)
             .put(Pose.FALL_FLYING, EntityDimensions.scalable(0.6F, 0.6F).withEyeHeight(0.4F))
@@ -181,6 +187,35 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     public void setPatrolPos(BlockPos position) {
         this.entityData.set(GUARD_POS, Optional.ofNullable(position));
+    }
+
+    public int getAlignment() {
+        return this.entityData.get(ALIGNMENT);
+    }
+
+    public void setAlignment(int alignment) {
+        this.entityData.set(ALIGNMENT, alignment);
+        // Update target selector when alignment changes
+        if (!this.level().isClientSide && this.goalSelector != null) {
+            this.goalSelector.removeGoal(this.goalSelector.getRunningGoals().findAny().orElse(null));
+            // Clear and re-register alignment-based targets
+            this.targetSelector.getAllGoals().stream()
+                .filter(goal -> goal instanceof NearestAttackableTargetGoal)
+                .forEach(this.targetSelector::removeGoal);
+            registerAlignmentTargets();
+        }
+    }
+
+    public boolean isEvil() {
+        return this.getAlignment() == ALIGNMENT_EVIL;
+    }
+
+    public boolean isNeutral() {
+        return this.getAlignment() == ALIGNMENT_NEUTRAL;
+    }
+
+    public boolean isVillager() {
+        return this.getAlignment() == ALIGNMENT_VILLAGER;
     }
 
     @Override
@@ -289,6 +324,10 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 if (!level().isClientSide) this.readPersistentAngerSaveData(level(), compound);
             }
         }
+        // Load alignment
+        if (compound.contains("Alignment")) {
+            this.setAlignment(compound.getInt("Alignment"));
+        }
     }
 
     @Override
@@ -326,6 +365,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         compound.put("Gossips", this.gossips.store(NbtOps.INSTANCE));
         this.addPersistentAngerSaveData(compound);
+        // Save alignment
+        compound.putInt("Alignment", this.getAlignment());
     }
 
     private void maybeDecayGossip() {
@@ -547,6 +588,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         data.define(GUARD_POS, Optional.empty());
         data.define(PATROLLING, false);
         data.define(RUNNING_TO_EAT, false);
+        data.define(ALIGNMENT, ALIGNMENT_VILLAGER);
     }
 
     public void setChargingCrossbow(boolean charging) {
@@ -620,6 +662,36 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 5, true, true, (mob) -> GuardConfig.COMMON.MobWhiteList.get().contains(mob.getEncodeId())));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
         this.targetSelector.addGoal(4, new ResetUniversalAngerTargetGoal<>(this, false));
+        
+        // Alignment-based target selector
+        registerAlignmentTargets();
+    }
+
+    private void registerAlignmentTargets() {
+        if (this.isEvil()) {
+            // Evil guards: attack villagers (except those in their evil group) and hostile mobs
+            this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Villager.class, true, 
+                (villager) -> !isGuardAligned(villager) && this.distanceToSqr(villager) < 256));
+            
+            // Evil guards attack zombies and other hostile mobs
+            this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true, 
+                (zombie) -> !(zombie instanceof ZombifiedPiglin)));
+            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
+            
+            // Evil guards should NOT attack merchants/traders
+            // This is already excluded by the Villager check above since WanderingTrader is separate
+        } else if (this.isVillager()) {
+            // Normal guards: defend village, attack hostile mobs (already handled above)
+        } else { // NEUTRAL
+            // Neutral guards: only attack those who attack them or their owner
+        }
+    }
+
+    private boolean isGuardAligned(LivingEntity entity) {
+        if (entity instanceof Guard guard) {
+            return this.getAlignment() == guard.getAlignment();
+        }
+        return false;
     }
 
     @Override
@@ -1751,6 +1823,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public static class WalkBackToCheckPointGoal extends Goal {
         private final Guard guard;
         private final double speed;
+        private Vec3 lastPos;
+        private int stuckTicks = 0;
+        private static final int STUCK_THRESHOLD = 60; // 3 seconds at 20 ticks per second
 
         public WalkBackToCheckPointGoal(Guard guard, double speedIn) {
             this.guard = guard;
@@ -1765,7 +1840,31 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canContinueToUse() {
-            return this.canUse() && this.guard.getNavigation().isInProgress();
+            if (!this.canUse()) {
+                return false;
+            }
+            
+            // Check if navigation is still in progress
+            if (!this.guard.getNavigation().isInProgress()) {
+                return false;
+            }
+            
+            // Detect if the guard is stuck
+            if (this.lastPos != null) {
+                double distanceTraveled = this.guard.position().distanceTo(this.lastPos);
+                if (distanceTraveled < 0.1) { // Less than 0.1 block moved
+                    this.stuckTicks++;
+                    if (this.stuckTicks >= STUCK_THRESHOLD) {
+                        // Guard is stuck, stop this goal and let other goals handle it
+                        this.stuckTicks = 0;
+                        return false;
+                    }
+                } else {
+                    this.stuckTicks = 0; // Reset if moving
+                }
+            }
+            
+            return true;
         }
 
         @Override
@@ -1774,7 +1873,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             if (blockpos != null) {
                 Vec3 vector3d = Vec3.atCenterOf(blockpos);
                 this.guard.getNavigation().moveTo(vector3d.x, vector3d.y, vector3d.z, this.speed);
+                this.lastPos = this.guard.position();
+                this.stuckTicks = 0;
             }
+        }
+
+        @Override
+        public void tick() {
+            this.lastPos = this.guard.position();
         }
 
         @Override
