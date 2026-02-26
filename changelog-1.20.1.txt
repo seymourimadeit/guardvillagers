@@ -1,1 +1,2 @@
 
+- - [CHANGE] hopefully reduces issues with guard pathfinding to patrol points (with help from hrmcngs)     - If guards are continually stuck they will simply pause their patrol finding ai for a moment
