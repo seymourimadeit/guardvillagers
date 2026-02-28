@@ -13,6 +13,8 @@ public class WalkBackToCheckPointGoal extends Goal {
     private final Guard guard;
     private final double speed;
     private long delayTime = 0L;
+    private int ticksRan = 0;
+    private boolean stop = false;
 
     public WalkBackToCheckPointGoal(Guard guard, double speedIn) {
         this.guard = guard;
@@ -27,23 +29,34 @@ public class WalkBackToCheckPointGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return this.canUse() && this.guard.getNavigation().isInProgress() && (!this.guard.getNavigation().isStuck() || ((this.guard.getNavigation().getPath() != null && !(this.guard.getNavigation().getPath().getEndNode().distanceTo(guard.blockPosition()) > 2))));
+        return this.canUse() && this.guard.getNavigation().isInProgress() && stop;
     }
 
     @Override
     public void start() {
+        if (ticksRan > 200)
+            this.ticksRan = 0;
         BlockPos blockpos = this.guard.getPatrolPos();
-        if (blockpos != null) {
+        if (blockpos != null && !this.guard.blockPosition().equals(this.guard.getPatrolPos())) {
             Path path = this.guard.getNavigation().createPath(blockpos, 0);
             this.guard.getNavigation().moveTo(path, this.speed);
         }
     }
 
     @Override
-    public void stop() {
+    public void tick() {
         if (this.guard.getNavigation().getPath() != null && !this.guard.getNavigation().getPath().canReach())
+            this.ticksRan++;
+        if (this.guard.getNavigation().getPath() != null && !this.guard.getNavigation().getPath().canReach() && !this.guard.blockPosition().equals(this.guard.getPatrolPos()) && ticksRan > 200)
+            this.stop = true;
+    }
+
+    @Override
+    public void stop() {
+        if (stop)
             this.delayTime = this.guard.level().getGameTime();
         this.guard.getNavigation().stop();
+        this.stop = false;
     }
 
     @Override
