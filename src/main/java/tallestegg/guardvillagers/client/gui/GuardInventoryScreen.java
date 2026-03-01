@@ -21,6 +21,7 @@ import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.common.entities.GuardContainer;
 import tallestegg.guardvillagers.networking.GuardFollowPacket;
 import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
+import net.minecraft.client.renderer.RenderType;
 
 public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer> {
     private static final ResourceLocation GUARD_GUI_TEXTURES = ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "textures/container/inventory.png");
@@ -64,12 +65,18 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, GUARD_GUI_TEXTURES);
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        graphics.blit(GUARD_GUI_TEXTURES, i, j, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(
+                RenderType::guiTextured,
+                GUARD_GUI_TEXTURES,
+                i, j,
+                0.0F, 0.0F,
+                this.imageWidth, this.imageHeight,
+                256, 256
+        );
         InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, i + 26, j + 8, i + 75, j + 78, 30, 0.0625F, this.mousePosX, this.mousePosY, this.guard);
     }
 
@@ -105,15 +112,15 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
                 for (int k = 0; k < 10; k++) {
                     int l = k * 8 + 80;
                     if (k * 2 + 1 < armor) {
-                        graphics.blitSprite(ARMOR_FULL_SPRITE, l, 20, 9, 9);
+                        graphics.blitSprite(RenderType::guiTextured, ARMOR_FULL_SPRITE, l, 20, 9, 9);
                     }
 
                     if (k * 2 + 1 == armor) {
-                        graphics.blitSprite(ARMOR_HALF_SPRITE, l, 20, 9, 9);
+                        graphics.blitSprite(RenderType::guiTextured, ARMOR_FULL_SPRITE, l, 20, 9, 9);
                     }
 
                     if (k * 2 + 1 > armor) {
-                        graphics.blitSprite(ARMOR_EMPTY_SPRITE, l, 20, 9, 9);
+                        graphics.blitSprite(RenderType::guiTextured, ARMOR_FULL_SPRITE, l, 20, 9, 9);
                     }
                 }
                 RenderSystem.disableBlend();
@@ -123,7 +130,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
 
     private void renderHeart(GuiGraphics guiGraphics, Gui.HeartType heartType, int x, int y, boolean halfHeart) {
         RenderSystem.enableBlend();
-        guiGraphics.blitSprite(heartType.getSprite(false, halfHeart, false), x, y, 9, 9);
+        guiGraphics.blitSprite(RenderType::guiTextured, heartType.getSprite(false, halfHeart, false), x, y, 9, 9);
         RenderSystem.disableBlend();
     }
 
@@ -159,7 +166,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
             WidgetSprites icon = this.requirementsForTexture() ? this.texture : this.newTexture;
             ResourceLocation resourcelocation = icon.get(this.isActive(), this.isHoveredOrFocused());
-            graphics.blitSprite(resourcelocation, this.getX(), this.getY(), this.width, this.height);
+            graphics.blitSprite(RenderType::guiTextured, resourcelocation, this.getX(), this.getY(), this.width, this.height);
         }
     }
 

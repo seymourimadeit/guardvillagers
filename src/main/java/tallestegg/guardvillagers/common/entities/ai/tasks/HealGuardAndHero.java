@@ -10,7 +10,11 @@ import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -91,9 +95,15 @@ public class HealGuardAndHero extends VillagerHelp {
     }
 
     public void throwPotion(LivingEntity healer) {
+        if (!(healer.level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
         healer.setData(GuardDataAttachments.TIMES_THROWN_POTION.get(), healer.getData(GuardDataAttachments.TIMES_THROWN_POTION.get()) + 1);
         Holder<Potion> potion = targetToHeal.getHealth() > 4.0F ? Potions.REGENERATION : Potions.HEALING;
-        ThrownPotion potionentity = new ThrownPotion(healer.level(), healer);
+        ItemStack potionStack = PotionContents.createItemStack(Items.SPLASH_POTION, potion);
+        ThrownPotion potionentity = new ThrownPotion(EntityType.POTION, serverLevel);
+        potionentity.setOwner(healer);
+        potionentity.setItem(potionStack.copy());
         potionentity.setItem(PotionContents.createItemStack(Items.SPLASH_POTION, potion));
         potionentity.shootFromRotation(healer, healer.getViewXRot(1.0F), healer.getYHeadRot(), -20.0F, 0.5F, 0.0F);
         healer.level().playSound(null, healer.getX(), healer.getY(), healer.getZ(), SoundEvents.SPLASH_POTION_THROW, healer.getSoundSource(), 1.0F, 0.8F + healer.getRandom().nextFloat() * 0.4F);

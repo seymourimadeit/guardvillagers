@@ -65,6 +65,9 @@ public class HandlerEvents {
     @SubscribeEvent
     public static void onEntityTarget(LivingChangeTargetEvent event) {
         LivingEntity entity = event.getEntity();
+        if (entity instanceof Raider raider && raider.hasActiveRaid()) {
+            return;
+        }
         LivingEntity target = event.getNewAboutToBeSetTarget();
         if (target == null || entity.getType() == GuardEntityType.GUARD.get() || entity instanceof IronGolem) return;
         boolean isVillager = GuardConfig.COMMON.mobsGuardsProtectTargeted.get().contains(target.getEncodeId());
@@ -87,6 +90,13 @@ public class HandlerEvents {
     public static void onEntityHurt(LivingDamageEvent.Pre event) {
         LivingEntity entity = event.getEntity();
         Entity trueSource = event.getContainer().getSource().getEntity();
+        if (entity instanceof Raider raider && raider.hasActiveRaid()) {
+            return;
+        }
+
+        if (trueSource instanceof Raider raider && raider.hasActiveRaid()) {
+            return;
+        }
         if (entity == null || trueSource == null) return;
         boolean isVillager = GuardConfig.COMMON.mobsGuardsProtectHurt.get().contains(entity.getEncodeId());
         if (isVillager && trueSource.getType() == GuardEntityType.GUARD.get() && !GuardConfig.COMMON.guardArrowsHurtVillagers.get()) {
@@ -110,10 +120,20 @@ public class HandlerEvents {
     @SubscribeEvent
     public static void onLivingSpawned(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Mob mob) {
-            if (mob instanceof Raider) {
-                if (((Raider) mob).hasActiveRaid() && GuardConfig.COMMON.RaidAnimals.get())
-                    mob.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(((Raider) mob), Animal.class, false));
+            if (mob instanceof Raider raider && raider.hasActiveRaid()) {
+                return;
             }
+            boolean inActiveRaid = (mob instanceof Raider raider) && raider.hasActiveRaid();
+            if (inActiveRaid) {
+                return;
+            }
+
+            if (mob instanceof Raider) {
+                if (GuardConfig.COMMON.RaidAnimals.get()) {
+                    mob.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(((Raider) mob), Animal.class, false));
+                }
+            }
+
             if (GuardConfig.COMMON.MobsAttackGuards.get()) {
                 if (mob instanceof Enemy && !GuardConfig.COMMON.MobBlackList.get().contains(mob.getEncodeId())) {
                     if (!(mob instanceof Spider))
@@ -159,7 +179,7 @@ public class HandlerEvents {
 
             if (mob instanceof Witch witch) {
                 if (GuardConfig.COMMON.WitchesVillager.get()) {
-                    witch.targetSelector.addGoal(3, new NearestAttackableWitchTargetGoal<>(witch, AbstractVillager.class, 10, true, false, ISNT_BABY));
+                    witch.targetSelector.addGoal(3, new NearestAttackableWitchTargetGoal<>(witch, AbstractVillager.class, 10, true, false,(serverLevel, target) -> ISNT_BABY.test(serverLevel)));
                     witch.targetSelector.addGoal(3, new NearestAttackableWitchTargetGoal<>(witch, IronGolem.class, 10, true, false, null));
                     witch.targetSelector.addGoal(2, new NearestAttackableWitchTargetGoal<>(witch, Guard.class, 10, true, false, null));
                 }
@@ -223,7 +243,7 @@ public class HandlerEvents {
     private static void convertVillager(LivingEntity entity, Player player) {
         player.swing(InteractionHand.MAIN_HAND);
         ItemStack itemstack = player.getItemBySlot(EquipmentSlot.MAINHAND);
-        Guard guard = GuardEntityType.GUARD.get().create(entity.level());
+        Guard guard = GuardEntityType.GUARD.get().create(entity.level(), EntitySpawnReason.EVENT);
         Villager villager = (Villager) entity;
         if (guard == null)
             return;

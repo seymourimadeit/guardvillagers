@@ -20,15 +20,12 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import tallestegg.guardvillagers.client.ClientEvents;
+import tallestegg.guardvillagers.client.GuardClientEvents;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.loot_tables.GuardLootTables;
-import tallestegg.guardvillagers.networking.GuardFollowPacket;
-import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
-import tallestegg.guardvillagers.networking.GuardSetPatrolPosPacket;
 
 @Mod(GuardVillagers.MODID)
 public class GuardVillagers {
@@ -50,15 +47,9 @@ public class GuardVillagers {
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addCreativeTabs);
-        modEventBus.addListener(this::register);
-    }
-
-
-    private void register(final RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar reg = event.registrar(MODID).versioned("2.0.2");
-        reg.playToServer(GuardSetPatrolPosPacket.TYPE, GuardSetPatrolPosPacket.STREAM_CODEC, GuardSetPatrolPosPacket::setPatrolPosition);
-        reg.playToClient(GuardOpenInventoryPacket.TYPE, GuardOpenInventoryPacket.STREAM_CODEC, GuardOpenInventoryPacket::handle);
-        reg.playToServer(GuardFollowPacket.TYPE, GuardFollowPacket.STREAM_CODEC, GuardFollowPacket::handle);
+        modEventBus.addListener(GuardClientEvents::layerDefinitions);
+        modEventBus.addListener(GuardClientEvents::entityRenderers);
+        modEventBus.addListener(ClientEvents::registerLayerDefinitions);
     }
 
     public static boolean hotvChecker(Player player, Guard guard) {
@@ -97,8 +88,8 @@ public class GuardVillagers {
     }
 
     private void serverStart(final ServerAboutToStartEvent event) {
-        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registry(Registries.TEMPLATE_POOL).orElseThrow();
-        Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().registry(Registries.PROCESSOR_LIST).orElseThrow();
+        Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().lookupOrThrow(Registries.TEMPLATE_POOL);
+        Registry<StructureProcessorList> processorListRegistry = event.getServer().registryAccess().lookupOrThrow(Registries.PROCESSOR_LIST);
     }
 
 

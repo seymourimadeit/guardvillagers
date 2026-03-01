@@ -75,6 +75,7 @@ import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.GuardVillagers;
@@ -83,6 +84,9 @@ import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.loot_tables.GuardLootTables;
 import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
+
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.food.FoodProperties;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -148,7 +152,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @SuppressWarnings({"deprecation", "OverrideOnly"})
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor worldIn, @NotNull DifficultyInstance difficultyIn, @NotNull EntitySpawnReason reason, @Nullable SpawnGroupData spawnDataIn) {
         this.setPersistenceRequired();
         String type = getVariantFromBiome(level(), this.blockPosition());
         this.setVariant(type);
@@ -196,7 +200,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             ItemStack itemstack = this.guardInventory.getItem(i);
             RandomSource randomsource = level().getRandom();
             if (!itemstack.isEmpty() && !EnchantmentHelper.has(itemstack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP) && randomsource.nextFloat() < GuardConfig.COMMON.chanceToDropEquipment.get().floatValue())
-                this.spawnAtLocation(itemstack);
+                if (this.level() instanceof ServerLevel serverLevel) {
+                    this.spawnAtLocation(serverLevel, itemstack);
+                }
         }
     }
 
@@ -322,24 +328,51 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     protected void completeUsingItem() {
-        if (this.isUsingItem()) {
-            InteractionHand interactionhand = this.getUsedItemHand();
-            if (!this.useItem.equals(this.getItemInHand(interactionhand))) {
-                this.releaseUsingItem();
-            } else {
-                if (!this.useItem.isEmpty() && this.isUsingItem()) {
-                    this.triggerItemUseEffects(this.useItem, 16);
-                    ItemStack copy = this.useItem.copy();
-                    ItemStack itemstack = EventHooks.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
-                    if (itemstack != this.useItem) {
-                        this.setItemInHand(interactionhand, itemstack);
-                    }
-                    if (!(this.useItem.getUseAnimation() == UseAnim.EAT)) this.useItem.shrink(1);
-                    this.stopUsingItem();
-                }
+        if (!this.isUsingItem()) {
+            return;
+        }
 
+        InteractionHand hand = this.getUsedItemHand();
+
+        // 사용 중인 아이템과 실제 손 아이템이 달라졌으면 취소
+        if (!this.useItem.equals(this.getItemInHand(hand))) {
+            this.releaseUsingItem();
+            return;
+        }
+
+        if (this.useItem.isEmpty()) {
+            return;
+        }
+
+        // 소비 전 스택 복사 (영양값 판정용)
+        ItemStack consumedStack = this.useItem.copy();
+
+        // 음식/음료 회복 처리 (영양값 기반)
+        if (Guard.isConsumable(consumedStack)) {
+            FoodProperties food = consumedStack.get(DataComponents.FOOD);
+            if (food != null) {
+                this.heal((float) food.nutrition());
             }
         }
+
+        // 기존 아이템 사용 완료 처리
+        ItemStack result = EventHooks.onItemUseFinish(
+                this,
+                consumedStack,
+                this.getUseItemRemainingTicks(),
+                this.useItem.finishUsingItem(this.level(), this)
+        );
+
+        if (result != this.useItem) {
+            this.setItemInHand(hand, result);
+        }
+
+        // 기존 코드 흐름 유지 (EAT가 아닌 경우만 shrink)
+        if (this.useItem.getUseAnimation() != ItemUseAnimation.EAT) {
+            this.useItem.shrink(1);
+        }
+
+        this.stopUsingItem();
     }
 
     @Override
@@ -388,16 +421,16 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    public boolean doHurtTarget(@NotNull Entity entityIn) {
+    public boolean doHurtTarget(@NotNull ServerLevel level, @NotNull Entity target) {
         if (this.isKicking()) {
-            ((LivingEntity) entityIn).knockback(1.0F, Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
+            ((LivingEntity) target).knockback(1.0F, Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
             this.kickTicks = 10;
             level().broadcastEntityEvent(this, (byte) 4);
-            this.lookAt(entityIn, 90.0F, 90.0F);
+            this.lookAt(target, 90.0F, 90.0F);
         }
         ItemStack hand = this.getMainHandItem();
         this.damageGuardItem(1, EquipmentSlot.MAINHAND, hand);
-        return super.doHurtTarget(entityIn);
+        return super.doHurtTarget((ServerLevel) level(), getTarget());
     }
 
     @Override
@@ -416,26 +449,60 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void die(@NotNull DamageSource source) {
-        if (GuardConfig.COMMON.convertGuardOnDeath.get() && (level().getDifficulty() == Difficulty.NORMAL || level().getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie && EventHooks.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {
-        })) {
-            ZombieVillager zombieguard = this.convertTo(EntityType.ZOMBIE_VILLAGER, true);
-            if (level().getDifficulty() != Difficulty.HARD && this.random.nextBoolean() || zombieguard == null) {
+        if (GuardConfig.COMMON.convertGuardOnDeath.get()
+                && (level().getDifficulty() == Difficulty.NORMAL || level().getDifficulty() == Difficulty.HARD)
+                && source.getEntity() instanceof Zombie
+                && EventHooks.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {})) {
+
+            if (this.level() instanceof ServerLevel serverLevel) {
+                // 노말 난이도는 50% 확률로 변환 실패(원래 의도 유지)
+                if (level().getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
+                    super.die(source);
+                    return;
+                }
+
+                ZombieVillager zombieguard = EntityType.ZOMBIE_VILLAGER.create(serverLevel, EntitySpawnReason.CONVERSION);
+                if (zombieguard == null) {
+                    super.die(source);
+                    return;
+                }
+
+                // 위치/이름/상태 복사
+                zombieguard.copyPosition(this);
+                zombieguard.finalizeSpawn(
+                        serverLevel,
+                        serverLevel.getCurrentDifficultyAt(zombieguard.blockPosition()),
+                        EntitySpawnReason.CONVERSION,
+                        null
+                );
+                zombieguard.setNoAi(this.isNoAi());
+                zombieguard.setCustomName(this.getCustomName());
+                zombieguard.setCustomNameVisible(this.isCustomNameVisible());
+                zombieguard.setPersistenceRequired();
+
+                for (EquipmentSlot slot : EquipmentSlot.values()) {
+                    // 우리 Guard는 getItemBySlot을 guardInventory로 오버라이드했으므로 그대로 복사하면 됨
+                    ItemStack stack = this.getItemBySlot(slot);
+                    if (!stack.isEmpty()) {
+                        zombieguard.setItemSlot(slot, stack.copy());
+                    }
+                }
+
+                // 사운드(바닐라 변환 사운드)
+                if (!this.isSilent()) {
+                    level().levelEvent(null, 1026, this.blockPosition(), 0);
+                }
+
+                // 월드에 실제 추가
+                serverLevel.addFreshEntityWithPassengers(zombieguard);
+
+                // 원본 가드는 제거하고 종료 (super.die 호출하면 중복 처리될 수 있음)
+                this.discard();
                 return;
             }
-            if (!this.isSilent()) level().levelEvent(null, 1026, this.blockPosition(), 0);
-            this.discard();
         }
-        super.die(source);
-    }
 
-    @Override
-    public @NotNull ItemStack eat(@NotNull Level world, ItemStack stack, @NotNull FoodProperties foodProperties) {
-        if (stack.getUseAnimation() == UseAnim.EAT) {
-            this.heal((foodProperties.nutrition()));
-        }
-        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 0.5F, world.random.nextFloat() * 0.1F + 0.9F);
-        super.eat(world, stack, foodProperties);
-        return stack;
+        super.die(source);
     }
 
     @Override
@@ -592,14 +659,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
         this.targetSelector.addGoal(5, new DefendVillageGuardGoal(this));
         if (GuardConfig.COMMON.AttackAllMobs.get()) {
-            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> mob instanceof Enemy && !GuardConfig.COMMON.MobBlackList.get().contains(mob.getEncodeId())));
+            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this,Mob.class,5,true,true,(target, serverLevel) -> target instanceof Enemy && !GuardConfig.COMMON.MobBlackList.get().contains(target.getEncodeId())));
         } else {
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Ravager.class, true)); // To make witches and ravagers have a priority than other mobs this has to be done
             this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Witch.class, true));
             this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
-            this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Zombie.class, true, (mob) -> !(mob instanceof ZombifiedPiglin)));
+            this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this,Zombie.class,true,(target, serverLevel) -> !(target instanceof ZombifiedPiglin)));
         }
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 5, true, true, (mob) -> GuardConfig.COMMON.MobWhiteList.get().contains(mob.getEncodeId())));
+        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this,LivingEntity.class,5,true,true,(target, serverLevel) -> GuardConfig.COMMON.MobWhiteList.get().contains(target.getEncodeId())));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
         this.targetSelector.addGoal(4, new ResetUniversalAngerTargetGoal<>(this, false));
     }
@@ -769,10 +836,10 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public void thunderHit(ServerLevel p_241841_1_, LightningBolt p_241841_2_) {
         if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL && EventHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {
         })) {
-            Witch witchentity = EntityType.WITCH.create(p_241841_1_);
+            Witch witchentity = EntityType.WITCH.create(p_241841_1_, EntitySpawnReason.EVENT);
             if (witchentity == null) return;
             witchentity.copyPosition(this);
-            witchentity.finalizeSpawn(p_241841_1_, p_241841_1_.getCurrentDifficultyAt(witchentity.blockPosition()), MobSpawnType.CONVERSION, null);
+            witchentity.finalizeSpawn(p_241841_1_, p_241841_1_.getCurrentDifficultyAt(witchentity.blockPosition()), EntitySpawnReason.CONVERSION, null);
             witchentity.setNoAi(this.isNoAi());
             witchentity.setCustomName(this.getCustomName());
             witchentity.setCustomNameVisible(this.isCustomNameVisible());
@@ -816,7 +883,12 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         this.interacting = true;
         player.nextContainerCounter();
-        player.connection.send(new GuardOpenInventoryPacket(player.containerCounter, this.guardInventory.getContainerSize(), this.getId()));
+
+        PacketDistributor.sendToPlayer(
+                player,
+                new GuardOpenInventoryPacket(player.containerCounter, this.guardInventory.getContainerSize(), this.getId())
+        );
+
         player.containerMenu = new GuardContainer(player.containerCounter, player.getInventory(), this.guardInventory, this);
         player.initMenu(player.containerMenu);
         NeoForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, player.containerMenu));
@@ -841,7 +913,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     public static boolean isConsumable(ItemStack stack) {
-        return stack.getUseAnimation() == UseAnim.EAT || stack.getUseAnimation() == UseAnim.DRINK && !(stack.getItem() instanceof SplashPotionItem);
+        return stack.getUseAnimation() == ItemUseAnimation.EAT || stack.getUseAnimation() == ItemUseAnimation.DRINK && !(stack.getItem() instanceof SplashPotionItem);
     }
 
     public void tryToTeleportToOwner() {
@@ -1031,7 +1103,17 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public static class GuardMeleeGoal extends MeleeAttackGoal {
         private static final double DEFAULT_ATTACK_REACH = Math.sqrt(2.04F) - (double) 0.6F;
         public final Guard guard;
+        @Override
+        public void start() {
+            super.start();
+            this.guard.setAggressive(true);
+        }
 
+        @Override
+        public void stop() {
+            super.stop();
+            this.guard.setAggressive(false);
+        }
         public GuardMeleeGoal(Guard guard, double speedIn, boolean useLongMemory) {
             super(guard, speedIn, useLongMemory);
             this.guard = guard;
@@ -1039,7 +1121,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canUse() {
-            return (!(mob.getMainHandItem().getItem() instanceof CrossbowItem) || !(mob.getMainHandItem().getItem() instanceof BowItem)) && this.guard.getTarget() != null && !this.guard.isEating() && super.canUse();
+            return !(mob.getMainHandItem().getItem() instanceof CrossbowItem)
+                    && !(mob.getMainHandItem().getItem() instanceof BowItem)
+                    && this.guard.getTarget() != null
+                    && !this.guard.isEating()
+                    && super.canUse();
         }
 
         @Override
@@ -1067,7 +1153,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 this.guard.stopUsingItem();
                 if (guard.shieldCoolDown == 0) this.guard.shieldCoolDown = 8;
                 this.guard.swing(InteractionHand.MAIN_HAND);
-                this.guard.doHurtTarget(enemy);
+                if (this.guard.level() instanceof ServerLevel serverLevel) {
+                    this.guard.doHurtTarget(serverLevel, enemy);
+                }
             }
         }
 
@@ -1344,7 +1432,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             List<? extends Guard> list = this.taskOwner.level().getEntitiesOfClass(this.taskOwner.getClass(), this.taskOwner.getBoundingBox().inflate(8.0D, 8.0D, 8.0D));
             if (!list.isEmpty()) {
                 for (Guard guard : list) {
-                    if (!guard.isInvisible() && guard.getOffhandItem().canPerformAction(ItemAbilities.SHIELD_BLOCK) && guard.isBlocking() && this.taskOwner.level().getNearbyEntities(Guard.class, NEARBY_GUARDS.range(3.0D), guard, this.taskOwner.getBoundingBox().inflate(5.0D)).size() < 5) {
+                    if (!guard.isInvisible() && guard.getOffhandItem().canPerformAction(ItemAbilities.SHIELD_BLOCK) && guard.isBlocking() && this.taskOwner.level().getEntitiesOfClass(Guard.class, this.taskOwner.getBoundingBox().inflate(5.0D), g -> g != guard && !g.isRemoved()).size() < 5) {
                         if (!(taskOwner.getMainHandItem().getItem() instanceof ProjectileWeaponItem)) {
                             this.guardtofollow = guard;
                             Vec3 vec3d = this.getPosition();
@@ -1466,10 +1554,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                     this.mob.getMoveControl().strafe(this.mob.isUsingItem() ? -0.5F : -3.0F, 0.0F);
                     this.mob.lookAt(livingentity, 30.0F, 30.0F);
                 }
-                if (this.mob.getRandom().nextInt(50) == 0) {
-                    if (this.mob.hasPose(Pose.STANDING)) this.mob.setPose(Pose.CROUCHING);
-                    else this.mob.setPose(Pose.STANDING);
-                }
                 boolean canSee2 = (d0 > (double) this.attackRadiusSqr || this.seeTime < 5) && this.attackDelay == 0;
                 if (canSee2) {
                     --this.updatePathDelay;
@@ -1587,7 +1671,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             if (guard.kickTicks <= 0) {
                 guard.kickTicks = 10;
             }
-            guard.doHurtTarget(guard.getTarget());
+            if (guard.level() instanceof net.minecraft.server.level.ServerLevel serverLevel && guard.getTarget() != null) {
+                guard.doHurtTarget(serverLevel, guard.getTarget());
+            }
         }
 
         @Override
@@ -1618,11 +1704,24 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         public void start() {
             if (guard.getOffhandItem().getItem().canPerformAction(guard.getOffhandItem(), ItemAbilities.SHIELD_BLOCK))
                 guard.startUsingItem(InteractionHand.OFF_HAND);
+
+            // 근접 가드(활/석궁 아님)만 방패 들 때 숙이기
+            boolean ranged = guard.getMainHandItem().getItem() instanceof CrossbowItem
+                    || guard.getMainHandItem().getItem() instanceof BowItem;
+
+            if (!ranged) {
+                guard.setPose(Pose.CROUCHING);
+            }
         }
 
         @Override
         public void stop() {
             if (!GuardConfig.COMMON.GuardRaiseShield.get()) guard.stopUsingItem();
+
+            // 방패 자세 해제 시 다시 서기
+            if (guard.getPose() == Pose.CROUCHING) {
+                guard.setPose(Pose.STANDING);
+            }
         }
 
         protected boolean raiseShield() {

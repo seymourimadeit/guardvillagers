@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Rotation;
@@ -25,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
+import net.minecraft.world.entity.EntitySpawnReason;
 
 @Mixin(SinglePoolElement.class)
 public abstract class SinglePoolElementMixin {
@@ -37,9 +38,9 @@ public abstract class SinglePoolElementMixin {
         this.template.left().ifPresent(resourceLocation -> {
             if (GuardConfig.COMMON.structuresThatSpawnGuards.get().contains(resourceLocation.toString())) {
                 for (int guardCount = 0; guardCount < GuardConfig.COMMON.guardSpawnInVillage.getAsInt(); guardCount++) {
-                    Guard guard = GuardEntityType.GUARD.get().create(level.getLevel());
+                    Guard guard = GuardEntityType.GUARD.get().create(level.getLevel(), EntitySpawnReason.EVENT);
                     guard.moveTo(offset, 0, 0);
-                    guard.finalizeSpawn(level, level.getCurrentDifficultyAt(offset), MobSpawnType.STRUCTURE, null);
+                    guard.finalizeSpawn(level, level.getCurrentDifficultyAt(offset), EntitySpawnReason.STRUCTURE, null);
                     level.addFreshEntityWithPassengers(guard);
                 }
             }

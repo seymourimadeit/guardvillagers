@@ -17,7 +17,7 @@ import tallestegg.guardvillagers.client.models.GuardModel;
 import tallestegg.guardvillagers.client.models.GuardSteveModel;
 import tallestegg.guardvillagers.client.renderer.GuardRenderer;
 
-@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT)
 public class GuardClientEvents {
     public static ModelLayerLocation GUARD = new ModelLayerLocation(
             ResourceLocation.withDefaultNamespace("modded/" + GuardVillagers.MODID + "/" + "guard"), "main");
@@ -38,8 +38,8 @@ public class GuardClientEvents {
         event.registerLayerDefinition(GuardClientEvents.GUARD_STEVE, GuardSteveModel::createMesh);
         event.registerLayerDefinition(GuardClientEvents.GUARD_ARMOR_OUTER, GuardArmorModel::createOuterArmorLayer);
         event.registerLayerDefinition(GuardClientEvents.GUARD_ARMOR_INNER, GuardArmorModel::createInnerArmorLayer);
-        event.registerLayerDefinition(GuardClientEvents.GUARD_PLAYER_ARMOR_INNER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(0.5F)), 64, 32));
         event.registerLayerDefinition(GuardClientEvents.GUARD_PLAYER_ARMOR_OUTER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(1.0F)), 64, 32));
+        event.registerLayerDefinition(GuardClientEvents.GUARD_PLAYER_ARMOR_INNER, () -> LayerDefinition.create(HumanoidArmorModel.createBodyLayer(new CubeDeformation(0.5F)), 64, 32));
     }
 
     @SubscribeEvent
