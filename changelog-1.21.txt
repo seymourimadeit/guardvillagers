@@ -1,1 +1,2 @@
 
+- [CHANGE] stop guards from moving around slightly while patrolling
