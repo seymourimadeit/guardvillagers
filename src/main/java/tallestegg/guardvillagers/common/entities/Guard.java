@@ -18,7 +18,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
@@ -124,11 +123,15 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.setPathfindingMalus(PathType.DAMAGE_OTHER, -1.0F);
     }
 
+    @Override
+    protected PathNavigation createNavigation(Level level) {
+        return new GuardGroundPathNavigation(this, level);
+    }
+
     public static int slotToInventoryIndex(EquipmentSlot slot) {
         return switch (slot) {
             case CHEST -> 1;
             case FEET -> 3;
-            case HEAD -> 0;
             case LEGS -> 2;
             default -> 0;
         };
@@ -1762,6 +1765,25 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         @Override
         public boolean requiresUpdateEveryTick() {
             return true;
+        }
+    }
+
+    public static class GuardGroundPathNavigation extends GroundPathNavigation {
+        private final Guard guard;
+
+        public GuardGroundPathNavigation(Guard guard, Level level) {
+            super(guard, level);
+            this.guard = guard;
+        }
+
+        @Override
+        protected boolean canUpdatePath() {
+            return super.canUpdatePath();
+        }
+
+        @Override
+        public boolean isDone() {
+            return (guard.isPatrolling() && guard.getTarget() == null && guard.blockPosition().equals(guard.getPatrolPos())) || super.isDone();
         }
     }
 }
