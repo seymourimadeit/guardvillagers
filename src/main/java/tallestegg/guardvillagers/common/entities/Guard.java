@@ -1775,12 +1775,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             super(guard, level);
             this.guard = guard;
         }
-
-        @Override
-        protected boolean canUpdatePath() {
-            return super.canUpdatePath();
-        }
-
+        
         @Override
         public boolean isDone() {
             return (guard.isPatrolling() && guard.getTarget() == null && guard.blockPosition().equals(guard.getPatrolPos())) || super.isDone();
