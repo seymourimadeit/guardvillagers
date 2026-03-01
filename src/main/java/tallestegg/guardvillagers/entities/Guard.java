@@ -117,6 +117,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.setPathfindingMalus(BlockPathTypes.DAMAGE_OTHER, -1.0F);
     }
 
+    @Override
+    protected PathNavigation createNavigation(Level level) {
+        return new GuardGroundPathNavigation(this, level);
+    }
+
     public static int slotToInventoryIndex(EquipmentSlot slot) {
         return switch (slot) {
             case CHEST -> 1;
@@ -1134,6 +1139,20 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 this.guard.swing(InteractionHand.MAIN_HAND);
                 this.guard.doHurtTarget(enemy);
             }
+        }
+    }
+
+    public static class GuardGroundPathNavigation extends GroundPathNavigation {
+        private final Guard guard;
+
+        public GuardGroundPathNavigation(Guard guard, Level level) {
+            super(guard, level);
+            this.guard = guard;
+        }
+
+        @Override
+        public boolean isDone() {
+            return (guard.isPatrolling() && guard.getTarget() == null && guard.blockPosition().equals(guard.getPatrolPos())) || super.isDone();
         }
     }
 }
