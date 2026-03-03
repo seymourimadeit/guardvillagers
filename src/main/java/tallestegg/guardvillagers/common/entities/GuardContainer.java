@@ -1,16 +1,14 @@
 package tallestegg.guardvillagers.common.entities;
 
-import com.mojang.datafixers.util.Pair;
-
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import tallestegg.guardvillagers.GuardVillagers;
 
 public class GuardContainer extends AbstractContainerMenu {
@@ -45,8 +43,8 @@ public class GuardContainer extends AbstractContainerMenu {
             }
 
             @Override
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-                return Pair.of(InventoryMenu.BLOCK_ATLAS, InventoryMenu.EMPTY_ARMOR_SLOT_HELMET);
+            public Identifier getNoItemIcon() {
+                return InventoryMenu.EMPTY_ARMOR_SLOT_HELMET;
             }
         });
         this.addSlot(new Slot(guardInventory, 1, 8, 26) {
@@ -72,8 +70,8 @@ public class GuardContainer extends AbstractContainerMenu {
             }
 
             @Override
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-                return Pair.of(InventoryMenu.BLOCK_ATLAS, InventoryMenu.EMPTY_ARMOR_SLOT_CHESTPLATE);
+            public Identifier getNoItemIcon() {
+                return InventoryMenu.EMPTY_ARMOR_SLOT_CHESTPLATE;
             }
         });
         this.addSlot(new Slot(guardInventory, 2, 8, 44) {
@@ -99,8 +97,8 @@ public class GuardContainer extends AbstractContainerMenu {
             }
 
             @Override
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-                return Pair.of(InventoryMenu.BLOCK_ATLAS, InventoryMenu.EMPTY_ARMOR_SLOT_LEGGINGS);
+            public Identifier getNoItemIcon() {
+                return InventoryMenu.EMPTY_ARMOR_SLOT_LEGGINGS;
             }
         });
         this.addSlot(new Slot(guardInventory, 3, 8, 62) {
@@ -126,8 +124,8 @@ public class GuardContainer extends AbstractContainerMenu {
             }
 
             @Override
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-                return Pair.of(InventoryMenu.BLOCK_ATLAS, InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS);
+            public Identifier getNoItemIcon() {
+                return InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS;
             }
         });
         this.addSlot(new Slot(guardInventory, 4, 77, 62) {
@@ -148,11 +146,10 @@ public class GuardContainer extends AbstractContainerMenu {
             }
 
             @Override
-            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
-                return Pair.of(InventoryMenu.BLOCK_ATLAS, InventoryMenu.EMPTY_ARMOR_SLOT_SHIELD);
+            public Identifier getNoItemIcon() {
+                return InventoryMenu.EMPTY_ARMOR_SLOT_SHIELD;
             }
         });
-
         this.addSlot(new Slot(guardInventory, 5, 77, 44) {
             @Override
             public boolean mayPlace(ItemStack stack) {

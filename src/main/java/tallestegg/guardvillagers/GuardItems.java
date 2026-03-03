@@ -10,21 +10,17 @@ public class GuardItems {
 
     public static final DeferredItem<SpawnEggItem> GUARD_SPAWN_EGG =
             ITEMS.registerItem("guard_spawn_egg",
-                    props -> new SpawnEggItem(
-                            GuardEntityType.GUARD.get(),
-                            5651507,
-                            9804699,
-                            props
-                    )
-            );
+            properties -> new SpawnEggItem(
+                    properties.spawnEgg(GuardEntityType.GUARD.get())
+            )
+    );
 
     public static final DeferredItem<SpawnEggItem> ILLUSIONER_SPAWN_EGG =
             ITEMS.registerItem("illusioner_spawn_egg",
-                    props -> new SpawnEggItem(
-                            EntityType.ILLUSIONER,
-                            9804699,
-                            4547222,
-                            props
-                    )
-            );
+            properties -> new SpawnEggItem(
+                    properties.spawnEgg(EntityType.ILLUSIONER)
+            )
+    );
+
+    private GuardItems() {}
 }

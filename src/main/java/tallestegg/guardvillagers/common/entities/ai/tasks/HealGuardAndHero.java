@@ -1,30 +1,21 @@
 package tallestegg.guardvillagers.common.entities.ai.tasks;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownSplashPotion;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.alchemy.Potions;
 import tallestegg.guardvillagers.GuardDataAttachments;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 
 import java.util.List;
-import java.util.Optional;
 
 public class HealGuardAndHero extends VillagerHelp {
     private LivingEntity targetToHeal;
@@ -73,7 +64,7 @@ public class HealGuardAndHero extends VillagerHelp {
             this.waitUntilInSightTicks += 5;
         } else if (waitUntilInSightTicks > 0) this.waitUntilInSightTicks--;
         if (waitUntilInSightTicks == 0) {
-            this.throwPotion(owner);
+            this.throwPotion(level, owner, owner.getItemInHand(InteractionHand.MAIN_HAND));
             this.waitUntilInSightTicks = 40;
         }
     }
@@ -94,19 +85,16 @@ public class HealGuardAndHero extends VillagerHelp {
         this.waitUntilInSightTicks = 40;
     }
 
-    public void throwPotion(LivingEntity healer) {
-        if (!(healer.level() instanceof ServerLevel serverLevel)) {
-            return;
-        }
-        healer.setData(GuardDataAttachments.TIMES_THROWN_POTION.get(), healer.getData(GuardDataAttachments.TIMES_THROWN_POTION.get()) + 1);
-        Holder<Potion> potion = targetToHeal.getHealth() > 4.0F ? Potions.REGENERATION : Potions.HEALING;
-        ItemStack potionStack = PotionContents.createItemStack(Items.SPLASH_POTION, potion);
-        ThrownPotion potionentity = new ThrownPotion(EntityType.POTION, serverLevel);
-        potionentity.setOwner(healer);
-        potionentity.setItem(potionStack.copy());
-        potionentity.setItem(PotionContents.createItemStack(Items.SPLASH_POTION, potion));
-        potionentity.shootFromRotation(healer, healer.getViewXRot(1.0F), healer.getYHeadRot(), -20.0F, 0.5F, 0.0F);
-        healer.level().playSound(null, healer.getX(), healer.getY(), healer.getZ(), SoundEvents.SPLASH_POTION_THROW, healer.getSoundSource(), 1.0F, 0.8F + healer.getRandom().nextFloat() * 0.4F);
-        healer.level().addFreshEntity(potionentity);
+    private static void throwPotion(ServerLevel level, LivingEntity thrower, ItemStack potionStack) {
+        if (potionStack.isEmpty()) return;
+
+        ItemStack one = potionStack.copyWithCount(1);
+
+        ThrownSplashPotion projectile = new ThrownSplashPotion(level, thrower, one);
+        projectile.setPos(thrower.getX(), thrower.getEyeY() - 0.1D, thrower.getZ());
+        projectile.shootFromRotation(thrower, thrower.getXRot(), thrower.getYRot(), -20.0F, 0.5F, 0.0F);
+
+        level.addFreshEntity(projectile);
+        potionStack.shrink(1);
     }
 }

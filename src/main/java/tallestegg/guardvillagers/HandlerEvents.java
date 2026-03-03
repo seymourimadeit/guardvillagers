@@ -2,77 +2,89 @@ package tallestegg.guardvillagers;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableWitchTargetGoal;
 import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Cat;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.animal.PolarBear;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.animal.feline.Cat;
+import net.minecraft.world.entity.animal.golem.IronGolem;
+import net.minecraft.world.entity.animal.polarbear.PolarBear;
 import net.minecraft.world.entity.monster.*;
-import net.minecraft.world.entity.npc.AbstractVillager;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.monster.illager.AbstractIllager;
+import net.minecraft.world.entity.monster.spider.Spider;
+import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.raid.Raider;
-import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.entity.BellBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
-import tallestegg.guardvillagers.common.entities.ai.goals.*;
+import tallestegg.guardvillagers.common.entities.ai.goals.AttackEntityDaytimeGoal;
+import tallestegg.guardvillagers.common.entities.ai.goals.GetOutOfWaterGoal;
+import tallestegg.guardvillagers.common.entities.ai.goals.GolemFloatWaterGoal;
 import tallestegg.guardvillagers.configuration.GuardConfig;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 
 import java.util.List;
 import java.util.function.Predicate;
 
 @EventBusSubscriber(modid = GuardVillagers.MODID)
 public class HandlerEvents {
+
     private static final Predicate<LivingEntity> ISNT_BABY = mob -> !mob.isBaby();
+
     @SubscribeEvent
     public static void onEntityTarget(LivingChangeTargetEvent event) {
         LivingEntity entity = event.getEntity();
         if (entity instanceof Raider raider && raider.hasActiveRaid()) {
             return;
         }
+
         LivingEntity target = event.getNewAboutToBeSetTarget();
         if (target == null || entity.getType() == GuardEntityType.GUARD.get() || entity instanceof IronGolem) return;
+
         boolean isVillager = GuardConfig.COMMON.mobsGuardsProtectTargeted.get().contains(target.getEncodeId());
         if (isVillager) {
-            List<Mob> list = entity.level().getEntitiesOfClass(Mob.class, entity.getBoundingBox().inflate(GuardConfig.COMMON.GuardVillagerHelpRange.get(), 5.0D, GuardConfig.COMMON.GuardVillagerHelpRange.get()));
+            List<Mob> list = entity.level().getEntitiesOfClass(
+                    Mob.class,
+                    entity.getBoundingBox().inflate(
+                            GuardConfig.COMMON.GuardVillagerHelpRange.get(), 5.0D, GuardConfig.COMMON.GuardVillagerHelpRange.get()
+                    )
+            );
+
             for (Mob mob : list) {
                 if ((mob.getTarget() == null) && (mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM)) {
                     if (mob.getTeam() != null && entity.getTeam() != null && entity.getTeam().isAlliedTo(mob.getTeam()))
@@ -90,23 +102,42 @@ public class HandlerEvents {
     public static void onEntityHurt(LivingDamageEvent.Pre event) {
         LivingEntity entity = event.getEntity();
         Entity trueSource = event.getContainer().getSource().getEntity();
-        if (entity instanceof Raider raider && raider.hasActiveRaid()) {
+        Entity direct  = event.getContainer().getSource().getDirectEntity();
+
+        if (entity instanceof Raider raider && raider.hasActiveRaid()) return;
+        if (trueSource instanceof Raider raider && raider.hasActiveRaid()) return;
+        if (entity == null || trueSource == null) return;
+
+        boolean protectedFriendly =
+                GuardConfig.COMMON.mobsGuardsProtectHurt.get().contains(entity.getEncodeId())
+                        && !(entity instanceof Enemy);
+        if (protectedFriendly
+                && trueSource.getType() == GuardEntityType.GUARD.get()
+                && direct instanceof net.minecraft.world.entity.projectile.arrow.AbstractArrow
+                && !GuardConfig.COMMON.guardArrowsHurtVillagers.get()) {
+
+            event.getContainer().setNewDamage(0.0F);
             return;
         }
 
-        if (trueSource instanceof Raider raider && raider.hasActiveRaid()) {
-            return;
-        }
-        if (entity == null || trueSource == null) return;
         boolean isVillager = GuardConfig.COMMON.mobsGuardsProtectHurt.get().contains(entity.getEncodeId());
+
         if (isVillager && trueSource.getType() == GuardEntityType.GUARD.get() && !GuardConfig.COMMON.guardArrowsHurtVillagers.get()) {
             event.getContainer().setNewDamage(0.0F);
         }
+
         if (isVillager && event.getContainer().getSource().getEntity() instanceof Mob) {
-            List<Mob> list = trueSource.level().getEntitiesOfClass(Mob.class, trueSource.getBoundingBox().inflate(GuardConfig.COMMON.GuardVillagerHelpRange.get(), 5.0D, GuardConfig.COMMON.GuardVillagerHelpRange.get()));
+            List<Mob> list = trueSource.level().getEntitiesOfClass(
+                    Mob.class,
+                    trueSource.getBoundingBox().inflate(
+                            GuardConfig.COMMON.GuardVillagerHelpRange.get(), 5.0D, GuardConfig.COMMON.GuardVillagerHelpRange.get()
+                    )
+            );
+
             for (Mob mob : list) {
                 boolean type = mob.getType() == GuardEntityType.GUARD.get() || mob.getType() == EntityType.IRON_GOLEM;
                 boolean trueSourceGolem = trueSource.getType() == GuardEntityType.GUARD.get() || trueSource.getType() == EntityType.IRON_GOLEM;
+
                 if (!trueSourceGolem && type && mob.getTarget() == null) {
                     if (mob.getTeam() != null && entity.getTeam() != null && entity.getTeam().isAlliedTo(mob.getTeam()))
                         return;
@@ -120,13 +151,8 @@ public class HandlerEvents {
     @SubscribeEvent
     public static void onLivingSpawned(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Mob mob) {
-            if (mob instanceof Raider raider && raider.hasActiveRaid()) {
-                return;
-            }
-            boolean inActiveRaid = (mob instanceof Raider raider) && raider.hasActiveRaid();
-            if (inActiveRaid) {
-                return;
-            }
+            if (mob instanceof Raider raider && raider.hasActiveRaid()) return;
+            if ((mob instanceof Raider raider) && raider.hasActiveRaid()) return;
 
             if (mob instanceof Raider) {
                 if (GuardConfig.COMMON.RaidAnimals.get()) {
@@ -165,7 +191,6 @@ public class HandlerEvents {
                 if (GuardConfig.COMMON.golemFloat.get()) {
                     golem.goalSelector.addGoal(0, new GetOutOfWaterGoal(golem, 1.0D));
                     golem.goalSelector.addGoal(1, new GolemFloatWaterGoal(golem));
-
                 }
             }
 
@@ -194,17 +219,24 @@ public class HandlerEvents {
     @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         Player player = event.getEntity();
+        Level level = player.level();
+        if (level.isClientSide()) return;
+        if (event.getHand() != InteractionHand.MAIN_HAND) return;
+
         ItemStack itemstack = event.getEntity().getMainHandItem();
         Entity target = event.getTarget();
         if (itemstack.is(GuardVillagerTags.GUARD_CONVERT) && player.isCrouching()) {
             if (target instanceof Villager villager) {
                 if (!villager.isBaby()) {
-                    if (GuardConfig.COMMON.convertibleProfessions.get().contains(villager.getVillagerData().getProfession().name())) {
+                    if (GuardConfig.COMMON.convertibleProfessions.get().contains(professionId(villager))) {
                         if (!GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get() || player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) && GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get()) {
                             convertVillager(villager, player);
                             if (!player.getAbilities().instabuild)
                                 itemstack.shrink(1);
                         }
+
+                        event.setCancellationResult(InteractionResult.SUCCESS);
+                        event.setCanceled(true);
                     }
                 }
             }
@@ -241,13 +273,27 @@ public class HandlerEvents {
     }
 
     private static void convertVillager(LivingEntity entity, Player player) {
+        Level level = entity.level();
+        if (level.isClientSide()) return;
+
         player.swing(InteractionHand.MAIN_HAND);
         ItemStack itemstack = player.getItemBySlot(EquipmentSlot.MAINHAND);
         Guard guard = GuardEntityType.GUARD.get().create(entity.level(), EntitySpawnReason.EVENT);
         Villager villager = (Villager) entity;
-        if (guard == null)
-            return;
-        if (entity.level().isClientSide) {
+        if (guard == null) return;
+
+        // 1.21.11 add
+        if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            serverLevel.sendParticles(
+                    ParticleTypes.HAPPY_VILLAGER,
+                    villager.getX(), villager.getY() + 0.5D, villager.getZ(),
+                    10,
+                    villager.getBbWidth(), villager.getBbHeight() * 0.5D, villager.getBbWidth(),
+                    0.02D
+            );
+        }
+
+        if (entity.level().isClientSide()) {
             ParticleOptions iparticledata = ParticleTypes.HAPPY_VILLAGER;
             for (int i = 0; i < 10; ++i) {
                 double d0 = villager.getRandom().nextGaussian() * 0.02D;
@@ -260,7 +306,7 @@ public class HandlerEvents {
         guard.copyPosition(villager);
         guard.playSound(GuardSounds.GUARD_YES.value(), 1.0F, 1.0F);
         guard.setItemSlot(EquipmentSlot.MAINHAND, itemstack.copy());
-        guard.setVariant(villager.getVariant().toString());
+        guard.setVariant(Guard.getVariantFromBiome(villager.level(), villager.blockPosition()));
         guard.setPersistenceRequired();
         guard.setCustomName(villager.getCustomName());
         guard.setCustomNameVisible(villager.isCustomNameVisible());
@@ -280,5 +326,42 @@ public class HandlerEvents {
             CriteriaTriggers.SUMMONED_ENTITY.trigger(serverPlayer, guard);
             player.awardStat(GuardStats.GUARDS_MADE.get());
         }
+    }
+
+    private static String professionId(Villager villager) {
+        return holderPath(villager.getVillagerData().profession());
+    }
+
+    private static String typeId(Villager villager) {
+        return holderPath(villager.getVillagerData().type());
+    }
+
+    private static <T> String holderPath(Holder<T> holder) {
+        String fullId = holder.unwrapKey()
+                .map(ResourceKey::identifier)
+                .map(Object::toString)
+                .orElseGet(holder::getRegisteredName);
+
+        int idx = fullId.indexOf(':');
+        return (idx >= 0) ? fullId.substring(idx + 1) : fullId;
+    }
+
+    //1.21.11 add
+    @SubscribeEvent
+    public static void onEntityDamaged(LivingDamageEvent.Post event) {
+        var victim = event.getEntity();
+        if (victim.level().isClientSide()) return;
+
+        if (!(victim instanceof Enemy)) return;
+
+        DamageSource source = event.getSource();
+        Entity direct = source.getDirectEntity();
+        if (!(direct instanceof AbstractArrow arrow)) return;
+
+        if (!(arrow.getOwner() instanceof Guard)) return;
+
+        if (event.getNewDamage() <= 0.0F) return;
+
+        arrow.discard();
     }
 }

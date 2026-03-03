@@ -2,7 +2,7 @@ package tallestegg.guardvillagers;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -12,7 +12,7 @@ import tallestegg.guardvillagers.common.entities.Guard;
 public class GuardEntityType {
     private static final ResourceKey<EntityType<?>> GUARD_KEY = ResourceKey.create(
             Registries.ENTITY_TYPE,
-            ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "guard")
+            Identifier.fromNamespaceAndPath(GuardVillagers.MODID, "guard")
     );
 
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, GuardVillagers.MODID);

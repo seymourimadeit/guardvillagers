@@ -14,13 +14,13 @@ public class GetOutOfWaterGoal extends WaterAvoidingRandomStrollGoal {
 
     @Override
     public boolean canUse() {
-        return this.mob.isInWaterOrBubble() && this.getPosition() != null;
+        return this.mob.isInWater() && this.getPosition() != null;
     }
 
     @Nullable
     @Override
     protected Vec3 getPosition() {
-        if (this.mob.isInWaterOrBubble()) {
+        if (this.mob.isInWater()) {
             Vec3 vec3 = LandRandomPos.getPos(this.mob, 15, 7);
             return vec3 == null ? super.getPosition() : vec3;
         }

@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Either;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.level.StructureManager;
@@ -31,15 +31,15 @@ import net.minecraft.world.entity.EntitySpawnReason;
 public abstract class SinglePoolElementMixin {
     @Shadow
     @Final
-    protected Either<ResourceLocation, StructureTemplate> template;
+    protected Either<Identifier, StructureTemplate> template;
 
     @Inject(at = @At(value = "RETURN"), method = "place", cancellable = true)
     public void place(StructureTemplateManager structureTemplateManager, WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator, BlockPos offset, BlockPos pos, Rotation rotation, BoundingBox box, RandomSource random, LiquidSettings liquidSettings, boolean keepJigsaws, CallbackInfoReturnable<Boolean> cir) {
-        this.template.left().ifPresent(resourceLocation -> {
-            if (GuardConfig.COMMON.structuresThatSpawnGuards.get().contains(resourceLocation.toString())) {
+        this.template.left().ifPresent(identifier -> {
+            if (GuardConfig.COMMON.structuresThatSpawnGuards.get().contains(identifier.toString())) {
                 for (int guardCount = 0; guardCount < GuardConfig.COMMON.guardSpawnInVillage.getAsInt(); guardCount++) {
                     Guard guard = GuardEntityType.GUARD.get().create(level.getLevel(), EntitySpawnReason.EVENT);
-                    guard.moveTo(offset, 0, 0);
+                    guard.snapTo(offset, 0, 0);
                     guard.finalizeSpawn(level, level.getCurrentDifficultyAt(offset), EntitySpawnReason.STRUCTURE, null);
                     level.addFreshEntityWithPassengers(guard);
                 }

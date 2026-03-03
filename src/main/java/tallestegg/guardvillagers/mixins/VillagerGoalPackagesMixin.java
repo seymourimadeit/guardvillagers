@@ -7,8 +7,8 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,6 +19,7 @@ import tallestegg.guardvillagers.common.entities.ai.tasks.RepairGolem;
 import tallestegg.guardvillagers.common.entities.ai.tasks.RepairGuardEquipment;
 import tallestegg.guardvillagers.common.entities.ai.tasks.ShareGossipWithGuard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
+import net.minecraft.core.Holder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.List;
 @Mixin(VillagerGoalPackages.class)
 public abstract class VillagerGoalPackagesMixin {
     @Inject(method = "getCorePackage", cancellable = true, at = @At("RETURN"))
-    private static void getCorePackage(VillagerProfession pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
+    private static void getCorePackage(Holder<VillagerProfession> pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
         List<Pair<Integer, ? extends BehaviorControl<? super Villager>>> villagerList = new ArrayList<>(cir.getReturnValue());
         if (GuardConfig.COMMON.BlacksmithHealing.get())
             villagerList.add(Pair.of(10, new RepairGolem()));
@@ -38,14 +39,14 @@ public abstract class VillagerGoalPackagesMixin {
     }
 
     @Inject(method = "getMeetPackage", cancellable = true, at = @At("RETURN"))
-    private static void getMeetPackage(VillagerProfession pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
+    private static void getMeetPackage(Holder<VillagerProfession> pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
         List<Pair<Integer, ? extends BehaviorControl<? super Villager>>> villagerList = new ArrayList<>(cir.getReturnValue());
         villagerList.add(Pair.of(2, new GateBehavior<>(ImmutableMap.of(), ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE, ImmutableList.of(Pair.of(new ShareGossipWithGuard(), 1), Pair.of(new TradeWithVillager(), 1)))));
         cir.setReturnValue(ImmutableList.copyOf(villagerList));
     }
 
     @Inject(method = "getIdlePackage", cancellable = true, at = @At("RETURN"))
-    private static void getIdlePackage(VillagerProfession pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
+    private static void getIdlePackage(Holder<VillagerProfession> pProfession, float pSpeedModifier, CallbackInfoReturnable<ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>>> cir) {
         List<Pair<Integer, ? extends BehaviorControl<? super Villager>>> villagerList = new ArrayList<>(cir.getReturnValue());
         villagerList.add(Pair.of(2, new RunOne<>(ImmutableList.of(Pair.of(InteractWith.of(GuardEntityType.GUARD.get(), 8, MemoryModuleType.INTERACTION_TARGET, pSpeedModifier, 2), 3), Pair.of(InteractWith.of(EntityType.VILLAGER, 8, MemoryModuleType.INTERACTION_TARGET, pSpeedModifier, 2), 3), Pair.of(new DoNothing(30, 60), 1)))));
         villagerList.add(Pair.of(2, new GateBehavior<>(ImmutableMap.of(), ImmutableSet.of(MemoryModuleType.INTERACTION_TARGET), GateBehavior.OrderPolicy.ORDERED, GateBehavior.RunningPolicy.RUN_ONE, ImmutableList.of(Pair.of(new ShareGossipWithGuard(), 1), Pair.of(new TradeWithVillager(), 1)))));

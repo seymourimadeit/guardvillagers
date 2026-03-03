@@ -5,7 +5,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
 import tallestegg.guardvillagers.client.gui.GuardInventoryScreen;
 import tallestegg.guardvillagers.common.entities.Guard;
@@ -15,7 +14,7 @@ import tallestegg.guardvillagers.networking.GuardOpenInventoryPacket;
 public class GuardPacketHandler {
     @SuppressWarnings("resource")
     public static void openGuardInventory(GuardOpenInventoryPacket packet) {
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist() == Dist.CLIENT) {
             Player player = Minecraft.getInstance().player;
             if (player != null) {
                 Entity entity = player.level().getEntity(packet.entityId());

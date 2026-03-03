@@ -4,14 +4,14 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tallestegg.guardvillagers.GuardPacketHandler;
 import tallestegg.guardvillagers.GuardVillagers;
 
 public record GuardOpenInventoryPacket(int id, int size, int entityId) implements CustomPacketPayload {
     public static final Type<GuardOpenInventoryPacket> TYPE =
-            new Type<>(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "open_inventory"));
+            new Type<>(Identifier.fromNamespaceAndPath(GuardVillagers.MODID, "open_inventory"));
 
     public static final StreamCodec<ByteBuf, GuardOpenInventoryPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, GuardOpenInventoryPacket::id,

@@ -99,10 +99,16 @@ public class GuardModel extends HumanoidModel<GuardRenderState> {
 
         partdefinition.addOrReplaceChild(
                 "hat",
-                CubeListBuilder.create().texOffs(0, 0)
-                        .addBox(-4.5F, -11.0F, -4.5F, 9, 11, 9, new CubeDeformation(0.0F)),
+                CubeListBuilder.create(),
                 PartPose.offset(0.0F, 1.0F, 0.0F)
         );
+        head.addOrReplaceChild(
+                "hat",
+                CubeListBuilder.create().texOffs(0, 0)
+                        .addBox(-4.5F, -11.0F, -4.5F, 9, 11, 9, new CubeDeformation(0.0F)),
+                PartPose.ZERO
+        );
+
 
         return LayerDefinition.create(meshdefinition, 128, 128);
     }
@@ -133,15 +139,7 @@ public class GuardModel extends HumanoidModel<GuardRenderState> {
             this.eatingAnimationLeftHand(state.mainHandUseAnimation, state.eating, state.ageInTicks);
         }
 
-        this.hat.visible = this.head.visible;
-        this.hat.copyFrom(this.head);
-
-        this.hat.x = this.head.x;
-        this.hat.y = this.head.y;
-        this.hat.z = this.head.z;
-        this.hat.xRot = this.head.xRot;
-        this.hat.yRot = this.head.yRot;
-        this.hat.zRot = this.head.zRot;
+        syncHatToHead();
     }
 
     private void applyArmPoses(GuardRenderState state) {
@@ -198,7 +196,6 @@ public class GuardModel extends HumanoidModel<GuardRenderState> {
             this.rightArm.zRot = Mth.cos(ageInTicks) * 0.1F;
             this.head.xRot = Mth.cos(ageInTicks) * 0.2F;
             this.head.yRot = 0.0F;
-            this.hat.copyFrom(this.head);
         }
     }
 
@@ -210,7 +207,6 @@ public class GuardModel extends HumanoidModel<GuardRenderState> {
             this.leftArm.zRot = Mth.cos(ageInTicks) * 0.1F;
             this.head.xRot = Mth.cos(ageInTicks) * 0.2F;
             this.head.yRot = 0.0F;
-            this.hat.copyFrom(this.head);
         }
     }
 
@@ -220,5 +216,34 @@ public class GuardModel extends HumanoidModel<GuardRenderState> {
         } else {
             this.rightArm.xRot = -1.8F;
         }
+    }
+
+    private void syncHatToHead() {
+        this.hat.visible = this.head.visible;
+
+        try {
+            if (this.head.getChild("hat") != this.hat) {
+                copyPart(this.hat, this.head);
+            }
+        } catch (Exception e) {
+            copyPart(this.hat, this.head);
+        }
+    }
+
+    private static void copyPart(ModelPart dst, ModelPart src) {
+        dst.x = src.x;
+        dst.y = src.y;
+        dst.z = src.z;
+
+        dst.xRot = src.xRot;
+        dst.yRot = src.yRot;
+        dst.zRot = src.zRot;
+
+        dst.xScale = src.xScale;
+        dst.yScale = src.yScale;
+        dst.zScale = src.zScale;
+
+        dst.visible = src.visible;
+        dst.skipDraw = src.skipDraw;
     }
 }

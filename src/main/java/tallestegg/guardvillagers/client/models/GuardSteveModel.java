@@ -1,7 +1,7 @@
 package tallestegg.guardvillagers.client.models;
 
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
@@ -43,15 +43,8 @@ public class GuardSteveModel extends HumanoidModel<GuardRenderState> {
             this.eatingAnimationRightHand(state.offHandUseAnimation, state.eating, state.ageInTicks);
             this.eatingAnimationLeftHand(state.mainHandUseAnimation, state.eating, state.ageInTicks);
         }
-        this.hat.visible = this.head.visible;
-        this.hat.copyFrom(this.head);
 
-        this.hat.x = this.head.x;
-        this.hat.y = this.head.y;
-        this.hat.z = this.head.z;
-        this.hat.xRot = this.head.xRot;
-        this.hat.yRot = this.head.yRot;
-        this.hat.zRot = this.head.zRot;
+        syncHatToHead();
     }
 
     private void eatingAnimationRightHand(ItemUseAnimation useAnim, boolean eating, float ageInTicks) {
@@ -63,7 +56,6 @@ public class GuardSteveModel extends HumanoidModel<GuardRenderState> {
             this.head.xRot = Mth.cos(ageInTicks) * 0.2F;
             this.head.yRot = 0.0F;
             this.hat.visible = this.head.visible;
-            this.hat.copyFrom(this.head);
         }
     }
 
@@ -76,7 +68,6 @@ public class GuardSteveModel extends HumanoidModel<GuardRenderState> {
             this.head.xRot = Mth.cos(ageInTicks) * 0.2F;
             this.head.yRot = 0.0F;
             this.hat.visible = this.head.visible;
-            this.hat.copyFrom(this.head);
         }
     }
 
@@ -86,5 +77,33 @@ public class GuardSteveModel extends HumanoidModel<GuardRenderState> {
         } else {
             this.rightArm.xRot = -1.8F;
         }
+    }
+    private void syncHatToHead() {
+        this.hat.visible = this.head.visible;
+
+        try {
+            if (this.head.getChild("hat") != this.hat) {
+                copyPart(this.hat, this.head);
+            }
+        } catch (Exception e) {
+            copyPart(this.hat, this.head);
+        }
+    }
+
+    private static void copyPart(ModelPart dst, ModelPart src) {
+        dst.x = src.x;
+        dst.y = src.y;
+        dst.z = src.z;
+
+        dst.xRot = src.xRot;
+        dst.yRot = src.yRot;
+        dst.zRot = src.zRot;
+
+        dst.xScale = src.xScale;
+        dst.yScale = src.yScale;
+        dst.zScale = src.zScale;
+
+        dst.visible = src.visible;
+        dst.skipDraw = src.skipDraw;
     }
 }

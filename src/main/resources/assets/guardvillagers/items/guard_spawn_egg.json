@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "guardvillagers:item/guard_spawn_egg"
+  }
+}

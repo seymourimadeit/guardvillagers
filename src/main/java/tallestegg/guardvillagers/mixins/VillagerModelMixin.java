@@ -1,6 +1,6 @@
 package tallestegg.guardvillagers.mixins;
 
-import net.minecraft.client.model.VillagerModel;
+import net.minecraft.client.model.npc.VillagerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.state.VillagerRenderState;
 import org.spongepowered.asm.mixin.Mixin;

@@ -4,8 +4,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.target.DefendVillageTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.animal.golem.IronGolem;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Final;
@@ -41,7 +41,6 @@ public abstract class DefendVillageGoalGolemMixin {
 
         AABB aabb = this.golem.getBoundingBox().inflate(10.0D, 8.0D, 10.0D);
 
-        // 1.21.3: getNearbyEntities/getNearbyPlayers 대신 getEntitiesOfClass + TargetingConditions.test 사용
         List<Villager> villagers = serverLevel.getEntitiesOfClass(
                 Villager.class,
                 aabb,

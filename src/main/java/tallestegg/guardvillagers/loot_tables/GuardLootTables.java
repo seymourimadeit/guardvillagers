@@ -4,7 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
@@ -19,7 +19,7 @@ import tallestegg.guardvillagers.loot_tables.functions.ArmorSlotFunction;
 import java.util.function.Consumer;
 
 public class GuardLootTables {
-    public static final BiMap<ResourceLocation, ContextKeySet> REGISTRY = HashBiMap.create();
+    public static final BiMap<Identifier, ContextKeySet> REGISTRY = HashBiMap.create();
     public static final ContextKeySet SLOT = register("slot", (table) -> {
         table.required(LootContextParams.THIS_ENTITY);
     });
@@ -32,7 +32,7 @@ public class GuardLootTables {
         ContextKeySet.Builder lootcontextparamset$builder = new ContextKeySet.Builder();
         p_81430_.accept(lootcontextparamset$builder);
         ContextKeySet lootcontextparamset = lootcontextparamset$builder.build();
-        REGISTRY.put(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, p_81429_), lootcontextparamset);
+        REGISTRY.put(Identifier.fromNamespaceAndPath(GuardVillagers.MODID, p_81429_), lootcontextparamset);
         return lootcontextparamset;
     }
 }
