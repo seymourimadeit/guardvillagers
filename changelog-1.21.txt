@@ -1,3 +1,1 @@
 
-- [CHANGE] stop guards from moving around slightly while patrolling
-- [CHANGE] make it so return to village ai has higher priority than attacking mob ai so guards are able to return to the village more effectively
