@@ -20,7 +20,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
@@ -148,11 +147,15 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.setPathfindingMalus(PathType.DAMAGE_OTHER, -1.0F);
     }
 
+    @Override
+    protected PathNavigation createNavigation(Level level) {
+        return new GuardGroundPathNavigation(this, level);
+    }
+
     public static int slotToInventoryIndex(EquipmentSlot slot) {
         return switch (slot) {
             case CHEST -> 1;
             case FEET -> 3;
-            case HEAD -> 0;
             case LEGS -> 2;
             default -> 0;
         };
@@ -694,14 +697,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.targetSelector.addGoal(3, new HeroHurtTargetGoal(this));
         this.targetSelector.addGoal(5, new DefendVillageGuardGoal(this));
         if (GuardConfig.COMMON.AttackAllMobs.get()) {
-            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this,Mob.class,5,true,true,(target, serverLevel) -> target instanceof Enemy && !GuardConfig.COMMON.MobBlackList.get().contains(target.getEncodeId())));
+            this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, true, (mob) -> mob instanceof Enemy && !GuardConfig.COMMON.MobBlackList.get().contains(mob.getEncodeId())));
         } else {
-            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Ravager.class, true)); // To make witches and ravagers have a priority than other mobs this has to be done
-            this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Witch.class, true));
-            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Raider.class, true));
-            this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this,Zombie.class,true,(target, serverLevel) -> !(target instanceof ZombifiedPiglin)));
+            this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Ravager.class, true)); // To make witches and ravagers have a priority than other mobs this has to be done
+            this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Witch.class, true));
+            this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Raider.class, true));
+            this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, Zombie.class, true, (mob) -> !(mob instanceof ZombifiedPiglin)));
         }
-        this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this,LivingEntity.class,5,true,true,(target, serverLevel) -> GuardConfig.COMMON.MobWhiteList.get().contains(target.getEncodeId())));
+        this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 5, true, true, (mob) -> GuardConfig.COMMON.MobWhiteList.get().contains(mob.getEncodeId())));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false, this::isAngryAt));
         this.targetSelector.addGoal(4, new ResetUniversalAngerTargetGoal<>(this, false));
     }
@@ -1899,6 +1902,20 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         @Override
         public boolean requiresUpdateEveryTick() {
             return true;
+        }
+    }
+
+    public static class GuardGroundPathNavigation extends GroundPathNavigation {
+        private final Guard guard;
+
+        public GuardGroundPathNavigation(Guard guard, Level level) {
+            super(guard, level);
+            this.guard = guard;
+        }
+
+        @Override
+        public boolean isDone() {
+            return (guard.isPatrolling() && guard.getTarget() == null && guard.blockPosition().equals(guard.getPatrolPos())) || super.isDone();
         }
     }
 }
