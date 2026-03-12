@@ -1,18 +1,19 @@
 package tallestegg.guardvillagers.networking;
 
-import net.minecraft.network.FriendlyByteBuf;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import tallestegg.guardvillagers.GuardPacketHandler;
 import tallestegg.guardvillagers.GuardVillagers;
 
 public record GuardOpenInventoryPacket(int id, int size, int entityId) implements CustomPacketPayload {
-    public static final Type<GuardOpenInventoryPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "open_inventory"));
+    public static final Type<GuardOpenInventoryPacket> TYPE =
+            new Type<>(Identifier.fromNamespaceAndPath(GuardVillagers.MODID, "open_inventory"));
 
-    public static final StreamCodec<FriendlyByteBuf, GuardOpenInventoryPacket> STREAM_CODEC = StreamCodec.composite(
+    public static final StreamCodec<ByteBuf, GuardOpenInventoryPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, GuardOpenInventoryPacket::id,
             ByteBufCodecs.INT, GuardOpenInventoryPacket::size,
             ByteBufCodecs.INT, GuardOpenInventoryPacket::entityId,
@@ -20,9 +21,7 @@ public record GuardOpenInventoryPacket(int id, int size, int entityId) implement
     );
 
     public static void handle(GuardOpenInventoryPacket payload, IPayloadContext context) {
-        context.enqueueWork(() -> {
-            GuardPacketHandler.openGuardInventory(payload);
-        });
+        context.enqueueWork(() -> GuardPacketHandler.openGuardInventory(payload));
     }
 
     @Override

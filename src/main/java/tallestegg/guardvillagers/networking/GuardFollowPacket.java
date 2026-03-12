@@ -4,7 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -15,7 +15,7 @@ import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
 
 public record GuardFollowPacket(int entityId) implements CustomPacketPayload {
-    public static final Type<GuardFollowPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(GuardVillagers.MODID, "following"));
+    public static final Type<GuardFollowPacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath(GuardVillagers.MODID, "following"));
     public static final StreamCodec<FriendlyByteBuf, GuardFollowPacket> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.INT, GuardFollowPacket::entityId,
             GuardFollowPacket::new

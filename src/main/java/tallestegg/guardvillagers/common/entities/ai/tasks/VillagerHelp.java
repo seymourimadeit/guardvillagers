@@ -5,7 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.Behavior;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.schedule.Activity;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class VillagerHelp extends Behavior<Villager> {
         if (!checkIfDayHavePassedFromLastActivity(owner))
             return false;
         else
-            return this.allowedProfessions.contains(owner.getVillagerData().getProfession().name()) && !owner.isSleeping() && activity != Activity.AVOID && activity != Activity.HIDE && activity != Activity.PANIC;
+            return this.allowedProfessions.contains(owner.getVillagerData().profession()) && !owner.isSleeping() && activity != Activity.AVOID && activity != Activity.HIDE && activity != Activity.PANIC;
     }
 
     protected boolean checkIfDayHavePassedFromLastActivity(LivingEntity owner) {

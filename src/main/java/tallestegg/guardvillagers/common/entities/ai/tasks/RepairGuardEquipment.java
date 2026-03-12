@@ -7,9 +7,11 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.equipment.Equippable;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import tallestegg.guardvillagers.GuardDataAttachments;
 import tallestegg.guardvillagers.common.entities.Guard;
@@ -31,10 +33,10 @@ public class RepairGuardEquipment extends VillagerHelp {
         if (!list.isEmpty()) {
             for (LivingEntity livingEntity : list) {
                 if (!livingEntity.isInvisible() && livingEntity.isAlive() && livingEntity instanceof Guard guard) { // Check only for iron golems and if a day has passed since the last time a golem was healed
-                    if (owner.getVillagerData().getProfession() == VillagerProfession.ARMORER) {
+                    if (owner.getVillagerData().profession() == VillagerProfession.ARMORER) {
                         for (int i = 0; i < guard.guardInventory.getContainerSize() - 2; ++i) {
                             ItemStack itemstack = guard.guardInventory.getItem(i);
-                            if (itemstack.isDamaged() && itemstack.getItem() instanceof ArmorItem && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
+                            if (itemstack.isDamaged() && isHumanoidArmor(itemstack) && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
                                 this.guard = guard;
                                 return super.checkExtraStartConditions(worldIn, owner);
                             }
@@ -90,11 +92,11 @@ public class RepairGuardEquipment extends VillagerHelp {
         BehaviorUtils.setWalkAndLookTargetMemories(healer, guard, 0.5F, 0);
         if (healer.distanceTo(guard) <= 2.0D) {
             healer.setData(GuardDataAttachments.TIMES_REPAIRED_GUARD, healer.getData(GuardDataAttachments.TIMES_REPAIRED_GUARD) + 1);
-            VillagerProfession profession = healer.getVillagerData().getProfession();
-            if (profession == VillagerProfession.ARMORER) {
+            VillagerProfession profession = healer.getVillagerData().profession().value();
+            if (profession.name() == VillagerProfession.ARMORER) {
                 for (int i = 0; i < guard.guardInventory.getContainerSize() - 2; ++i) {
                     ItemStack itemstack = guard.guardInventory.getItem(i);
-                    if (itemstack.isDamaged() && itemstack.getItem() instanceof ArmorItem && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2) + guard.getRandom().nextInt(5)) {
+                    if (itemstack.isDamaged() && isHumanoidArmor(itemstack) && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2) + guard.getRandom().nextInt(5)) {
                         itemstack.setDamageValue(itemstack.getDamageValue() - guard.getRandom().nextInt(5));
                     }
                 }
@@ -107,5 +109,12 @@ public class RepairGuardEquipment extends VillagerHelp {
                 }
             }
         }
+    }
+
+    private static boolean isHumanoidArmor(ItemStack stack) {
+        Equippable eq = stack.get(DataComponents.EQUIPPABLE);
+        if (eq == null) return false;
+        EquipmentSlot slot = eq.slot();
+        return slot == EquipmentSlot.HEAD || slot == EquipmentSlot.CHEST || slot == EquipmentSlot.LEGS || slot == EquipmentSlot.FEET;
     }
 }

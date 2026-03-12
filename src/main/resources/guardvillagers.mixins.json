@@ -2,7 +2,6 @@
   "required": true,
   "package": "tallestegg.guardvillagers.mixins",
   "compatibilityLevel": "JAVA_21",
-  "refmap": "guardvillagers.refmap.json",
   "mixins": [
     "VillagerGoalPackagesMixin",
     "DefendVillageGoalGolemMixin",

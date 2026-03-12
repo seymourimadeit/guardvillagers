@@ -14,21 +14,21 @@ import java.util.function.Supplier;
 public class GuardDataAttachments {
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, GuardVillagers.MODID);
     public static final Supplier<AttachmentType<Integer>> TIMES_THROWN_POTION = ATTACHMENT_TYPES.register(
-            "times_thrown_potion",() -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build()
+            "times_thrown_potion",() -> AttachmentType.builder(() -> 0).build()
     );
     public static final Supplier<AttachmentType<Integer>> TIMES_HEALED_GOLEM = ATTACHMENT_TYPES.register(
-            "times_repaired_golem",() -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build()
+            "times_repaired_golem",() -> AttachmentType.builder(() -> 0).build()
     );
     public static final Supplier<AttachmentType<Integer>> TIMES_REPAIRED_GUARD = ATTACHMENT_TYPES.register(
-            "times_repaired_guard",() -> AttachmentType.builder(() -> 0).serialize(Codec.INT).build()
+            "times_repaired_guard",() -> AttachmentType.builder(() -> 0).build()
     );
     public static final Supplier<AttachmentType<Long>> LAST_REPAIRED_GOLEM = ATTACHMENT_TYPES.register(
-            "last_repaired_golem",() -> AttachmentType.builder(() -> 0L).serialize(Codec.LONG).build()
+            "last_repaired_golem",() -> AttachmentType.builder(() -> 0L).build()
     );
     public static final Supplier<AttachmentType<Long>> LAST_THROWN_POTION = ATTACHMENT_TYPES.register(
-            "last_thrown_potion",() -> AttachmentType.builder(() -> 0L).serialize(Codec.LONG).build()
+            "last_thrown_potion",() -> AttachmentType.builder(() -> 0L).build()
     );
     public static final Supplier<AttachmentType<Long>> LAST_REPAIRED_GUARD = ATTACHMENT_TYPES.register(
-            "last_repaired_guard",() -> AttachmentType.builder(() -> 0L).serialize(Codec.LONG).build()
+            "last_repaired_guard",() -> AttachmentType.builder(() -> 0L).build()
     );
 }
