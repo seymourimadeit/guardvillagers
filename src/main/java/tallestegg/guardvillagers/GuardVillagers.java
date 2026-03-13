@@ -20,8 +20,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import tallestegg.guardvillagers.client.ClientEvents;
-import tallestegg.guardvillagers.client.GuardClientEvents;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
@@ -47,9 +45,6 @@ public class GuardVillagers {
         NeoForge.EVENT_BUS.addListener(this::serverStart);
         modEventBus.addListener(this::addAttributes);
         modEventBus.addListener(this::addCreativeTabs);
-        modEventBus.addListener(GuardClientEvents::layerDefinitions);
-        modEventBus.addListener(GuardClientEvents::entityRenderers);
-        modEventBus.addListener(ClientEvents::registerLayerDefinitions);
     }
 
     public static boolean hotvChecker(Player player, Guard guard) {

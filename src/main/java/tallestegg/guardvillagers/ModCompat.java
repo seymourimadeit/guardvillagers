@@ -1,7 +1,6 @@
 package tallestegg.guardvillagers;
 
-import ewewukek.musketmod.GunItem;
-import net.minecraft.client.model.HumanoidModel;
+/* import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -158,4 +157,4 @@ public class ModCompat {
                 return LandRandomPos.getPos(mob, 5, 7);
         }
     }
-}
+}*/

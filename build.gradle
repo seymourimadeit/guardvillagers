@@ -58,7 +58,6 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
-    implementation "curse.maven:ewewukeks-musket-mod-354562:5575694"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

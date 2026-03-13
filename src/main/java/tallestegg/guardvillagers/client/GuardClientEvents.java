@@ -1,4 +1,3 @@
-// GuardClientEvents.java (MC 1.21.11 / NeoForge 21.11.x)
 
 package tallestegg.guardvillagers.client;
 
@@ -15,16 +14,17 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.GuardVillagers;
+import tallestegg.guardvillagers.client.models.GuardArmorModel;
 import tallestegg.guardvillagers.client.models.GuardModel;
 import tallestegg.guardvillagers.client.models.GuardSteveModel;
 import tallestegg.guardvillagers.client.renderer.GuardRenderer;
 
 @EventBusSubscriber(modid = GuardVillagers.MODID, value = Dist.CLIENT)
 public final class GuardClientEvents {
-    private GuardClientEvents() {}
     private static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(GuardVillagers.MODID, path);
     }
+
     public static final ModelLayerLocation GUARD = new ModelLayerLocation(id("guard"), "main");
     public static final ModelLayerLocation GUARD_STEVE = new ModelLayerLocation(id("guard_steve"), "main");
     public static final ModelLayerLocation GUARD_ARMOR_HEAD = new ModelLayerLocation(id("guard_armor/head"), "main");
@@ -42,16 +42,15 @@ public final class GuardClientEvents {
     public static void layerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(GuardClientEvents.GUARD, GuardModel::createBodyLayer);
         event.registerLayerDefinition(GuardClientEvents.GUARD_STEVE, GuardSteveModel::createMesh);
-        ArmorModelSet<MeshDefinition> armorMeshes = HumanoidModel.createArmorMeshSet(new CubeDeformation(0.5F), new CubeDeformation(1.0F));
-        registerArmorLayerDefs(event, GUARD_ARMOR, armorMeshes);
-        registerArmorLayerDefs(event, GUARD_STEVE_ARMOR, armorMeshes);
+        registerArmorLayerDefs(event, GUARD_ARMOR, GuardArmorModel.createArmorMeshSet(new CubeDeformation(0.5F), new CubeDeformation(1.0F)));
+        registerArmorLayerDefs(event, GUARD_STEVE_ARMOR, HumanoidModel.createArmorMeshSet(new CubeDeformation(0.5F), new CubeDeformation(1.0F)));
     }
 
     private static void registerArmorLayerDefs(EntityRenderersEvent.RegisterLayerDefinitions event, ArmorModelSet<ModelLayerLocation> targets, ArmorModelSet<MeshDefinition> meshes) {
-        event.registerLayerDefinition(targets.head(),  () -> LayerDefinition.create(meshes.head(),  64, 32));
+        event.registerLayerDefinition(targets.head(), () -> LayerDefinition.create(meshes.head(), 64, 32));
         event.registerLayerDefinition(targets.chest(), () -> LayerDefinition.create(meshes.chest(), 64, 32));
-        event.registerLayerDefinition(targets.legs(),  () -> LayerDefinition.create(meshes.legs(),  64, 32));
-        event.registerLayerDefinition(targets.feet(),  () -> LayerDefinition.create(meshes.feet(),  64, 32));
+        event.registerLayerDefinition(targets.legs(), () -> LayerDefinition.create(meshes.legs(), 64, 32));
+        event.registerLayerDefinition(targets.feet(), () -> LayerDefinition.create(meshes.feet(), 64, 32));
     }
 
     @SubscribeEvent

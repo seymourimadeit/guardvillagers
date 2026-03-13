@@ -1,9 +1,6 @@
 package tallestegg.guardvillagers.client.renderer.state;
 
-import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemUseAnimation;
 
 public class GuardRenderState extends HumanoidRenderState {
@@ -20,14 +17,4 @@ public class GuardRenderState extends HumanoidRenderState {
     public ItemUseAnimation mainHandUseAnimation = ItemUseAnimation.NONE;
     public ItemUseAnimation offHandUseAnimation  = ItemUseAnimation.NONE;
     public String variant = "plains";
-
-    public HumanoidModel.ArmPose rightArmPose = HumanoidModel.ArmPose.EMPTY;
-    public HumanoidModel.ArmPose leftArmPose  = HumanoidModel.ArmPose.EMPTY;
-    public boolean isUsingItem;
-    public InteractionHand useItemHand;
-    public int ticksUsingItem;
-    public float maxCrossbowChargeDuration;
-
-    public HumanoidArm mainArm = HumanoidArm.RIGHT;
-
 }

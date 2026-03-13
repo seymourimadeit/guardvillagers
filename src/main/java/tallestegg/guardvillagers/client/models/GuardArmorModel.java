@@ -2,6 +2,11 @@ package tallestegg.guardvillagers.client.models;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.model.object.armorstand.ArmorStandArmorModel;
+import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.renderer.entity.ArmorModelSet;
 import tallestegg.guardvillagers.client.renderer.state.GuardRenderState;
 
 public class GuardArmorModel extends HumanoidModel<GuardRenderState> {
@@ -9,38 +14,22 @@ public class GuardArmorModel extends HumanoidModel<GuardRenderState> {
         super(part);
     }
 
-    @Override
-    public void setupAnim(GuardRenderState state) {
-        super.setupAnim(state);
-
-        syncHatToHead();
-    }
-    private void syncHatToHead() {
-        this.hat.visible = this.head.visible;
-
-        try {
-            if (this.head.getChild("hat") != this.hat) {
-                copyPart(this.hat, this.head);
-            }
-        } catch (Exception e) {
-            copyPart(this.hat, this.head);
-        }
+    public static ArmorModelSet<MeshDefinition> createArmorMeshSet(CubeDeformation innerCubeDeformation, CubeDeformation outerCubeDeformation) {
+        return createArmorMeshSet(GuardArmorModel::createBaseMesh, innerCubeDeformation, outerCubeDeformation);
     }
 
-    private static void copyPart(ModelPart dst, ModelPart src) {
-        dst.x = src.x;
-        dst.y = src.y;
-        dst.z = src.z;
-
-        dst.xRot = src.xRot;
-        dst.yRot = src.yRot;
-        dst.zRot = src.zRot;
-
-        dst.xScale = src.xScale;
-        dst.yScale = src.yScale;
-        dst.zScale = src.zScale;
-
-        dst.visible = src.visible;
-        dst.skipDraw = src.skipDraw;
+    private static MeshDefinition createBaseMesh(CubeDeformation cubeDeformation) {
+        MeshDefinition meshdefinition = HumanoidModel.createMesh(cubeDeformation, 0.0F);
+        PartDefinition partdefinition = meshdefinition.getRoot();
+        partdefinition.addOrReplaceChild(
+                "head", CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -9.0F, -4.0F, 8.0F, 8.0F, 8.0F, cubeDeformation), PartPose.ZERO
+        );
+        partdefinition.addOrReplaceChild(
+                "hat",
+                CubeListBuilder.create().texOffs(32, 0).addBox(-4.0F, -9.0F, -4.0F, 8.0F, 8.0F, 8.0F, cubeDeformation.extend(0.5F)),
+                PartPose.offset(0.0F, 1.0F, 0.0F)
+        );
+        return meshdefinition;
     }
+
 }
