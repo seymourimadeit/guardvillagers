@@ -92,9 +92,9 @@ public class GuardConfig {
             MobWhiteList = builder.comment("Guards will additionally attack mobs ids put in this list, for example, putting \"minecraft:cow\" in this list will make guards attack cows.").defineListAllowEmpty("Mob Whitelist", new ArrayList<>(), () -> "", obj -> true);
             builder.pop();
             builder.push("villager stuff");
-            professionsThatHeal = builder.defineListAllowEmpty("Profession Whitelist for healing ai for clerics", ImmutableList.of("cleric"), () -> "", obj -> true);
-            professionsThatRepairGolems = builder.defineListAllowEmpty("Profession Whitelist for golem repair ai", ImmutableList.of("armorer", "weaponsmith"), () -> "", obj -> true);
-            professionsThatRepairGuards = builder.defineListAllowEmpty("Profession Whitelist for guard weaponry repair ai", ImmutableList.of("weaponsmith", "armorer", "toolsmith"), () -> "", obj -> true);
+            professionsThatHeal = builder.defineListAllowEmpty("Profession Whitelist for healing ai for clerics", ImmutableList.of("minecraft:cleric"), () -> "", obj -> true);
+            professionsThatRepairGolems = builder.defineListAllowEmpty("Profession Whitelist for golem repair ai", ImmutableList.of("minecraft:armorer", "minecraft:weaponsmith"), () -> "", obj -> true);
+            professionsThatRepairGuards = builder.defineListAllowEmpty("Profession Whitelist for guard weaponry repair ai", ImmutableList.of("minecraft:weaponsmith", "minecraft:armorer", "minecraft:toolsmith"), () -> "", obj -> true);
             maxClericHeal = builder.defineInRange("How many times a cleric can heal a guard in one day", 3, 0, 1000000);
             maxGolemRepair = builder.defineInRange("How many times a smith villager can heal a golem in one day", 3, 0, 1000000);
             maxVillageRepair = builder.defineInRange("How many times a villager can heal a guard's equipment in one day", 3, 0, 1000000);

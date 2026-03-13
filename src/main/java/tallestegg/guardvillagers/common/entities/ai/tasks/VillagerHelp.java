@@ -25,7 +25,7 @@ public class VillagerHelp extends Behavior<Villager> {
         if (!checkIfDayHavePassedFromLastActivity(owner))
             return false;
         else
-            return this.allowedProfessions.contains(owner.getVillagerData().profession()) && !owner.isSleeping() && activity != Activity.AVOID && activity != Activity.HIDE && activity != Activity.PANIC;
+            return this.allowedProfessions.contains(owner.getVillagerData().profession().getRegisteredName()) && !owner.isSleeping() && activity != Activity.AVOID && activity != Activity.HIDE && activity != Activity.PANIC;
     }
 
     protected boolean checkIfDayHavePassedFromLastActivity(LivingEntity owner) {

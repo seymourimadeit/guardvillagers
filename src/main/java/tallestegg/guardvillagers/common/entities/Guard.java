@@ -209,10 +209,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.setFollowing(input.getBooleanOr("Following", false));
         this.interacting = input.getBooleanOr("Interacting", false);
         this.setPatrolling(input.getBooleanOr("Patrolling", false));
-
         this.shieldCoolDown = input.getIntOr("ShieldCooldown", 0);
         this.kickCoolDown = input.getIntOr("KickCooldown", 0);
-
         this.lastGossipDecayTime = input.getLongOr("LastGossipDecay", 0L);
         this.lastGossipTime = input.getLongOr("LastGossipTime", 0L);
         this.spawnWithArmor = input.getBooleanOr("SpawnWithArmor", false);

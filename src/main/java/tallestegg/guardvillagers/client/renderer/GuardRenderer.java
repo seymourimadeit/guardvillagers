@@ -131,8 +131,6 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardRenderState, 
         }
         if (handItem.isEmpty()) {
             return HumanoidModel.ArmPose.EMPTY;
-        } else if (!guard.swinging && handItem.getItem() instanceof CrossbowItem && CrossbowItem.isCharged(handItem) && guard.isAggressive()) {
-            return HumanoidModel.ArmPose.CROSSBOW_HOLD;
         } else {
             if (guard.getUsedItemHand() == hand && guard.getUseItemRemainingTicks() > 0) {
                 ItemUseAnimation itemuseanimation = handItem.getUseAnimation();
@@ -163,7 +161,9 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardRenderState, 
                     }
                 }
             }
-
+            if (!guard.swinging && (handItem.getItem() instanceof CrossbowItem) && ((CrossbowItem.isCharged(handItem) && guard.isAggressive()) || guard.isAggressive())) {
+                return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+            }
             SwingAnimation swinganimation = handItem.get(DataComponents.SWING_ANIMATION);
             if (swinganimation != null && swinganimation.type() == SwingAnimationType.STAB && guard.swinging) {
                 return HumanoidModel.ArmPose.SPEAR;
