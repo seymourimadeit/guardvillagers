@@ -37,10 +37,10 @@ import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.entity.ai.village.ReputationEventType;
 import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.animal.polarbear.PolarBear;
-import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.zombie.ZombieVillager;
@@ -55,6 +55,7 @@ import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.BlocksAttacks;
+import net.minecraft.world.item.component.KineticWeapon;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -114,6 +115,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     private EntityReference<LivingEntity> persistentAngerTarget;
     private static final EntityDataAccessor<Long> DATA_ANGER_END_TIME = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.LONG);
     private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(20, 39);
+    private static final AttributeModifier HORSE_SPEED_COMPENSATOR = new AttributeModifier(Identifier.fromNamespaceAndPath(GuardVillagers.MODID, "horse_speed_compensator"), 0.27, AttributeModifier.Operation.ADD_VALUE);
 
     public Guard(EntityType<? extends Guard> type, Level world) {
         super(type, world);
@@ -506,6 +508,21 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
     }
 
+    @Override
+    public boolean startRiding(Entity vehicle, boolean force, boolean sendGameEvent) {
+        if (vehicle instanceof LivingEntity living)
+            living.getAttribute(Attributes.MOVEMENT_SPEED).addOrUpdateTransientModifier(HORSE_SPEED_COMPENSATOR);
+        return super.startRiding(vehicle, force, sendGameEvent);
+    }
+
+    @Override
+    public void stopRiding() {
+        Entity entity = this.getVehicle();
+        if (entity instanceof LivingEntity living)
+            living.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(HORSE_SPEED_COMPENSATOR);
+        super.stopRiding();
+    }
+
 
     @Override
     public void stopUsingItem() {
@@ -551,10 +568,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.goalSelector.addGoal(0, new RaiseShieldGoal(this));
         this.goalSelector.addGoal(1, new GuardRunToEatGoal(this));
         this.goalSelector.addGoal(3, new RangedCrossbowAttackPassiveGoal<>(this, 1.0D, GuardConfig.COMMON.guardCrossbowAttackRadius.get().floatValue()));
+        this.goalSelector.addGoal(3, new PassiveMobSpearUseGoal<>(this, 0.7D, 0.8D, 10.0F, 2.0F));
         this.goalSelector.addGoal(3, new GuardBowAttack(this, 0.5D, 20, 15.0F));
         //if (ModList.get().isLoaded("musketmod"))
         // this.goalSelector.addGoal(3, new ModCompat.UseMusketGoal(this, 20, 15.0F));
-        this.goalSelector.addGoal(3, new GuardMeleeGoal(this, 0.8D, true));
+        this.goalSelector.addGoal(3, new GuardMeleeGoal(this, 1.0D, true));
         this.goalSelector.addGoal(4, new FollowHeroGoal(this, 0.8F, 10.0F, 4.0F));
         if (GuardConfig.COMMON.GuardsRunFromPolarBears.get())
             this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, PolarBear.class, 12.0F, 1.0D, 1.2D));
@@ -695,7 +713,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void rideTick() {
         super.rideTick();
-        if (this.getVehicle() instanceof PathfinderMob creatureentity) {
+        if (this.getControlledVehicle() instanceof PathfinderMob creatureentity) {
             this.yBodyRot = creatureentity.yBodyRot;
         }
     }
@@ -732,7 +750,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void setTarget(LivingEntity entity) {
-        if (entity != null && ((this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(entity.getTeam())) || GuardConfig.COMMON.MobBlackList.get().contains(EntityType.getKey(entity.getType()).toString()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || (entity instanceof TamableAnimal tamed && (tamed.getOwner() != null && tamed.getOwner().getUUID().equals(this.getOwnerId())))))
+        if (entity != null && entity.isAlive() && ((this.getTeam() != null && entity.getTeam() != null && this.getTeam().isAlliedTo(entity.getTeam())) || GuardConfig.COMMON.MobBlackList.get().contains(EntityType.getKey(entity.getType()).toString()) || entity.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || this.isOwner(entity) || (entity instanceof TamableAnimal tamed && (tamed.getOwner() != null && tamed.getOwner().getUUID().equals(this.getOwnerId())))))
             return;
         super.setTarget(entity);
     }
@@ -1122,7 +1140,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         public void tick() {
             super.tick();
             LivingEntity attacker = guard.getTarget();
-            if (attacker != null) {
+            if (attacker != null && attacker.isAlive()) {
                 this.guard.getLookControl().setLookAt(attacker);
                 this.guard.lookAt(attacker, 30.0F, 30.0F);
             }
@@ -1137,7 +1155,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canContinueToUse() {
-            return (this.canUse() || !guard.getNavigation().isDone()) && this.isBowInMainhand();
+            return (this.canUse() || !guard.getNavigation().isDone()) && this.isBowInMainhand() && guard.getTarget() != null && guard.getTarget().isAlive();
         }
 
     }
@@ -1776,6 +1794,152 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         @Override
         public boolean requiresUpdateEveryTick() {
             return true;
+        }
+    }
+
+    public static class PassiveMobSpearUseGoal<T extends Guard> extends Goal {
+        static final double MAX_FLEEING_TIME = reducedTickDelay(100);
+        private final T mob;
+        private SpearUseState state;
+        double speedModifierWhenCharging;
+        double speedModifierWhenRepositioning;
+        float approachDistanceSq;
+        float targetInRangeRadiusSq;
+
+        public PassiveMobSpearUseGoal(T mob, double speedModifierWhenCharging, double speedModifierWhenRepositioning, float attackRadius, float targetInRange) {
+            this.mob = mob;
+            this.speedModifierWhenCharging = speedModifierWhenCharging;
+            this.speedModifierWhenRepositioning = speedModifierWhenRepositioning;
+            this.approachDistanceSq = attackRadius * attackRadius;
+            this.targetInRangeRadiusSq = targetInRange * targetInRange;
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        }
+
+        @Override
+        public boolean canUse() {
+            return this.ableToAttack() && !this.mob.isUsingItem() && !RangedCrossbowAttackPassiveGoal.friendlyInLineOfSight(this.mob);
+        }
+
+        private boolean ableToAttack() {
+            return this.mob.getTarget() != null && this.mob.getMainHandItem().has(DataComponents.KINETIC_WEAPON);
+        }
+
+        private int getKineticWeaponUseDuration() {
+            int i = Optional.ofNullable(this.mob.getMainHandItem().get(DataComponents.KINETIC_WEAPON)).map(KineticWeapon::computeDamageUseDuration).orElse(0);
+            return reducedTickDelay(i);
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return this.state != null && !this.state.done && this.ableToAttack() && !RangedCrossbowAttackPassiveGoal.friendlyInLineOfSight(this.mob);
+        }
+
+        @Override
+        public void start() {
+            super.start();
+            this.mob.setAggressive(true);
+            this.state = new SpearUseState();
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            this.mob.getNavigation().stop();
+            this.mob.setAggressive(false);
+            this.state = null;
+            this.mob.stopUsingItem();
+        }
+
+        @Override
+        public void tick() {
+            if (this.state != null) {
+                LivingEntity livingentity = this.mob.getTarget();
+                double d0 = this.mob.distanceToSqr(livingentity.getX(), livingentity.getY(), livingentity.getZ());
+                Entity entity = this.mob.getRootVehicle();
+                float f = 1.0F;
+                if (entity instanceof Mob mob) {
+                    f = 1.4F;
+                }
+
+                int i = this.mob.isPassenger() ? 2 : 0;
+                this.mob.lookAt(livingentity, 30.0F, 30.0F);
+                this.mob.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
+                if (this.state.notEngagedYet()) {
+                    if (d0 > this.approachDistanceSq && !RangedCrossbowAttackPassiveGoal.friendlyInLineOfSight(this.mob)) {
+                        this.mob.getNavigation().moveTo(livingentity, f * this.speedModifierWhenRepositioning);
+                        return;
+                    }
+
+                    this.state.startEngagement(this.getKineticWeaponUseDuration());
+                    this.mob.startUsingItem(InteractionHand.MAIN_HAND);
+                }
+
+                if (this.state.tickAndCheckEngagement()) {
+                    this.mob.stopUsingItem();
+                    double d1 = Math.sqrt(d0);
+                    this.state.awayPos = LandRandomPos.getPosAway(this.mob, Math.max(0.0, 9 + i - d1), Math.max(1.0, 11 + i - d1), 7, livingentity.position());
+                    this.state.fleeingTime = 1;
+                }
+
+                if (!this.state.tickAndCheckFleeing()) {
+                    if (this.state.awayPos != null) {
+                        this.mob.getNavigation().moveTo(this.state.awayPos.x, this.state.awayPos.y, this.state.awayPos.z, f * this.speedModifierWhenRepositioning);
+                        if (this.mob.getNavigation().isDone()) {
+                            if (this.state.fleeingTime > 0) {
+                                this.state.done = true;
+                                return;
+                            }
+
+                            this.state.awayPos = null;
+                        }
+                    } else {
+                        this.mob.getNavigation().moveTo(livingentity, f * this.speedModifierWhenCharging);
+                        if (d0 < this.targetInRangeRadiusSq || this.mob.getNavigation().isDone()) {
+                            double d2 = Math.sqrt(d0);
+                            this.state.awayPos = LandRandomPos.getPosAway(this.mob, 6 + i - d2, 7 + i - d2, 7, livingentity.position());
+                        }
+                    }
+                }
+            }
+        }
+
+        public static class SpearUseState {
+            private int engageTime = -1;
+            int fleeingTime = -1;
+            @org.jspecify.annotations.Nullable
+            Vec3 awayPos;
+            boolean done = false;
+
+            public boolean notEngagedYet() {
+                return this.engageTime < 0;
+            }
+
+            public void startEngagement(int engageTime) {
+                this.engageTime = engageTime;
+            }
+
+            public boolean tickAndCheckEngagement() {
+                if (this.engageTime > 0) {
+                    this.engageTime--;
+                    if (this.engageTime == 0) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            public boolean tickAndCheckFleeing() {
+                if (this.fleeingTime > 0) {
+                    this.fleeingTime++;
+                    if (this.fleeingTime > MAX_FLEEING_TIME) {
+                        this.done = true;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
         }
     }
 
