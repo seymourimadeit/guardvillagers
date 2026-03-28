@@ -115,7 +115,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     private EntityReference<LivingEntity> persistentAngerTarget;
     private static final EntityDataAccessor<Long> DATA_ANGER_END_TIME = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.LONG);
     private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(20, 39);
-    private static final AttributeModifier HORSE_SPEED_COMPENSATOR = new AttributeModifier(Identifier.fromNamespaceAndPath(GuardVillagers.MODID, "horse_speed_compensator"), 0.27, AttributeModifier.Operation.ADD_VALUE);
+    private static final AttributeModifier HORSE_SPEED_COMPENSATOR = new AttributeModifier(Identifier.fromNamespaceAndPath(GuardVillagers.MODID, "horse_speed_compensator"), 1.5F, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
     public Guard(EntityType<? extends Guard> type, Level world) {
         super(type, world);
@@ -216,7 +216,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.lastGossipDecayTime = input.getLongOr("LastGossipDecay", 0L);
         this.lastGossipTime = input.getLongOr("LastGossipTime", 0L);
         this.spawnWithArmor = input.getBooleanOr("SpawnWithArmor", false);
-        input.getString("Variant").ifPresent(v -> this.setVariant(v));
+        input.getString("Variant").ifPresent(v -> this.setVariant(v.toLowerCase()));
         var optX = input.getInt("PatrolPosX");
         var optY = input.getInt("PatrolPosY");
         var optZ = input.getInt("PatrolPosZ");
@@ -1155,8 +1155,15 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public boolean canContinueToUse() {
-            return (this.canUse() || !guard.getNavigation().isDone()) && this.isBowInMainhand() && guard.getTarget() != null && guard.getTarget().isAlive();
+            return (this.canUse()) && this.isBowInMainhand() && guard.getTarget() != null && guard.getTarget().isAlive();
         }
+
+        @Override
+        public void stop() {
+            super.stop();
+            this.guard.stopUsingItem();
+        }
+
 
     }
 
