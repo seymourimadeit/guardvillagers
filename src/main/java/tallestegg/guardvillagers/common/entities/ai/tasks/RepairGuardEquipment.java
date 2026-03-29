@@ -70,7 +70,7 @@ public class RepairGuardEquipment extends VillagerHelp {
     @Override
     protected void stop(ServerLevel worldIn, Villager entityIn, long gameTimeIn) {
         if (entityIn.getData(GuardDataAttachments.TIMES_REPAIRED_GUARD) >= GuardConfig.COMMON.maxVillageRepair.get()) {
-            entityIn.setData(GuardDataAttachments.LAST_REPAIRED_GUARD, worldIn.getDayTime());
+            entityIn.setData(GuardDataAttachments.LAST_REPAIRED_GUARD, worldIn.getOverworldClockTime());
             entityIn.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
             entityIn.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
             entityIn.setData(GuardDataAttachments.TIMES_REPAIRED_GUARD, 0);

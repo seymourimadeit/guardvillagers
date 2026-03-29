@@ -7,9 +7,6 @@
     "DefendVillageGoalGolemMixin",
     "SinglePoolElementMixin"
   ],
-  "client":[
-    "VillagerModelMixin"
-  ],
   "injectors": {
     "defaultRequire": 1
   },

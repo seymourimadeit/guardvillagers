@@ -56,7 +56,7 @@ public class RepairGolem extends VillagerHelp {
     protected void stop(ServerLevel worldIn, Villager entityIn, long gameTimeIn) {
         if (entityIn.getData(GuardDataAttachments.TIMES_HEALED_GOLEM) >= GuardConfig.COMMON.maxGolemRepair.get()) {
             entityIn.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-            entityIn.setData(GuardDataAttachments.LAST_REPAIRED_GOLEM.get(), worldIn.getDayTime());
+            entityIn.setData(GuardDataAttachments.LAST_REPAIRED_GOLEM.get(), worldIn.getOverworldClockTime());
             entityIn.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
             entityIn.getBrain().eraseMemory(MemoryModuleType.LOOK_TARGET);
             entityIn.setData(GuardDataAttachments.TIMES_HEALED_GOLEM.get(), 0);

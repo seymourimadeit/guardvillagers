@@ -29,7 +29,7 @@ public class VillagerHelp extends Behavior<Villager> {
     }
 
     protected boolean checkIfDayHavePassedFromLastActivity(LivingEntity owner) {
-        long gameTime = owner.level().getDayTime();
+        long gameTime = owner.level().getOverworldClockTime();
         if (timeToCheck(owner) > 0 && gameTime - timeToCheck(owner) < 24000L)
             return false;
         else if (timeToCheck(owner) <= 0)

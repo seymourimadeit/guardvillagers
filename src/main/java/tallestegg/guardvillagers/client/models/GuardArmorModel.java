@@ -15,7 +15,7 @@ public class GuardArmorModel extends HumanoidModel<GuardRenderState> {
     }
 
     public static ArmorModelSet<MeshDefinition> createArmorMeshSet(CubeDeformation innerCubeDeformation, CubeDeformation outerCubeDeformation) {
-        return createArmorMeshSet(GuardArmorModel::createBaseMesh, innerCubeDeformation, outerCubeDeformation);
+        return createArmorMeshSet(GuardArmorModel::createBaseMesh, ADULT_ARMOR_PARTS_PER_SLOT, innerCubeDeformation, outerCubeDeformation);
     }
 
     private static MeshDefinition createBaseMesh(CubeDeformation cubeDeformation) {

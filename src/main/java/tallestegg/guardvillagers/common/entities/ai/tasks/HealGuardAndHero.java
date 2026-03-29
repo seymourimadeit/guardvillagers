@@ -83,7 +83,7 @@ public class HealGuardAndHero extends VillagerHelp {
         super.stop(level, entity, gameTime);
         this.waitUntilInSightTicks = 40;
         if (entity.getData(GuardDataAttachments.TIMES_THROWN_POTION.get()) >= GuardConfig.COMMON.maxClericHeal.get()) {
-            entity.setData(GuardDataAttachments.LAST_THROWN_POTION.get(), level.getDayTime());
+            entity.setData(GuardDataAttachments.LAST_THROWN_POTION.get(), level.getOverworldClockTime());
             entity.setData(GuardDataAttachments.TIMES_THROWN_POTION.get(), 0);
         }
         this.targetToHeal = null;

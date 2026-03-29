@@ -7,13 +7,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.List;
-
-import static tallestegg.guardvillagers.loot_tables.GuardLootTables.ARMOR_SLOT;
 
 public class ArmorSlotFunction extends LootItemConditionalFunction {
     final EquipmentSlot slot;
@@ -29,16 +26,17 @@ public class ArmorSlotFunction extends LootItemConditionalFunction {
     }
 
     @Override
+    public MapCodec<? extends LootItemConditionalFunction> codec() {
+        return CODEC;
+    }
+
+    @Override
     protected ItemStack run(ItemStack pStack, LootContext pContext) {
         LivingEntity livingEntity = (LivingEntity) pContext.getOptionalParameter(LootContextParams.THIS_ENTITY);
         livingEntity.setItemSlot(slot, pStack);
         return pStack;
     }
 
-    @Override
-    public LootItemFunctionType getType() {
-        return ARMOR_SLOT.get();
-    }
 
     public static LootItemConditionalFunction.Builder<?> armorSlotFunction(EquipmentSlot slot) {
         return simpleBuilder(conditions -> new ArmorSlotFunction(conditions, slot));

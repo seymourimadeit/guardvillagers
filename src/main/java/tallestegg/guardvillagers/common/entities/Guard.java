@@ -90,7 +90,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAttackMob, ContainerListener, ReputationEventHandler, NeutralMob {
+public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAttackMob, ReputationEventHandler, NeutralMob {
     private static final AttributeModifier USE_ITEM_SPEED_PENALTY = new AttributeModifier(Identifier.fromNamespaceAndPath(GuardVillagers.MODID, "item_slow_down"), -0.25D, AttributeModifier.Operation.ADD_VALUE);
     private static final EntityDataAccessor<Optional<BlockPos>> GUARD_POS = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.OPTIONAL_BLOCK_POS);
     private static final EntityDataAccessor<Boolean> PATROLLING = SynchedEntityData.defineId(Guard.class, EntityDataSerializers.BOOLEAN);
@@ -119,12 +119,12 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     public Guard(EntityType<? extends Guard> type, Level world) {
         super(type, world);
-        this.guardInventory.addListener(this);
         this.setPersistenceRequired();
         if (GuardConfig.COMMON.GuardsOpenDoors.get()) this.getNavigation().setCanOpenDoors(true);
         this.setPathfindingMalus(PathType.POWDER_SNOW, -1.0F);
-        this.setPathfindingMalus(PathType.DANGER_POWDER_SNOW, -1.0F);
-        this.setPathfindingMalus(PathType.DAMAGE_OTHER, -1.0F);
+        this.setPathfindingMalus(PathType.ON_TOP_OF_POWDER_SNOW, -1.0F);
+        this.setPathfindingMalus(PathType.DAMAGING_IN_NEIGHBOR, -1.0F);
+        this.setPathfindingMalus(PathType.DAMAGING, -1.0F);
     }
 
     @Override
@@ -216,7 +216,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         this.lastGossipDecayTime = input.getLongOr("LastGossipDecay", 0L);
         this.lastGossipTime = input.getLongOr("LastGossipTime", 0L);
         this.spawnWithArmor = input.getBooleanOr("SpawnWithArmor", false);
-        input.getString("Variant").ifPresent(v -> this.setVariant(v.toLowerCase()));
+        input.getString("Variant").ifPresent(v -> this.setVariant(v));
         var optX = input.getInt("PatrolPosX");
         var optY = input.getInt("PatrolPosY");
         var optZ = input.getInt("PatrolPosZ");
@@ -792,9 +792,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     public void onReputationEventFrom(ReputationEventType reputationEventType, Entity entity) {
     }
 
-    @Override
-    public void containerChanged(Container invBasic) {
-    }
 
     @Override
     protected void hurtArmor(DamageSource damageSource, float damage) {
@@ -1163,7 +1160,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             super.stop();
             this.guard.stopUsingItem();
         }
-
 
     }
 

@@ -47,6 +47,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardRenderState, 
                         : new GuardModel(context.bakeLayer(GuardClientEvents.GUARD)),
                 0.5F
         );
+        this.addLayer(new GuardVariantLayer(this, context.getResourceManager()));
         this.addLayer(new ItemInHandLayer<>(this));
         if (GuardConfig.CLIENT.GuardSteve.get()) {
             ArmorModelSet<HumanoidModel<GuardRenderState>> armorModels =
@@ -57,7 +58,6 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardRenderState, 
                     ArmorModelSet.bake(GuardClientEvents.GUARD_ARMOR, context.getModelSet(), GuardArmorModel::new);
             this.addLayer(new HumanoidArmorLayer<>(this, armorModels, context.getEquipmentRenderer()));
         }
-        this.addLayer(new GuardVariantLayer(this, context.getResourceManager()));
     }
 
     @Override
@@ -194,7 +194,6 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardRenderState, 
                     GuardVillagers.MODID,
                     "textures/entity/guard/guard_variants/guard" + guardSteve + "_" + state.variant + ".png"
             );
-
             if (this.resourceManager.getResource(variantTexture).isEmpty()) {
                 variantTexture = Identifier.fromNamespaceAndPath(
                         GuardVillagers.MODID,
@@ -202,7 +201,7 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardRenderState, 
                 );
             }
 
-            renderColoredCutoutModel(this.getParentModel(), variantTexture, poseStack, nodeCollector, packedLight, state, -1, state.outlineColor);
+            renderColoredCutoutModel(this.getParentModel(), variantTexture, poseStack, nodeCollector, packedLight, state, -1, 1);
         }
     }
 }

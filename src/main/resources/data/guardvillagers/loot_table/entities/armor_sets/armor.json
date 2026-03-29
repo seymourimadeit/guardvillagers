@@ -420,6 +420,90 @@
           "chance": 0.037
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:copper_helmet"
+        }
+      ],
+      "functions": [
+        {
+          "function": "guardvillagers:slot",
+          "slot": "head"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.032
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:copper_chestplate"
+        }
+      ],
+      "functions": [
+        {
+          "function": "guardvillagers:slot",
+          "slot": "chest"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.032
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:copper_leggings"
+        }
+      ],
+      "functions": [
+        {
+          "function": "guardvillagers:slot",
+          "slot": "legs"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.032
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:copper_boots"
+        }
+      ],
+      "functions": [
+        {
+          "function": "guardvillagers:slot",
+          "slot": "feet"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.032
+        }
+      ]
     }
   ]
 }

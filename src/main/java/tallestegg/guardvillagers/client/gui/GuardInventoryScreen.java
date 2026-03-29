@@ -1,7 +1,7 @@
 package tallestegg.guardvillagers.client.gui;
 
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -61,7 +61,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(
@@ -72,19 +72,19 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
                 this.imageWidth, this.imageHeight,
                 256, 256
         );
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics, i + 26, j + 8, i + 75, j + 78, 30, 0.0625F, this.mousePosX, this.mousePosY, this.guard);
+        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics, i + 26, j + 8, i + 75, j + 78, 30, 0.0625F, this.mousePosX, this.mousePosY, this.guard);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
+        super.extractLabels(graphics, xm, ym);
         int health = Mth.ceil(guard.getHealth());
         int armor = guard.getArmorValue();
         Component guardHealthText = Component.translatable("guardinventory.health", health);
         Component guardArmorText = Component.translatable("guardinventory.armor", armor);
         int yValueWithOrWithoutArmor = armor <= 0 ? 20 : 30;
         if (!GuardConfig.CLIENT.guardInventoryNumbers.get() || guard.getMaxHealth() > 20) {
-            graphics.drawString(font, guardHealthText, 80, 30, 4210752, false);
+            graphics.text(font, guardHealthText, 80, 30, -12566464, false);
         } else if (guard.getMaxHealth() <= 20) {
             for (int i = 0; i < (guard.getMaxHealth() * 0.5); i++) {
                 int heartXValue = i * 8 + 80;
@@ -100,7 +100,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
             }
         }
         if (!GuardConfig.CLIENT.guardInventoryNumbers.get()) {
-            graphics.drawString(font, guardArmorText, 80, 20, 4210752, false);
+            graphics.text(font, guardArmorText, 80, 20, 4210752, false);
         } else {
             if (armor > 0) {
                 for (int k = 0; k < 10; k++) {
@@ -120,18 +120,15 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
             }
         }
     }
-
-    private void renderHeart(GuiGraphics guiGraphics, Gui.HeartType heartType, int x, int y, boolean halfHeart) {
+    private void renderHeart(GuiGraphicsExtractor guiGraphics, Gui.HeartType heartType, int x, int y, boolean halfHeart) {
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, heartType.getSprite(false, halfHeart, false), x, y, 9, 9);
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractRenderState(graphics, mouseX, mouseY, a);
         this.mousePosX = (float) mouseX;
         this.mousePosY = (float) mouseY;
-        super.render(graphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(graphics, mouseX, mouseY);
     }
 
     class GuardGuiButton extends ImageButton {
@@ -151,7 +148,8 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         }
 
         @Override
-        public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+            super.extractContents(graphics, mouseX, mouseY, a);
             WidgetSprites icon = this.requirementsForTexture() ? this.texture : this.newTexture;
             Identifier sprite = icon.get(this.isActive(), this.isHoveredOrFocused());
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, this.getX(), this.getY(), this.width, this.height);
