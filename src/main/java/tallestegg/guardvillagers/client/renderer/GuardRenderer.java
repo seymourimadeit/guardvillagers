@@ -66,6 +66,12 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardRenderState, 
     }
 
     @Override
+    protected void scale(GuardRenderState state, PoseStack poseStack) {
+        super.scale(state, poseStack);
+        poseStack.scale(0.9375F, 0.9375F, 0.9375F);
+    }
+
+    @Override
     public void extractRenderState(Guard entity, GuardRenderState state, float partialTick) {
         super.extractRenderState(entity, state, partialTick);
         state.isUsingItem = entity.isUsingItem();

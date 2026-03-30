@@ -779,6 +779,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (inventoryRequirements) {
             if (this.getTarget() != player && this.isEffectiveAi() && configValues) {
                 if (player instanceof ServerPlayer) {
+                    player.swing(hand, true);
                     this.openGui((ServerPlayer) player);
                     return InteractionResult.SUCCESS;
                 }
@@ -825,9 +826,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
         this.interacting = true;
         player.nextContainerCounter();
-
         PacketDistributor.sendToPlayer(player, new GuardOpenInventoryPacket(player.containerCounter, this.guardInventory.getContainerSize(), this.getId()));
-
         player.containerMenu = new GuardContainer(player.containerCounter, player.getInventory(), this.guardInventory, this);
         player.initMenu(player.containerMenu);
         NeoForge.EVENT_BUS.post(new PlayerContainerEvent.Open(player, player.containerMenu));

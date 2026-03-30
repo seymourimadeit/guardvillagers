@@ -36,9 +36,9 @@ jobs:
           files-primary: build/libs/!(*source*|*dev*|*javadoc*|*slim*).jar
           version-type: release
           loaders: neoforge
-          game-versions: 1.21.1
+          game-versions: 26.1.0
           version: ${{ steps.version.outputs.value }}
-          java: 21
+          java: 25
           name: ""
           changelog-file: changelog-1.21.*
       - name: Nuke Changelog dot txt

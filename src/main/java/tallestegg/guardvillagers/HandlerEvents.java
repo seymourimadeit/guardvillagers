@@ -280,14 +280,11 @@ public class HandlerEvents {
     private static void convertVillager(LivingEntity entity, Player player) {
         Level level = entity.level();
         if (level.isClientSide()) return;
-
-        player.swing(InteractionHand.MAIN_HAND);
+        player.swing(InteractionHand.MAIN_HAND, true);
         ItemStack itemstack = player.getItemBySlot(EquipmentSlot.MAINHAND);
         Guard guard = GuardEntityType.GUARD.get().create(entity.level(), EntitySpawnReason.EVENT);
         Villager villager = (Villager) entity;
         if (guard == null) return;
-
-        // 1.21.11 add
         if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
             serverLevel.sendParticles(
                     ParticleTypes.HAPPY_VILLAGER,
@@ -296,17 +293,6 @@ public class HandlerEvents {
                     villager.getBbWidth(), villager.getBbHeight() * 0.5D, villager.getBbWidth(),
                     0.02D
             );
-        }
-
-        if (entity.level().isClientSide()) {
-            ParticleOptions iparticledata = ParticleTypes.HAPPY_VILLAGER;
-            for (int i = 0; i < 10; ++i) {
-                double d0 = villager.getRandom().nextGaussian() * 0.02D;
-                double d1 = villager.getRandom().nextGaussian() * 0.02D;
-                double d2 = villager.getRandom().nextGaussian() * 0.02D;
-                villager.level().addParticle(iparticledata, villager.getX() + (double) (villager.getRandom().nextFloat() * villager.getBbWidth() * 2.0F) - (double) villager.getBbWidth(), villager.getY() + 0.5D + (double) (villager.getRandom().nextFloat() * villager.getBbHeight()),
-                        villager.getZ() + (double) (villager.getRandom().nextFloat() * villager.getBbWidth() * 2.0F) - (double) villager.getBbWidth(), d0, d1, d2);
-            }
         }
         guard.copyPosition(villager);
         guard.playSound(GuardSounds.GUARD_YES.value(), 1.0F, 1.0F);
