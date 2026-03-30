@@ -19,7 +19,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           arguments: build
-          gradle-version: 8.9
+          gradle-version: 9.1.0
       - uses: BrycensRanch/read-properties-action@v1
         id: version
         with:
