@@ -1,2 +1,1 @@
 
-- [MAJOR] 1.21.11 port (special thanks to zzong8286-crypto on github for helping out with the majority of this)- [CHANGE] guards can use spears and added bows and iron axes to guard equipment selection
