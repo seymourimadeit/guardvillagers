@@ -136,9 +136,9 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         private final WidgetSprites newTexture;
         private final boolean isFollowButton;
 
-        public GuardGuiButton(int xIn, int yIn, int widthIn, int heightIn, WidgetSprites resourceLocationIn, WidgetSprites newTexture, boolean isFollowButton, OnPress onPressIn) {
-            super(xIn, yIn, widthIn, heightIn, resourceLocationIn, onPressIn);
-            this.texture = resourceLocationIn;
+        public GuardGuiButton(int xIn, int yIn, int widthIn, int heightIn, WidgetSprites IdentifierIn, WidgetSprites newTexture, boolean isFollowButton, OnPress onPressIn) {
+            super(xIn, yIn, widthIn, heightIn, IdentifierIn, onPressIn);
+            this.texture = IdentifierIn;
             this.newTexture = newTexture;
             this.isFollowButton = isFollowButton;
         }
