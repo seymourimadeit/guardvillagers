@@ -1,1 +1,2 @@
 
+- [CHANGE] fix #296 (guards not attacking other guards on opposite teams)
