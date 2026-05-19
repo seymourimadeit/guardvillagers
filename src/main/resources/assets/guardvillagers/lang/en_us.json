@@ -71,5 +71,6 @@
   "guardvillagers.configuration.Angle of how ranged guards determine if a friendly mob is infront of them before firing": "Angle of how ranged guards determine if a friendly mob is infront of them before firing",
   "guardvillagers.configuration.Depth value for guards fighting underwater mobs": "Depth value for guards fighting underwater mobs",
   "guardvillagers.configuration.Allow guards to sink temporarily to fight mobs that are under water?": "Allow guards to sink temporarily to fight mobs that are under water?",
-  "guardvillagers.configuration.Mobs that guards actively protect when they get targeted": "Mobs that guards actively protect when they get targeted"
+  "guardvillagers.configuration.Mobs that guards actively protect when they get targeted": "Mobs that guards actively protect when they get targeted",
+  "guardvillagers.configuration.Allow guards to patrol around villager workstations like golems?": "Allow guards to patrol around villager workstations like golems?"
 }
