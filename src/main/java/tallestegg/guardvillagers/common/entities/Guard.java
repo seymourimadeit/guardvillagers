@@ -582,7 +582,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (GuardConfig.COMMON.GuardFormation.get())
             this.goalSelector.addGoal(6, new FollowShieldGuards(this)); // phalanx
         this.goalSelector.addGoal(3, new WalkBackToCheckPointGoal(this, 0.5D));
-        this.goalSelector.addGoal(5, new GolemRandomStrollInVillageGoal(this, 0.5D));
+        if (GuardConfig.COMMON.guardPatrolAroundVillageWorkstations.get())
+            this.goalSelector.addGoal(5, new GolemRandomStrollInVillageGoal(this, 0.5D));
         if (GuardConfig.COMMON.guardPatrolVillageAi.get())
             this.goalSelector.addGoal(5, new MoveThroughVillageGoal(this, 0.5D, false, 4, () -> false));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 0.5D));
@@ -658,20 +659,16 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         super.setItemSlot(slotIn, stack);
         switch (slotIn) {
             case CHEST:
-                if (this.guardInventory.getItem(1).isEmpty())
-                    this.guardInventory.setItem(1, this.equipment.get(slotIn));
+                this.guardInventory.setItem(1, this.equipment.get(slotIn));
                 break;
             case FEET:
-                if (this.guardInventory.getItem(3).isEmpty())
-                    this.guardInventory.setItem(3, this.equipment.get(slotIn));
+                this.guardInventory.setItem(3, this.equipment.get(slotIn));
                 break;
             case HEAD:
-                if (this.guardInventory.getItem(0).isEmpty())
-                    this.guardInventory.setItem(0, this.equipment.get(slotIn));
+                this.guardInventory.setItem(0, this.equipment.get(slotIn));
                 break;
             case LEGS:
-                if (this.guardInventory.getItem(2).isEmpty())
-                    this.guardInventory.setItem(2, this.equipment.get(slotIn));
+                this.guardInventory.setItem(2, this.equipment.get(slotIn));
                 break;
             case MAINHAND:
                 this.guardInventory.setItem(5, this.equipment.get(slotIn));
@@ -755,14 +752,12 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         super.setTarget(entity);
     }
 
-
     public void gossip(Villager villager, long gameTime) {
         if (gameTime < this.lastGossipTime || gameTime >= this.lastGossipTime + 1200L) {
             this.gossips.transferFrom(villager.getGossips(), this.random, 10);
             this.lastGossipTime = gameTime;
         }
     }
-
 
     @Override
     protected void blockedByItem(LivingEntity entityIn) {

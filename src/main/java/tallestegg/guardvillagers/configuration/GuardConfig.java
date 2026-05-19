@@ -54,6 +54,7 @@ public class GuardConfig {
         public final ModConfigSpec.BooleanValue golemFloat;
         public final ModConfigSpec.BooleanValue multiFollow;
         public final ModConfigSpec.BooleanValue guardPatrolVillageAi;
+        public final ModConfigSpec.BooleanValue guardPatrolAroundVillageWorkstations;
         public final ModConfigSpec.BooleanValue convertGuardOnDeath;
         public final ModConfigSpec.BooleanValue guardSinkToFightUnderWater;
         public final ModConfigSpec.ConfigValue<List<? extends String>> MobBlackList;
@@ -139,6 +140,7 @@ public class GuardConfig {
             followHero = builder.define("Have guards only follow the player if they have hero of the village?", true);
             reputationRequirementToBeAttacked = builder.defineInRange("How low of a reputation of a player should have to be instantly aggroed upon by guards and golems?", -100, -9999, 9999);
             guardPatrolVillageAi = builder.define("Allow guards to naturally patrol villages? This feature can cause lag if a lot of guards are spawned", false);
+            guardPatrolAroundVillageWorkstations = builder.define("Allow guards to patrol around villager workstations like golems?", true);
             builder.pop();
         }
     }
