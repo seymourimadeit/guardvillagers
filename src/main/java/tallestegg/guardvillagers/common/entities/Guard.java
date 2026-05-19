@@ -570,7 +570,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (GuardConfig.COMMON.GuardFormation.get())
             this.goalSelector.addGoal(6, new FollowShieldGuards(this)); // phalanx
         this.goalSelector.addGoal(3, new WalkBackToCheckPointGoal(this, 0.5D));
-        this.goalSelector.addGoal(5, new GolemRandomStrollInVillageGoal(this, 0.5D));
+        if (GuardConfig.COMMON.guardPatrolAroundVillageWorkstations.get())
+            this.goalSelector.addGoal(5, new GolemRandomStrollInVillageGoal(this, 0.5D));
         if (GuardConfig.COMMON.guardPatrolVillageAi.get())
             this.goalSelector.addGoal(5, new MoveThroughVillageGoal(this, 0.5D, false, 4, () -> false));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 0.5D));
@@ -646,20 +647,16 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         super.setItemSlot(slotIn, stack);
         switch (slotIn) {
             case CHEST:
-                if (this.guardInventory.getItem(1).isEmpty())
-                    this.guardInventory.setItem(1, this.armorItems.get(slotIn.getIndex()));
+                this.guardInventory.setItem(1, this.armorItems.get(slotIn.getIndex()));
                 break;
             case FEET:
-                if (this.guardInventory.getItem(3).isEmpty())
-                    this.guardInventory.setItem(3, this.armorItems.get(slotIn.getIndex()));
+                this.guardInventory.setItem(3, this.armorItems.get(slotIn.getIndex()));
                 break;
             case HEAD:
-                if (this.guardInventory.getItem(0).isEmpty())
-                    this.guardInventory.setItem(0, this.armorItems.get(slotIn.getIndex()));
+                this.guardInventory.setItem(0, this.armorItems.get(slotIn.getIndex()));
                 break;
             case LEGS:
-                if (this.guardInventory.getItem(2).isEmpty())
-                    this.guardInventory.setItem(2, this.armorItems.get(slotIn.getIndex()));
+                this.guardInventory.setItem(2, this.armorItems.get(slotIn.getIndex()));
                 break;
             case MAINHAND:
                 this.guardInventory.setItem(5, this.handItems.get(slotIn.getIndex()));
