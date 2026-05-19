@@ -1,2 +1,3 @@
 
 - [CHANGE] fix #296 (guards not attacking other guards on opposite teams)
+- [CHANGE] fix #297 by adding a config option for guards  patrolling village workstations like golems
