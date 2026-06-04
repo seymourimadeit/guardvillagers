@@ -351,7 +351,7 @@ public class HandlerEvents {
 
         if (!(arrow.getOwner() instanceof Guard)) return;
 
-        if (event.getNewDamage() <= 0.0F) return;
+        if (event.getHealthDamage() <= 0.0F) return;
 
         arrow.discard();
     }
