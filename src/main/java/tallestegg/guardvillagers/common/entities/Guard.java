@@ -56,6 +56,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -426,6 +427,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             this.discard();
         }
         super.die(source);
+        net.minecraft.network.chat.Component deathMessage = this.getCombatTracker().getDeathMessage();
+        if (this.dead)
+            if (!this.level().isClientSide && this.level().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES) && this.getOwner() instanceof ServerPlayer) {
+                this.getOwner().sendSystemMessage(deathMessage);
+            }
     }
 
     @Override
