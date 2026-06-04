@@ -1,2 +1,5 @@
 
 - [CHANGE] add death message after named guards owned by players die
+- [CHANGE] Fix NoSuchMethodError: LivingDamageEvent.Post.getNewDamage on NeoForge 26.1 - 0LostConnection 
+
+Fix NoSuchMethodError: LivingDamageEvent.Post.getNewDamage on NeoForge 26.1
