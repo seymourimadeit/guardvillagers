@@ -63,6 +63,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathType;
@@ -438,6 +439,13 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         }
 
         super.die(source);
+        net.minecraft.network.chat.Component deathMessage = this.getCombatTracker().getDeathMessage();
+        if (this.dead)
+            if (this.level() instanceof ServerLevel serverLevel
+                    && serverLevel.getGameRules().get(GameRules.SHOW_DEATH_MESSAGES)
+                    && this.getOwner() instanceof ServerPlayer serverPlayer) {
+                serverPlayer.sendSystemMessage(deathMessage);
+            }
     }
 
     @Override
