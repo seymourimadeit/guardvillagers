@@ -1,1 +1,2 @@
 
+- [CHANGE] add death message after named guards owned by players die
