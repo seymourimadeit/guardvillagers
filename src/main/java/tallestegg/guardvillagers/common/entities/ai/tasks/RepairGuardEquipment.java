@@ -1,24 +1,23 @@
 package tallestegg.guardvillagers.common.entities.ai.tasks;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.equipment.Equippable;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.Equippable;
 import tallestegg.guardvillagers.GuardDataAttachments;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 
 import java.util.List;
-import java.util.Optional;
 
 public class RepairGuardEquipment extends VillagerHelp {
     private Guard guard;
@@ -29,24 +28,26 @@ public class RepairGuardEquipment extends VillagerHelp {
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, Villager owner) {
-        List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
-        if (!list.isEmpty()) {
-            for (LivingEntity livingEntity : list) {
-                if (!livingEntity.isInvisible() && livingEntity.isAlive() && livingEntity instanceof Guard guard) { // Check only for iron golems and if a day has passed since the last time a golem was healed
-                    if (owner.getVillagerData().profession() == VillagerProfession.ARMORER) {
-                        for (int i = 0; i < guard.guardInventory.getContainerSize() - 2; ++i) {
-                            ItemStack itemstack = guard.guardInventory.getItem(i);
-                            if (itemstack.isDamaged() && isHumanoidArmor(itemstack) && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
-                                this.guard = guard;
-                                return super.checkExtraStartConditions(worldIn, owner);
+        if (owner.getBrain().hasMemoryValue(MemoryModuleType.NEAREST_LIVING_ENTITIES)) {
+            List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
+            if (!list.isEmpty()) {
+                for (LivingEntity livingEntity : list) {
+                    if (!livingEntity.isInvisible() && livingEntity.isAlive() && livingEntity instanceof Guard guard) { // Check only for iron golems and if a day has passed since the last time a golem was healed
+                        if (owner.getVillagerData().profession() == VillagerProfession.ARMORER) {
+                            for (int i = 0; i < guard.guardInventory.getContainerSize() - 2; ++i) {
+                                ItemStack itemstack = guard.guardInventory.getItem(i);
+                                if (itemstack.isDamaged() && isHumanoidArmor(itemstack) && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
+                                    this.guard = guard;
+                                    return super.checkExtraStartConditions(worldIn, owner);
+                                }
                             }
-                        }
-                    } else {
-                        for (int i = 4; i < 6; ++i) {
-                            ItemStack itemstack = guard.guardInventory.getItem(i);
-                            if (itemstack.isDamaged() && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
-                                this.guard = guard;
-                                return super.checkExtraStartConditions(worldIn, owner);
+                        } else {
+                            for (int i = 4; i < 6; ++i) {
+                                ItemStack itemstack = guard.guardInventory.getItem(i);
+                                if (itemstack.isDamaged() && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
+                                    this.guard = guard;
+                                    return super.checkExtraStartConditions(worldIn, owner);
+                                }
                             }
                         }
                     }

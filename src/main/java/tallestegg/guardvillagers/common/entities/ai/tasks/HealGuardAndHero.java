@@ -36,13 +36,15 @@ public class HealGuardAndHero extends VillagerHelp {
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, Villager owner) {
-        List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
-        if (!list.isEmpty()) {
-            for (LivingEntity searchedForHeal : list) {
-                if (searchedForHeal instanceof Guard || searchedForHeal.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || searchedForHeal instanceof Villager) {
-                    if (searchedForHeal.getHealth() < searchedForHeal.getMaxHealth() && searchedForHeal.distanceTo(owner) <= 4.0D) {
-                        this.targetToHeal = searchedForHeal;
-                        return super.checkExtraStartConditions(level, owner);
+        if (owner.getBrain().hasMemoryValue(MemoryModuleType.NEAREST_LIVING_ENTITIES)) {
+            List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
+            if (!list.isEmpty()) {
+                for (LivingEntity searchedForHeal : list) {
+                    if (searchedForHeal instanceof Guard || searchedForHeal.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || searchedForHeal instanceof Villager) {
+                        if (searchedForHeal.getHealth() < searchedForHeal.getMaxHealth() && searchedForHeal.distanceTo(owner) <= 4.0D) {
+                            this.targetToHeal = searchedForHeal;
+                            return super.checkExtraStartConditions(level, owner);
+                        }
                     }
                 }
             }
