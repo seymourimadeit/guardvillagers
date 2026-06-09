@@ -20,7 +20,6 @@ import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 
 import java.util.List;
-import java.util.Optional;
 
 public class HealGuardAndHero extends VillagerHelp {
     private LivingEntity targetToHeal;
@@ -32,13 +31,15 @@ public class HealGuardAndHero extends VillagerHelp {
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel level, Villager owner) {
-        List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
-        if (!list.isEmpty()) {
-            for (LivingEntity searchedForHeal : list) {
-                if (searchedForHeal instanceof Guard || searchedForHeal.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || searchedForHeal instanceof Villager) {
-                    if (searchedForHeal.getHealth() < searchedForHeal.getMaxHealth() && searchedForHeal.distanceTo(owner) <= 4.0D) {
-                        this.targetToHeal = searchedForHeal;
-                        return super.checkExtraStartConditions(level, owner);
+        if (owner.getBrain().hasMemoryValue(MemoryModuleType.NEAREST_LIVING_ENTITIES)) {
+            List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
+            if (!list.isEmpty()) {
+                for (LivingEntity searchedForHeal : list) {
+                    if (searchedForHeal instanceof Guard || searchedForHeal.hasEffect(MobEffects.HERO_OF_THE_VILLAGE) || searchedForHeal instanceof Villager) {
+                        if (searchedForHeal.getHealth() < searchedForHeal.getMaxHealth() && searchedForHeal.distanceTo(owner) <= 4.0D) {
+                            this.targetToHeal = searchedForHeal;
+                            return super.checkExtraStartConditions(level, owner);
+                        }
                     }
                 }
             }
