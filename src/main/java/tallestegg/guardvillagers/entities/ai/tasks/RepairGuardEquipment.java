@@ -16,7 +16,6 @@ import tallestegg.guardvillagers.entities.Guard;
 import tallestegg.guardvillagers.entities.GuardVillagersVillagerData;
 
 import java.util.List;
-import java.util.Optional;
 
 public class RepairGuardEquipment extends VillagerHelp {
     private Guard guard;
@@ -27,24 +26,26 @@ public class RepairGuardEquipment extends VillagerHelp {
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, Villager owner) {
-        List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
-        if (!list.isEmpty()) {
-            for (LivingEntity livingEntity : list) {
-                if (!livingEntity.isInvisible() && livingEntity.isAlive() && livingEntity instanceof Guard guard) { // Check only for iron golems and if a day has passed since the last time a golem was healed
-                    if (owner.getVillagerData().getProfession() == VillagerProfession.ARMORER) {
-                        for (int i = 0; i < guard.guardInventory.getContainerSize() - 2; ++i) {
-                            ItemStack itemstack = guard.guardInventory.getItem(i);
-                            if (itemstack.isDamaged() && itemstack.getItem() instanceof ArmorItem && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
-                                this.guard = guard;
-                                return super.checkExtraStartConditions(worldIn, owner);
+        if (owner.getBrain().hasMemoryValue(MemoryModuleType.NEAREST_LIVING_ENTITIES)) {
+            List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
+            if (!list.isEmpty()) {
+                for (LivingEntity livingEntity : list) {
+                    if (!livingEntity.isInvisible() && livingEntity.isAlive() && livingEntity instanceof Guard guard) { // Check only for iron golems and if a day has passed since the last time a golem was healed
+                        if (owner.getVillagerData().getProfession() == VillagerProfession.ARMORER) {
+                            for (int i = 0; i < guard.guardInventory.getContainerSize() - 2; ++i) {
+                                ItemStack itemstack = guard.guardInventory.getItem(i);
+                                if (itemstack.isDamaged() && itemstack.getItem() instanceof ArmorItem && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
+                                    this.guard = guard;
+                                    return super.checkExtraStartConditions(worldIn, owner);
+                                }
                             }
-                        }
-                    } else {
-                        for (int i = 4; i < 6; ++i) {
-                            ItemStack itemstack = guard.guardInventory.getItem(i);
-                            if (itemstack.isDamaged() && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
-                                this.guard = guard;
-                                return super.checkExtraStartConditions(worldIn, owner);
+                        } else {
+                            for (int i = 4; i < 6; ++i) {
+                                ItemStack itemstack = guard.guardInventory.getItem(i);
+                                if (itemstack.isDamaged() && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {
+                                    this.guard = guard;
+                                    return super.checkExtraStartConditions(worldIn, owner);
+                                }
                             }
                         }
                     }

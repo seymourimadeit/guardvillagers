@@ -1,5 +1,6 @@
 package tallestegg.guardvillagers.entities.ai.tasks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -17,7 +18,6 @@ import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.entities.GuardVillagersVillagerData;
 
 import java.util.List;
-import java.util.Optional;
 
 public class RepairGolem extends VillagerHelp {
     private LivingEntity golem;
@@ -28,13 +28,15 @@ public class RepairGolem extends VillagerHelp {
 
     @Override
     protected boolean checkExtraStartConditions(ServerLevel worldIn, Villager owner) {
-        List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
-        if (!list.isEmpty()) {
-            for (LivingEntity golem : list) {
-                if (!golem.isInvisible() && golem.isAlive() && golem.getType() == EntityType.IRON_GOLEM) { // Check only for iron golems and if a day has passed since the last time a golem was healed
-                    if (golem.getHealth() <= (golem.getMaxHealth() * 0.75F)) {
-                        this.golem = golem;
-                        return super.checkExtraStartConditions(worldIn, owner);
+        if (owner.getBrain().hasMemoryValue(MemoryModuleType.NEAREST_LIVING_ENTITIES)) {
+            List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).orElse(ImmutableList.of());
+            if (!list.isEmpty()) {
+                for (LivingEntity golem : list) {
+                    if (!golem.isInvisible() && golem.isAlive() && golem.getType() == EntityType.IRON_GOLEM) { // Check only for iron golems and if a day has passed since the last time a golem was healed
+                        if (golem.getHealth() <= (golem.getMaxHealth() * 0.75F)) {
+                            this.golem = golem;
+                            return super.checkExtraStartConditions(worldIn, owner);
+                        }
                     }
                 }
             }
