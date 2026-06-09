@@ -1,1 +1,2 @@
 
+- [CHANGE] fix #301 (rare crash with villagers not having the nearest living entities memory value)
