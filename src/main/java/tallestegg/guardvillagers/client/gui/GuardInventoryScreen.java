@@ -1,7 +1,7 @@
 package tallestegg.guardvillagers.client.gui;
 
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -62,6 +62,7 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
 
     @Override
     public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractBackground(graphics, mouseX, mouseY, a);
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(
@@ -88,14 +89,14 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
         } else if (guard.getMaxHealth() <= 20) {
             for (int i = 0; i < (guard.getMaxHealth() * 0.5); i++) {
                 int heartXValue = i * 8 + 80;
-                this.renderHeart(graphics, Gui.HeartType.CONTAINER, heartXValue, yValueWithOrWithoutArmor, false);
+                this.renderHeart(graphics, Hud.HeartType.CONTAINER, heartXValue, yValueWithOrWithoutArmor, false);
             }
             for (int i = 0; i < health / 2; i++) {
                 int heartXValue = i * 8 + 80;
                 if (health % 2 != 0 && health / 2 == i + 1) {
-                    this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, true);
+                    this.renderHeart(graphics, Hud.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, true);
                 } else {
-                    this.renderHeart(graphics, Gui.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, false);
+                    this.renderHeart(graphics, Hud.HeartType.NORMAL, heartXValue, yValueWithOrWithoutArmor, false);
                 }
             }
         }
@@ -120,15 +121,15 @@ public class GuardInventoryScreen extends AbstractContainerScreen<GuardContainer
             }
         }
     }
-    private void renderHeart(GuiGraphicsExtractor guiGraphics, Gui.HeartType heartType, int x, int y, boolean halfHeart) {
+    private void renderHeart(GuiGraphicsExtractor guiGraphics, Hud.HeartType heartType, int x, int y, boolean halfHeart) {
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, heartType.getSprite(false, halfHeart, false), x, y, 9, 9);
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
-        super.extractRenderState(graphics, mouseX, mouseY, a);
         this.mousePosX = (float) mouseX;
         this.mousePosY = (float) mouseY;
+        super.extractRenderState(graphics, mouseX, mouseY, a);
     }
 
     class GuardGuiButton extends ImageButton {

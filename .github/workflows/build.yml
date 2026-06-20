@@ -36,7 +36,7 @@ jobs:
           files-primary: build/libs/!(*source*|*dev*|*javadoc*|*slim*).jar
           version-type: release
           loaders: neoforge
-          game-versions: 26.1.2
+          game-versions: 26.2.0
           version: ${{ steps.version.outputs.value }}
           java: 25
           name: ""

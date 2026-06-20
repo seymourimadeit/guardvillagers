@@ -374,7 +374,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public boolean doHurtTarget(@NotNull ServerLevel level, @NotNull Entity target) {
         if (this.isKicking()) {
-            ((LivingEntity) target).knockback(1.0F, Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
+            ((LivingEntity) target).knockback(1.0F, Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))), this.damageSources().generic(), 1.0F);
             this.kickTicks = 10;
             level().broadcastEntityEvent(this, (byte) 4);
             this.lookAt(target, 90.0F, 90.0F);
@@ -400,7 +400,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void die(@NotNull DamageSource source) {
-        if (GuardConfig.COMMON.convertGuardOnDeath.get() && (level().getDifficulty() == Difficulty.NORMAL || level().getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie && EventHooks.canLivingConvert((LivingEntity) source.getEntity(), EntityType.ZOMBIE_VILLAGER, (timer) -> {
+        if (GuardConfig.COMMON.convertGuardOnDeath.get() && (level().getDifficulty() == Difficulty.NORMAL || level().getDifficulty() == Difficulty.HARD) && source.getEntity() instanceof Zombie && EventHooks.canLivingConvert((LivingEntity) source.getEntity(), EntityTypes.ZOMBIE_VILLAGER, (timer) -> {
         })) {
             if (this.level() instanceof ServerLevel serverLevel) {
                 if (level().getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
@@ -408,7 +408,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                     return;
                 }
 
-                ZombieVillager zombieguard = EntityType.ZOMBIE_VILLAGER.create(serverLevel, EntitySpawnReason.CONVERSION);
+                ZombieVillager zombieguard = EntityTypes.ZOMBIE_VILLAGER.create(serverLevel, EntitySpawnReason.CONVERSION);
                 if (zombieguard == null) {
                     super.die(source);
                     return;
@@ -476,15 +476,14 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    protected void blockUsingItem(ServerLevel level, LivingEntity entityIn) {
-        super.blockUsingItem(level, entityIn);
+    protected void blockUsingItem(ServerLevel level, LivingEntity attacker, DamageSource source, float damage) {
+        super.blockUsingItem(level, attacker, source, damage);
         this.playSound(SoundEvents.SHIELD_BLOCK.value(), 1.0F, 1.0F);
-
         ItemStack blocking = this.getItemBlockingWith();
         if (blocking.isEmpty()) return;
         BlocksAttacks blocksAttacks = blocking.get(DataComponents.BLOCKS_ATTACKS);
         if (blocksAttacks == null) return;
-        float disableSeconds = entityIn.getSecondsToDisableBlocking();
+        float disableSeconds = attacker.getSecondsToDisableBlocking();
         if (disableSeconds <= 0.0F) return;
         float scale = blocksAttacks.disableCooldownScale();
         if (scale <= 0.0F) return;
@@ -768,12 +767,13 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    protected void blockedByItem(LivingEntity entityIn) {
+    protected void blockedByItem(LivingEntity defender, DamageSource source, float damage) {
         if (this.isKicking()) {
             this.setKicking(false);
         }
-        super.blockedByItem(this);
+        super.blockedByItem(defender, source, damage);
     }
+
 
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
@@ -805,9 +805,9 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
     @Override
     public void thunderHit(ServerLevel p_241841_1_, LightningBolt p_241841_2_) {
-        if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL && EventHooks.canLivingConvert(this, EntityType.WITCH, (timer) -> {
+        if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL && EventHooks.canLivingConvert(this, EntityTypes.WITCH, (timer) -> {
         })) {
-            Witch witchentity = EntityType.WITCH.create(p_241841_1_, EntitySpawnReason.EVENT);
+            Witch witchentity = EntityTypes.WITCH.create(p_241841_1_, EntitySpawnReason.EVENT);
             if (witchentity == null) return;
             witchentity.copyPosition(this);
             witchentity.finalizeSpawn(p_241841_1_, p_241841_1_.getCurrentDifficultyAt(witchentity.blockPosition()), EntitySpawnReason.CONVERSION, null);
@@ -1561,7 +1561,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             List<Entity> list = mob.level().getEntities(mob, aabb);
             for (Entity guard : list) {
                 if (guard != mob.getTarget()) {
-                    boolean isVillager = ((Guard) mob).getOwner() == guard || guard.getType() == EntityType.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityType.IRON_GOLEM;
+                    boolean isVillager = ((Guard) mob).getOwner() == guard || guard.getType() == EntityTypes.VILLAGER || guard.getType() == GuardEntityType.GUARD.get() || guard.getType() == EntityTypes.IRON_GOLEM;
                     if (isVillager) {
                         Vec3 vector3d = mob.getLookAngle();
                         Vec3 vector3d1 = guard.position().vectorTo(mob.position()).normalize();

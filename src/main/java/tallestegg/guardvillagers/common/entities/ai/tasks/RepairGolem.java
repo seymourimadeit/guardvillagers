@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
@@ -31,7 +32,7 @@ public class RepairGolem extends VillagerHelp {
             List<LivingEntity> list = owner.getBrain().getMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES).get();
             if (!list.isEmpty()) {
                 for (LivingEntity golem : list) {
-                    if (!golem.isInvisible() && golem.isAlive() && golem.getType() == EntityType.IRON_GOLEM) { // Check only for iron golems and if a day has passed since the last time a golem was healed
+                    if (!golem.isInvisible() && golem.isAlive() && golem.getType() == EntityTypes.IRON_GOLEM) { // Check only for iron golems and if a day has passed since the last time a golem was healed
                         if (golem.getHealth() <= (golem.getMaxHealth() * 0.75F)) {
                             this.golem = golem;
                             return super.checkExtraStartConditions(worldIn, owner);

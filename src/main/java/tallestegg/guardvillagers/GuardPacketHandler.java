@@ -22,7 +22,7 @@ public class GuardPacketHandler {
                     LocalPlayer clientplayerentity = Minecraft.getInstance().player;
                     GuardContainer container = new GuardContainer(packet.id(), player.getInventory(), guard.guardInventory, guard);
                     clientplayerentity.containerMenu = container;
-                    Minecraft.getInstance().setScreen(new GuardInventoryScreen(container, player.getInventory(), guard));
+                    Minecraft.getInstance().gui.setScreen(new GuardInventoryScreen(container, player.getInventory(), guard));
                 }
             }
         }

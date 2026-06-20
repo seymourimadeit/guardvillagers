@@ -1,6 +1,7 @@
 package tallestegg.guardvillagers;
 
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.SpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -18,7 +19,7 @@ public class GuardItems {
     public static final DeferredItem<SpawnEggItem> ILLUSIONER_SPAWN_EGG =
             ITEMS.registerItem("illusioner_spawn_egg",
             properties -> new SpawnEggItem(
-                    properties.spawnEgg(EntityType.ILLUSIONER)
+                    properties.spawnEgg(EntityTypes.ILLUSIONER)
             )
     );
 
