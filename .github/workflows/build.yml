@@ -35,6 +35,7 @@ jobs:
           github-token: ${{ secrets.GIT_TOKEN }}
           files-primary: build/libs/!(*source*|*dev*|*javadoc*|*slim*).jar
           version-type: release
+          environment: client | server
           loaders: neoforge
           game-versions: 26.2.0
           version: ${{ steps.version.outputs.value }}
