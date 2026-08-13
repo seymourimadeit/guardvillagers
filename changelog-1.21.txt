@@ -1,2 +1,1 @@
 
-- [CHANGE] fix #309 bug where guards wearing armor had an animation glitch while eating food
