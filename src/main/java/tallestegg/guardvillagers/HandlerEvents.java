@@ -2,45 +2,33 @@ package tallestegg.guardvillagers;
 
 import net.minecraft.advancements.triggers.CriteriaTriggers;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.minecraft.world.entity.Entity;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 
-@EventBusSubscriber(modid = GuardVillagers.MODID)
+/** Lightweight event hooks for the simple-AI branch. */
 public final class HandlerEvents {
     private HandlerEvents() {}
 
-    /**
-     * Deliberately contains no LivingChangeTargetEvent/LivingDamageEvent
-     * handlers. Those handlers used to scan every nearby Mob whenever a
-     * villager was targeted or hurt, which is exactly the kind of event-driven
-     * fan-out we do not want in the simple-AI branch.
-     */
     @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
         Player player = event.getEntity();
         if (player.level().isClientSide() || event.getHand() != InteractionHand.MAIN_HAND) return;
 
         ItemStack stack = player.getMainHandItem();
-        Entity target = event.getTarget();
-        if (!stack.is(GuardVillagerTags.GUARD_CONVERT) || !player.isCrouching() || !(target instanceof Villager villager)) return;
-        if (villager.isBaby()) return;
-
+        if (!stack.is(GuardVillagerTags.GUARD_CONVERT) || !player.isCrouching()) return;
+        if (!(event.getTarget() instanceof Villager villager) || villager.isBaby()) return;
         if (GuardConfig.COMMON.ConvertVillagerIfHaveHOTV.get() && !player.hasEffect(MobEffects.HERO_OF_THE_VILLAGE)) return;
         if (!GuardConfig.COMMON.convertibleProfessions.get().contains(professionId(villager))) return;
 
@@ -61,8 +49,6 @@ public final class HandlerEvents {
         guard.setPersistenceRequired();
         guard.setCustomName(villager.getCustomName());
         guard.setCustomNameVisible(villager.isCustomNameVisible());
-
-        // Keep the conversion item's hand behaviour from the original mod.
         guard.setItemSlot(EquipmentSlot.MAINHAND, player.getMainHandItem().copy());
         guard.setDropChance(EquipmentSlot.HEAD, 1.0F);
         guard.setDropChance(EquipmentSlot.CHEST, 1.0F);
