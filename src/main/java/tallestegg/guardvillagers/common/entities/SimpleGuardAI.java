@@ -12,17 +12,12 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import tallestegg.guardvillagers.GuardVillagers;
 
-/**
- * Lightweight Guard AI for the 26.2 experimental branch.
- *
- * The Guard keeps its existing equipment/inventory implementation, but its
- * runtime decision loop is intentionally small and close to vanilla golem
- * behaviour: acquire a nearby hostile mob, navigate to it, and attack it.
- * There is deliberately no patrol, formation, follow, food-seeking, or
- * "which villager needs help" scan here.
- */
+/** Lightweight Guard AI for the 26.2 experimental branch. */
+@EventBusSubscriber(modid = GuardVillagers.MODID)
 public final class SimpleGuardAI {
     private SimpleGuardAI() {
     }
@@ -33,12 +28,9 @@ public final class SimpleGuardAI {
             return;
         }
 
-        // Guard.registerGoals() installs the original feature-heavy AI.
-        // Replace it once when the entity is added to the world.
         guard.goalSelector.removeAllGoals(goal -> true);
         guard.targetSelector.removeAllGoals(goal -> true);
 
-        // Basic movement/look behaviour.
         guard.goalSelector.addGoal(0, new FloatGoal(guard));
         guard.goalSelector.addGoal(1, new MeleeAttackGoal(guard, 1.0D, true));
         guard.goalSelector.addGoal(2, new RangedCrossbowAttackGoal<>(guard, 1.0D, 8.0F));
@@ -47,8 +39,6 @@ public final class SimpleGuardAI {
         guard.goalSelector.addGoal(8, new LookAtPlayerGoal(guard, Player.class, 8.0F));
         guard.goalSelector.addGoal(9, new RandomLookAroundGoal(guard));
 
-        // One broad hostile target selector instead of several overlapping
-        // selectors for raiders, witches, zombies, players, whitelists, etc.
         guard.targetSelector.addGoal(1, new HurtByTargetGoal(guard));
         guard.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(guard, Monster.class, true));
     }
