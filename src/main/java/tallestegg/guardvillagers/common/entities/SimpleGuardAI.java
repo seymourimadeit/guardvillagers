@@ -12,12 +12,9 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import tallestegg.guardvillagers.GuardVillagers;
 
 /** Lightweight Guard AI for the 26.2 experimental branch. */
-@EventBusSubscriber(modid = GuardVillagers.MODID)
 public final class SimpleGuardAI {
     private SimpleGuardAI() {
     }
