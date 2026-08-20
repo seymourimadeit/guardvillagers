@@ -14,7 +14,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -22,6 +22,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import tallestegg.guardvillagers.client.GuardSounds;
 import tallestegg.guardvillagers.common.entities.Guard;
+import tallestegg.guardvillagers.common.entities.SimpleGuardAI;
 import tallestegg.guardvillagers.configuration.GuardConfig;
 import tallestegg.guardvillagers.loot_tables.GuardLootTables;
 
@@ -35,6 +36,7 @@ public class GuardVillagers {
         container.registerConfig(ModConfig.Type.STARTUP, GuardConfig.STARTUP_SPEC);
         modEventBus.addListener(this::setup);
         NeoForge.EVENT_BUS.register(HandlerEvents.class);
+        NeoForge.EVENT_BUS.register(SimpleGuardAI.class);
         GuardEntityType.ENTITIES.register(modEventBus);
         GuardItems.ITEMS.register(modEventBus);
         GuardSounds.SOUNDS.register(modEventBus);
