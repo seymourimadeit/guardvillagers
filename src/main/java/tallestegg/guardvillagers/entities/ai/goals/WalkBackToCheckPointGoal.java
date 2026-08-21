@@ -61,4 +61,9 @@ public class WalkBackToCheckPointGoal extends Goal {
         this.guard.getNavigation().stop();
         this.stop = false;
     }
+
+    @Override
+    public boolean requiresUpdateEveryTick() {
+        return true;
+    }
 }
