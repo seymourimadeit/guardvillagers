@@ -74,6 +74,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
     implementation "curse.maven:ewewukeks-musket-mod-354562:5575694"
+    implementation "curse.maven:spark-361579:5434153"
 }
 
 repositories {

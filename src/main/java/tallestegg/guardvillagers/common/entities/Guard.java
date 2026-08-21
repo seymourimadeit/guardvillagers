@@ -1720,30 +1720,33 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         private final double speed;
         private long delayTime = 0L;
         private int ticksRan = 0;
-        private boolean stop = false;
+        private boolean stop;
 
         public WalkBackToCheckPointGoal(Guard guard, double speedIn) {
             this.guard = guard;
             this.speed = speedIn;
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
 
         @Override
         public boolean canUse() {
+            return this.canPatrol() && this.guard.getNavigation().isDone();
+        }
+
+        public boolean canPatrol() {
             return guard.getTarget() == null && this.guard.getPatrolPos() != null && !this.guard.blockPosition().equals(this.guard.getPatrolPos()) && !guard.isFollowing() && guard.isPatrolling() && (guard.level().getGameTime() - delayTime) > 200L;
         }
 
         @Override
         public boolean canContinueToUse() {
-            return this.canUse() && this.guard.getNavigation().isInProgress() && stop;
+            return this.canPatrol() && this.guard.getNavigation().isInProgress() && !stop;
         }
 
         @Override
         public void start() {
-            if (ticksRan > 200)
-                this.ticksRan = 0;
+            if (ticksRan > 200) this.ticksRan = 0;
+            this.stop = false;
             BlockPos blockpos = this.guard.getPatrolPos();
-            if (blockpos != null && !this.guard.blockPosition().equals(this.guard.getPatrolPos())) {
+            if (blockpos != null && !this.guard.blockPosition().equals(this.guard.getPatrolPos()) && !this.guard.getNavigation().isInProgress()) {
                 Path path = this.guard.getNavigation().createPath(blockpos, 0);
                 this.guard.getNavigation().moveTo(path, this.speed);
             }
@@ -1751,23 +1754,18 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
 
         @Override
         public void tick() {
-            if (this.guard.getNavigation().getPath() != null && !this.guard.getNavigation().getPath().canReach())
+            if (this.guard.getNavigation().getPath() != null && !this.guard.getNavigation().getPath().canReach()) {
                 this.ticksRan++;
-            if (this.guard.getNavigation().getPath() != null && !this.guard.getNavigation().getPath().canReach() && !this.guard.blockPosition().equals(this.guard.getPatrolPos()) && ticksRan > 200)
-                this.stop = true;
+                if (!this.guard.blockPosition().equals(this.guard.getPatrolPos()) && ticksRan > 200)
+                    this.stop = true;
+            }
         }
 
         @Override
         public void stop() {
-            if (stop)
-                this.delayTime = this.guard.level().getGameTime();
+            if (stop) this.delayTime = this.guard.level().getGameTime();
             this.guard.getNavigation().stop();
             this.stop = false;
-        }
-
-        @Override
-        public boolean requiresUpdateEveryTick() {
-            return true;
         }
     }
 
