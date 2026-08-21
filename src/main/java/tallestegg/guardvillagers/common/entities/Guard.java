@@ -1800,6 +1800,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             this.guard.getNavigation().stop();
             this.stop = false;
         }
+
+        @Override
+        public boolean requiresUpdateEveryTick() {
+            return true;
+        }
     }
 
     public static class PassiveMobSpearUseGoal<T extends Guard> extends Goal {
