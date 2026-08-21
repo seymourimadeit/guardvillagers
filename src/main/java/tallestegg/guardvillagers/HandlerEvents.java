@@ -21,7 +21,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableWitchTargetGoa
 import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.feline.Cat;
 import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.animal.polarbear.PolarBear;
 import net.minecraft.world.entity.monster.Enemy;
@@ -64,10 +63,6 @@ public class HandlerEvents {
     @SubscribeEvent
     public static void onEntityTarget(LivingChangeTargetEvent event) {
         LivingEntity entity = event.getEntity();
-        if (entity instanceof Raider raider && raider.hasActiveRaid()) {
-            return;
-        }
-
         LivingEntity target = event.getNewAboutToBeSetTarget();
         if (target == null || entity.getType() == GuardEntityType.GUARD.get() || entity instanceof IronGolem) return;
 
@@ -146,12 +141,9 @@ public class HandlerEvents {
     @SubscribeEvent
     public static void onLivingSpawned(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Mob mob) {
-            if (mob instanceof Raider raider && raider.hasActiveRaid()) return;
-            if ((mob instanceof Raider raider) && raider.hasActiveRaid()) return;
-
             if (mob instanceof Raider) {
                 if (GuardConfig.COMMON.RaidAnimals.get()) {
-                    mob.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(((Raider) mob), Animal.class, false));
+                    mob.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(mob, Animal.class, false));
                 }
             }
 
@@ -204,10 +196,6 @@ public class HandlerEvents {
                     witch.targetSelector.addGoal(2, new NearestAttackableWitchTargetGoal<>(witch, Guard.class, 10, true, false, null));
                 }
             }
-
-            if (mob instanceof Cat cat) {
-                cat.goalSelector.addGoal(1, new AvoidEntityGoal<>(cat, AbstractIllager.class, 12.0F, 1.0D, 1.2D));
-            }
         }
     }
 
@@ -217,7 +205,6 @@ public class HandlerEvents {
         Level level = player.level();
         if (level.isClientSide()) return;
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
-
         ItemStack itemstack = event.getEntity().getMainHandItem();
         Entity target = event.getTarget();
         if (itemstack.is(GuardVillagerTags.GUARD_CONVERT) && player.isCrouching()) {
