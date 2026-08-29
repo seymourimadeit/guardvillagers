@@ -200,10 +200,10 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     @Override
     public void readAdditionalSaveData(@NotNull ValueInput input) {
         super.readAdditionalSaveData(input);
-        String ownerStr = input.getStringOr("Owner", "");
-        if (!ownerStr.isEmpty()) {
+        String owner = input.getStringOr("Owner", "");
+        if (!owner.isEmpty()) {
             try {
-                this.setOwnerId(UUID.fromString(ownerStr));
+                this.setOwnerId(UUID.fromString(owner));
             } catch (Throwable t) {
                 this.setOwnerId(null);
             }
@@ -237,6 +237,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 }
             }
         }
+        this.gossips.clear();
+        input.read("Gossips", GossipContainer.CODEC).ifPresent(this.gossips::putAll);
         this.readPersistentAngerSaveData(this.level(), input);
     }
 
@@ -254,6 +256,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         output.putBoolean("SpawnWithArmor", this.spawnWithArmor);
         output.putLong("LastGossipTime", this.lastGossipTime);
         output.putLong("LastGossipDecay", this.lastGossipDecayTime);
+        output.store("Gossips", GossipContainer.CODEC, this.gossips);
         java.util.UUID owner = this.getOwnerId();
         if (owner != null) {
             output.putString("Owner", owner.toString());
