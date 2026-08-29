@@ -1,1 +1,2 @@
 
+- [CHANGE] fix guard gossips not being stored
