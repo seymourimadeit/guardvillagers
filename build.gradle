@@ -75,6 +75,7 @@ dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
     implementation "curse.maven:ewewukeks-musket-mod-354562:5575694"
     implementation "curse.maven:spark-361579:5434153"
+    implementation "curse.maven:carry-on-274259:8512888"
 }
 
 repositories {

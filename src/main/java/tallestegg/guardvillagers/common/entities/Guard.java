@@ -240,15 +240,17 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             int z = compound.getInt("PatrolPosZ");
             this.entityData.set(GUARD_POS, Optional.of(new BlockPos(x, y, z)));
         }
-        ListTag listtag = compound.getList("Gossips", 10);
-        this.gossips.update(new Dynamic<>(NbtOps.INSTANCE, listtag));
-        ListTag listnbt = compound.getList("Inventory", 9);
-        for (int i = 0; i < listnbt.size(); ++i) {
-            CompoundTag compoundnbt = listnbt.getCompound(i);
+        if (this.gossips != null) {
+            ListTag gossipTag = compound.getList("Gossips", 10);
+            this.gossips.update(new Dynamic<>(NbtOps.INSTANCE, gossipTag));
+        }
+        ListTag inventoryNBT = compound.getList("Inventory", 9);
+        for (int i = 0; i < inventoryNBT.size(); ++i) {
+            CompoundTag compoundnbt = inventoryNBT.getCompound(i);
             int j = compoundnbt.getByte("Slot") & 255;
             ItemStack stack = ItemStack.parseOptional(this.registryAccess(), compoundnbt);
             if (!stack.isEmpty()) this.guardInventory.setItem(j, stack);
-            else listtag.add(new CompoundTag());
+            else inventoryNBT.add(new CompoundTag());
         }
         if (compound.contains("ArmorItems", 9)) {
             ListTag armorItems = compound.getList("ArmorItems", 10);
@@ -258,7 +260,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                     int index = Guard.slotToInventoryIndex(this.getEquipmentSlotForItem(ItemStack.parse(this.registryAccess(), armorItems.getCompound(i)).orElse(ItemStack.EMPTY)));
                     this.guardInventory.setItem(index, stack);
                 } else {
-                    listtag.add(new CompoundTag());
+                    armorItems.add(new CompoundTag());
                 }
             }
             if (compound.contains("HandItems", 9)) {
@@ -267,7 +269,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                     int handSlot = i == 0 ? 5 : 4;
                     if (!ItemStack.parseOptional(this.registryAccess(), handItems.getCompound(i)).isEmpty())
                         this.guardInventory.setItem(handSlot, ItemStack.parseOptional(this.registryAccess(), handItems.getCompound(i)));
-                    else listtag.add(new CompoundTag());
+                    else handItems.add(new CompoundTag());
                 }
                 if (!level().isClientSide) this.readPersistentAngerSaveData(level(), compound);
             }
