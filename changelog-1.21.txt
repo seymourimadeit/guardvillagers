@@ -1,1 +1,2 @@
 
+- [CHANGE] fix #315 [illagers attacking animals while not in a raid]
