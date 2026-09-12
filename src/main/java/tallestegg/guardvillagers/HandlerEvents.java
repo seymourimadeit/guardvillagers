@@ -141,9 +141,9 @@ public class HandlerEvents {
     @SubscribeEvent
     public static void onLivingSpawned(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof Mob mob) {
-            if (mob instanceof Raider) {
+            if (mob instanceof Raider raider && raider.hasActiveRaid()) {
                 if (GuardConfig.COMMON.RaidAnimals.get()) {
-                    mob.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(mob, Animal.class, false));
+                    mob.targetSelector.addGoal(10, new NearestAttackableTargetGoal<>(mob, Animal.class, true));
                 }
             }
 
