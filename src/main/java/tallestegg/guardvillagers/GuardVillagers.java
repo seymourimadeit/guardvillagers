@@ -30,7 +30,7 @@ public class GuardVillagers {
     public static final String MODID = "guardvillagers";
 
     public GuardVillagers(ModContainer container, IEventBus modEventBus) {
-        container.registerConfig(ModConfig.Type.COMMON, GuardConfig.COMMON_SPEC);
+        container.registerConfig(ModConfig.Type.LOCAL, GuardConfig.COMMON_SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, GuardConfig.CLIENT_SPEC);
         container.registerConfig(ModConfig.Type.STARTUP, GuardConfig.STARTUP_SPEC);
         modEventBus.addListener(this::setup);

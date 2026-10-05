@@ -80,7 +80,7 @@ public class RepairGolem extends VillagerHelp {
         if (healer.distanceTo(golem) <= 2.0D) {
             healer.setData(GuardDataAttachments.TIMES_HEALED_GOLEM.get(), healer.getData(GuardDataAttachments.TIMES_HEALED_GOLEM.get()) + 1);
             healer.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_INGOT));
-            healer.swing(InteractionHand.MAIN_HAND);
+            healer.swingForAttack(InteractionHand.MAIN_HAND);
             golem.heal(15.0F);
             float pitch = 1.0F + (golem.getRandom().nextFloat() - golem.getRandom().nextFloat()) * 0.2F;
             golem.playSound(SoundEvents.IRON_GOLEM_REPAIR, 1.0F, pitch);

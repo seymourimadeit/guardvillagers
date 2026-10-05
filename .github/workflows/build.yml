@@ -37,7 +37,7 @@ jobs:
           version-type: release
           environment: client | server
           loaders: neoforge
-          game-versions: 26.2.0
+          game-versions: 26.3.0
           version: ${{ steps.version.outputs.value }}
           java: 25
           name: ""

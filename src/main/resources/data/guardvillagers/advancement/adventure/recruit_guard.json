@@ -3,15 +3,13 @@
   "criteria": {
     "recruit_guard": {
       "conditions": {
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "type": "guardvillagers:guard"
-            }
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:entity_type": "guardvillagers:guard"
           }
-        ]
+        }
       },
       "trigger": "minecraft:summoned_entity"
     }

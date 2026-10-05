@@ -1,85 +1,80 @@
 {
-  "type": "guardvillagers:slot",
   "pools": [
     {
-      "rolls": 1,
       "entries": [
         {
           "type": "minecraft:loot_table",
           "value": "guardvillagers:entities/armor_sets/armor"
         }
-      ]
+      ],
+      "rolls": 1
     },
     {
-      "rolls": 1,
       "entries": [
         {
-          "type": "minecraft:item",
           "name": "minecraft:iron_sword",
+          "type": "minecraft:item",
           "weight": 25
         },
         {
-          "type": "minecraft:item",
           "name": "minecraft:crossbow",
+          "type": "minecraft:item",
           "weight": 25
         },
         {
-          "type": "minecraft:item",
           "name": "minecraft:bow",
+          "type": "minecraft:item",
           "weight": 25
         },
         {
-          "type": "minecraft:item",
           "name": "minecraft:iron_axe",
+          "type": "minecraft:item",
           "weight": 25
         }
       ],
-      "functions": [
-        {
-          "function": "guardvillagers:slot",
-          "slot": "mainhand"
-        }
-      ]
+      "modifier": {
+        "slot": "mainhand",
+        "type": "guardvillagers:slot"
+      },
+      "rolls": 1
     },
     {
-      "rolls": 1,
       "entries": [
         {
-          "type": "minecraft:item",
-          "name": "minecraft:bread",
-          "functions": [
+          "condition":
             {
-              "function": "minecraft:set_count",
+              "chance": 0.1,
+              "type": "minecraft:random_chance"
+            },
+          "modifier": [
+            {
               "count": {
-                "min": 1,
-                "max": 8
-              }
+                "type": "minecraft:uniform",
+                "max": 8,
+                "min": 1
+              },
+              "type": "minecraft:set_count"
             }
           ],
-          "conditions": [
-            {
-              "condition": "minecraft:random_chance",
-              "chance": 0.1
-            }
-          ]
+          "name": "minecraft:bread",
+          "type": "minecraft:item"
         },
         {
-          "type": "minecraft:item",
-          "name": "minecraft:shield",
-          "conditions": [
+          "condition":
             {
-              "condition": "minecraft:random_chance",
-              "chance": 0.5
-            }
-          ]
+              "chance": 0.5,
+              "type": "minecraft:random_chance"
+            },
+          "name": "minecraft:shield",
+          "type": "minecraft:item"
         }
       ],
-      "functions": [
-        {
-          "function": "guardvillagers:slot",
-          "slot": "offhand"
-        }
-      ]
+      "modifier": {
+        "slot": "offhand",
+        "type": "guardvillagers:slot"
+      },
+      "rolls": 1
     }
-  ]
+  ],
+  "type": "guardvillagers:slot"
 }

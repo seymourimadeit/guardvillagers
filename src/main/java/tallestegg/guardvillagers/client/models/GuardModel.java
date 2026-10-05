@@ -67,7 +67,7 @@ public class GuardModel extends HumanoidModel<GuardRenderState> {
             this.rightLeg.xRot = Mth.lerp(f1, this.rightLeg.xRot, -1.40F);
         }
 
-        if (state.aggressive && !state.holdingShootable && !state.mainHandEmpty && !state.blocking && state.attackTime <= 0.0) {
+        if (state.aggressive && !state.holdingShootable && !state.mainHandEmpty && !state.blocking && state.swingAnimation <= 0.0) {
             this.holdWeaponHigh(state.mainArm);
         }
 

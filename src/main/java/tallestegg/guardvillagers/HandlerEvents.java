@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -36,6 +37,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.raid.Raider;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.entity.BellBlockEntity;
@@ -257,7 +259,7 @@ public class HandlerEvents {
     private static void convertVillager(LivingEntity entity, Player player) {
         Level level = entity.level();
         if (level.isClientSide()) return;
-        player.swing(InteractionHand.MAIN_HAND, true);
+        player.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, true);
         ItemStack itemstack = player.getItemBySlot(EquipmentSlot.MAINHAND);
         Guard guard = GuardEntityType.GUARD.get().create(entity.level(), EntitySpawnReason.EVENT);
         Villager villager = (Villager) entity;

@@ -1,6 +1,7 @@
 package tallestegg.guardvillagers.common.entities.ai.tasks;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -16,6 +17,7 @@ import tallestegg.guardvillagers.GuardEntityType;
 import tallestegg.guardvillagers.common.entities.Guard;
 
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class ShareGossipWithGuard extends Behavior<Villager> {
     public ShareGossipWithGuard() {
@@ -46,7 +48,7 @@ public class ShareGossipWithGuard extends Behavior<Villager> {
             guard.gossip(pOwner, pGameTime);
         }
         if (pOwner.hasExcessFood() && guard.getOffhandItem().isEmpty()) {
-            throwHalfStack(pOwner, Villager.FOOD_POINTS.keySet(), guard);
+            throwHalfStack(pOwner, itemStack -> itemStack.has(DataComponents.VILLAGER_FOOD), guard);
         }
     }
 
@@ -56,43 +58,38 @@ public class ShareGossipWithGuard extends Behavior<Villager> {
     }
 
     // From the TradeWithVillager class
-    private static void throwHalfStack(Villager pVillager, Set<Item> pStack, LivingEntity pEntity) {
-        SimpleContainer simplecontainer = pVillager.getInventory();
-        ItemStack itemstack = ItemStack.EMPTY;
+    private static void throwHalfStack(Villager pVillager, Predicate<ItemStack> predicate, LivingEntity pEntity) {
+        SimpleContainer inventory = pVillager.getInventory();
+        ItemStack toThrow = ItemStack.EMPTY;
         int i = 0;
 
-        while(i < simplecontainer.getContainerSize()) {
-            ItemStack itemstack1;
-            Item item;
-            int j;
+        while (i < inventory.getContainerSize()) {
+            ItemStack itemStack;
+            int count;
             label28: {
-                itemstack1 = simplecontainer.getItem(i);
-                if (!itemstack1.isEmpty()) {
-                    item = itemstack1.getItem();
-                    if (pStack.contains(item)) {
-                        if (itemstack1.getCount() > itemstack1.getMaxStackSize() / 2) {
-                            j = itemstack1.getCount() / 2;
-                            break label28;
-                        }
+                itemStack = inventory.getItem(i);
+                if (!itemStack.isEmpty() && predicate.test(itemStack)) {
+                    if (itemStack.getCount() > itemStack.getMaxStackSize() / 2) {
+                        count = itemStack.getCount() / 2;
+                        break label28;
+                    }
 
-                        if (itemstack1.getCount() > 24) {
-                            j = itemstack1.getCount() - 24;
-                            break label28;
-                        }
+                    if (itemStack.getCount() > 24) {
+                        count = itemStack.getCount() - 24;
+                        break label28;
                     }
                 }
 
-                ++i;
+                i++;
                 continue;
             }
 
-            itemstack1.shrink(j);
-            itemstack = new ItemStack(item, j);
+            toThrow = itemStack.split(count);
             break;
         }
 
-        if (!itemstack.isEmpty()) {
-            pEntity.setItemSlot(EquipmentSlot.OFFHAND, itemstack);
+        if (!toThrow.isEmpty()) {
+            BehaviorUtils.throwItem(pVillager, toThrow, pEntity.position());
         }
     }
 }

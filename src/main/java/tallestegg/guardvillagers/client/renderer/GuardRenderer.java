@@ -167,16 +167,13 @@ public class GuardRenderer extends HumanoidMobRenderer<Guard, GuardRenderState, 
                     }
                 }
             }
-            if (!guard.swinging && (handItem.getItem() instanceof CrossbowItem) && ((CrossbowItem.isCharged(handItem) && guard.isAggressive()) || guard.isAggressive())) {
+            if (!guard.isSwinging() && (handItem.getItem() instanceof CrossbowItem) && ((CrossbowItem.isCharged(handItem) && guard.isAggressive()) || guard.isAggressive())) {
                 return HumanoidModel.ArmPose.CROSSBOW_HOLD;
             }
-            SwingAnimation swinganimation = handItem.get(DataComponents.SWING_ANIMATION);
-            if (swinganimation != null && swinganimation.type() == SwingAnimationType.STAB && guard.swinging) {
-                return HumanoidModel.ArmPose.SPEAR;
-            } else {
-                return handItem.is(ItemTags.SPEARS) ? HumanoidModel.ArmPose.SPEAR : HumanoidModel.ArmPose.ITEM;
-            }
         }
+        return HumanoidMobRenderer.usesSpearPose(handItem, hand.asArm(guard.getMainArm()), guard)
+                ? HumanoidModel.ArmPose.SPEAR
+                : HumanoidModel.ArmPose.ITEM;
     }
 
     @Override

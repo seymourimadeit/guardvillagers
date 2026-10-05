@@ -33,7 +33,7 @@ public class RepairGuardEquipment extends VillagerHelp {
             if (!list.isEmpty()) {
                 for (LivingEntity livingEntity : list) {
                     if (!livingEntity.isInvisible() && livingEntity.isAlive() && livingEntity instanceof Guard guard) { // Check only for iron golems and if a day has passed since the last time a golem was healed
-                        if (owner.getVillagerData().profession() == VillagerProfession.ARMORER) {
+                        if (owner.getVillagerData().profession().is(VillagerProfession.ARMORER)) {
                             for (int i = 0; i < guard.guardInventory.getContainerSize() - 2; ++i) {
                                 ItemStack itemstack = guard.guardInventory.getItem(i);
                                 if (itemstack.isDamaged() && isHumanoidArmor(itemstack) && itemstack.getDamageValue() >= (itemstack.getMaxDamage() / 2)) {

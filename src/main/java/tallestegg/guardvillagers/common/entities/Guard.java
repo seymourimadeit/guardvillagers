@@ -56,6 +56,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.BlocksAttacks;
 import net.minecraft.world.item.component.KineticWeapon;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
@@ -463,7 +464,6 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
             getItemsFromLootTable(this);
             this.spawnWithArmor = false;
         }
-        this.updateSwingTime();
         super.aiStep();
     }
 
@@ -479,8 +479,8 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    protected void blockUsingItem(ServerLevel level, LivingEntity attacker, DamageSource source, float damage) {
-        super.blockUsingItem(level, attacker, source, damage);
+    protected void blockUsingItem(ServerLevel level, LivingEntity attacker, DamageSource source, float damage, boolean fullyBlocked) {
+        super.blockUsingItem(level, attacker, source, damage, fullyBlocked);
         this.playSound(SoundEvents.SHIELD_BLOCK.value(), 1.0F, 1.0F);
         ItemStack blocking = this.getItemBlockingWith();
         if (blocking.isEmpty()) return;
@@ -770,11 +770,11 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
     }
 
     @Override
-    protected void blockedByItem(LivingEntity defender, DamageSource source, float damage) {
+    protected void blockedByItem(LivingEntity defender, DamageSource source, float damage, boolean fullyBlocked) {
         if (this.isKicking()) {
             this.setKicking(false);
         }
-        super.blockedByItem(defender, source, damage);
+        super.blockedByItem(defender, source, damage, fullyBlocked);
     }
 
 
@@ -785,7 +785,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         if (inventoryRequirements) {
             if (this.getTarget() != player && this.isEffectiveAi() && configValues) {
                 if (player instanceof ServerPlayer) {
-                    player.swing(hand, true);
+                    player.swing(hand, SwingAnimation.DEFAULT, true);
                     this.openGui((ServerPlayer) player);
                     return InteractionResult.SUCCESS;
                 }
@@ -1094,7 +1094,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
                 this.resetAttackCooldown();
                 this.guard.stopUsingItem();
                 if (guard.shieldCoolDown == 0) this.guard.shieldCoolDown = 8;
-                this.guard.swing(InteractionHand.MAIN_HAND);
+                this.guard.swingForAttack(InteractionHand.MAIN_HAND);
                 if (this.guard.level() instanceof ServerLevel serverLevel) {
                     this.guard.doHurtTarget(serverLevel, enemy);
                 }
@@ -1185,7 +1185,7 @@ public class Guard extends PathfinderMob implements CrossbowAttackMob, RangedAtt
         public void start() {
             if (areOtherMobsComingThroughDoor(guard)) {
                 super.start();
-                guard.swing(InteractionHand.MAIN_HAND);
+                guard.swingForAttack(InteractionHand.MAIN_HAND);
             }
         }
 
